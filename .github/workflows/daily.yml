@@ -1,0 +1,18 @@
+name: Daily refresh
+on:
+  schedule:
+    - cron: '5 0 * * *'
+  workflow_dispatch:
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Touch index to trigger Vercel redeploy
+        run: |
+          git config user.email "bot@tj-pokemon-guide.com"
+          git config user.name "Daily Bot"
+          sed -i "s/<!-- LAST_UPDATED:.*-->/<!-- LAST_UPDATED: $(date -u +%Y-%m-%d) -->/" index.html
+          git add index.html
+          git commit -m "Daily refresh $(date -u +%Y-%m-%d)" || exit 0
+          git push
