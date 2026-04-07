@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TJ's Pokémon Card Guide</title>
+<!-- LAST_UPDATED: 2026-04-07 -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -106,6 +107,7 @@
     text-align: left;
     transition: background 0.15s;
     -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
   }
   .card-tab.active { background: var(--surface); border-color: var(--border2); }
   .card-tab:hover:not(.active) { background: rgba(255,255,255,0.03); }
@@ -119,6 +121,61 @@
     border-radius: 10px;
     font-size: 9px;
     font-weight: 700;
+  }
+
+  /* CARD OF THE DAY */
+  .cotd-banner {
+    background: linear-gradient(135deg, #0f0f2a, #1a1a35);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 12px 16px 8px;
+  }
+  .cotd-label {
+    font-size: 10px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .cotd-body {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .cotd-img-wrap { flex-shrink: 0; }
+  .cotd-img { width: 180px; display: block; }
+  .cotd-img-placeholder {
+    width: 180px; height: 250px;
+    background: var(--surface2); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--dim);
+  }
+  .cotd-info { flex: 1; min-width: 0; }
+  .cotd-name { font-size: clamp(20px, 5vw, 28px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
+  .cotd-set { font-size: 12px; color: var(--muted); margin-top: 3px; margin-bottom: 10px; }
+  .cotd-score-wrap { margin: 10px 0; }
+  .cotd-btn {
+    margin-top: 14px;
+    padding: 10px 18px;
+    background: var(--gold-bg);
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
+    transition: background 0.15s;
+  }
+  .cotd-btn:hover { background: rgba(245,158,11,0.2); }
+  @media(max-width:500px) {
+    .cotd-body { flex-direction: column; align-items: center; text-align: center; }
+    .cotd-img { width: 140px; }
+    .cotd-img-placeholder { width: 140px; height: 195px; }
+    .cotd-btn { width: 100%; }
   }
 
   /* MAIN PANEL */
@@ -137,6 +194,21 @@
     margin-bottom: 16px;
     border-bottom: 1px solid var(--border);
   }
+  .hero-layout {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  .hero-img-wrap { flex-shrink: 0; }
+  .card-img { width: 240px; display: block; }
+  .card-img-placeholder {
+    width: 240px; height: 335px;
+    background: var(--surface2); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: var(--dim);
+  }
+  .hero-text { flex: 1; min-width: 0; }
   .hero-top {
     display: flex;
     align-items: center;
@@ -144,13 +216,7 @@
     flex-wrap: wrap;
     margin-bottom: 8px;
   }
-  .verdict-pill {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-  }
+  .verdict-pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
   .card-id { font-size: 12px; color: var(--muted); }
   .hero-name { font-size: clamp(22px, 6vw, 32px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
   .hero-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
@@ -161,11 +227,7 @@
     gap: 8px;
     margin-top: 14px;
   }
-  .stat-box {
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 10px 12px;
-  }
+  .stat-box { background: var(--surface2); border-radius: 8px; padding: 10px 12px; }
   .stat-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 3px; }
   .stat-val { font-size: clamp(14px, 4vw, 18px); font-weight: 800; }
 
@@ -185,8 +247,23 @@
   .score-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
   .score-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
 
+  @media(max-width:600px) {
+    .hero-layout { flex-direction: column; align-items: center; }
+    .card-img { width: 200px; }
+    .card-img-placeholder { width: 200px; height: 280px; }
+    .hero-text { width: 100%; }
+  }
+  @media(max-width:360px) {
+    .stat-val { font-size: 1.1rem; }
+    .stat-label { font-size: 0.65rem; }
+  }
+
   /* INNER TABS */
-  .inner-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .inner-tabs {
+    display: flex; gap: 4px; margin-bottom: 16px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  }
+  .inner-tabs::-webkit-scrollbar { display: none; }
   .inner-tab {
     padding: 7px 14px;
     border-radius: 7px;
@@ -198,6 +275,7 @@
     transition: all 0.15s;
     -webkit-tap-highlight-color: transparent;
     white-space: nowrap;
+    min-height: 44px;
   }
   .inner-tab.active { background: var(--surface2); color: var(--text); font-weight: 600; }
 
@@ -212,28 +290,101 @@
   .risk-label { color: var(--muted); }
   .risk-pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
 
-  .targets-box {
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 14px;
-    margin-top: 12px;
-  }
+  .targets-box { background: var(--surface2); border-radius: 8px; padding: 14px; margin-top: 12px; }
   .targets-grid { display: flex; justify-content: space-between; text-align: center; margin-top: 8px; }
   .target-divider { width: 1px; background: var(--border); }
   .target-label { font-size: 10px; color: var(--dim); }
   .target-val { font-size: 16px; font-weight: 800; margin-top: 2px; }
 
   /* PRICE CHART */
-  .chart-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
-  .legend-line { width: 18px; height: 2px; }
+  .chart-note {
+    background: rgba(96,165,250,0.07);
+    border: 1px solid rgba(96,165,250,0.15);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .chart-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+  .legend-line { width: 18px; height: 2px; border-radius: 1px; }
   .legend-dash { width: 18px; height: 0; border-top: 2px dashed; }
-  .chart-wrap { position: relative; width: 100%; height: 220px; }
-  .events-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 14px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .chart-wrap { position: relative; width: 100%; height: 240px; }
+
+  /* LIVE PRICES */
+  .live-prices { margin-top: 20px; }
+  .live-prices-header {
+    font-size: 11px; color: var(--dim); text-transform: uppercase;
+    letter-spacing: 1px; font-weight: 600; margin-bottom: 10px;
+  }
+  .price-sources { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media(max-width:500px){ .price-sources { grid-template-columns: 1fr; } }
+  .price-source {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .price-source-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .price-source-name { font-size: 13px; font-weight: 700; }
+  .price-updated { font-size: 10px; color: var(--dim); font-weight: 400; }
+  .price-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .price-row:last-child { border-bottom: none; }
+  .price-row-label { color: var(--muted); }
+  .price-row-val { font-weight: 700; }
+  .price-loading { font-size: 12px; color: var(--dim); padding: 8px 0; }
+  .price-currency-note { font-size: 10px; color: var(--dim); margin-top: 8px; }
+  .events-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 16px; }
+  @media(max-width:400px){ .events-grid { grid-template-columns: 1fr 1fr; } }
   .event-box { background: var(--surface2); border-radius: 8px; padding: 10px 12px; }
   .event-date { font-size: 10px; color: var(--dim); }
   .event-label { font-size: 12px; font-weight: 600; margin: 2px 0; }
   .event-delta { font-size: 15px; font-weight: 800; }
+
+  /* WHERE TO BUY */
+  .buy-disclaimer {
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+  .buy-links { display: flex; flex-direction: column; gap: 10px; }
+  .buy-link-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: var(--surface2);
+    border: 1px solid var(--dim);
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s;
+  }
+  .buy-link-card:hover { border-color: var(--gold); }
+  .buy-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+  .buy-info { flex: 1; min-width: 0; }
+  .buy-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .buy-desc { font-size: 12px; color: var(--muted); }
+  .buy-cta { font-size: 13px; font-weight: 700; color: var(--gold); flex-shrink: 0; white-space: nowrap; }
+  @media(max-width:500px) {
+    .buy-link-card { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .buy-cta { align-self: flex-end; }
+  }
 
   /* CATALYSTS */
   .bullet-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 11px; }
@@ -290,6 +441,8 @@
   </div>
   <div class="card-tabs" id="cardTabs"></div>
 </div>
+
+<div id="cotdSection"></div>
 
 <div style="padding: 0 16px;">
   <div class="main-panel" id="mainPanel"></div>
@@ -442,9 +595,48 @@ const cards = [
   },
 ];
 
+// Card data fetched from Pokémon TCG API — images and real market prices
+const cardImages = {};
+const cardPrices = {}; // { id: { cm: cardmarket_obj, tcp: tcgplayer_obj } }
+let chartInst = null;
+
+const cardApiQueries = {
+  judge:   'name:Judge set.name:"Lost Thunder"',
+  cynthia: 'name:Cynthia set.name:"Ultra Prism"',
+  guzma:   'name:Guzma set.name:"Burning Shadows"',
+  lillie:  'name:Lillie set.name:"Sun & Moon"',
+};
+
+// Approximate exchange rates for display (EUR→GBP, USD→GBP)
+const EUR_GBP = 0.855;
+const USD_GBP = 0.797;
+
+function fmtGbp(v) { return '£' + Number(v).toFixed(2); }
+function fmtEur(v) { return '€' + Number(v).toFixed(2); }
+function fmtUsd(v) { return '$' + Number(v).toFixed(2); }
+function eurToGbp(v) { return fmtGbp(v * EUR_GBP); }
+function usdToGbp(v) { return fmtGbp(v * USD_GBP); }
+
+async function fetchCardData() {
+  const fetches = Object.entries(cardApiQueries).map(async ([id, q]) => {
+    try {
+      const res = await fetch('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q));
+      const data = await res.json();
+      const card = data.data && (data.data.find(c => c.rarity === 'Rare Ultra') || data.data[0]);
+      if (!card) return;
+      if (card.images && card.images.large) cardImages[id] = card.images.large;
+      if (card.cardmarket || card.tcgplayer) {
+        cardPrices[id] = { cm: card.cardmarket || null, tcp: card.tcgplayer || null };
+      }
+    } catch (e) { /* fall back to placeholders */ }
+  });
+  await Promise.all(fetches);
+  renderCardOfDay();
+  renderMain();
+}
+
 let active = cards[0];
 let innerTab = 'overview';
-let chartInst = null;
 
 const riskStyle = {
   'Very low': 'background:rgba(34,197,94,0.12);color:#22c55e;',
@@ -464,7 +656,42 @@ function riskPill(v) {
   return `<span class="risk-pill" style="${s}">${v}</span>`;
 }
 function scoreBar(val, color, id) {
-  return `<div class="score-track"><div class="score-fill" id="${id||'sb'}" style="width:${val}%;background:${color};"></div></div>`;
+  return `<div class="score-track"><div class="score-fill"${id?' id="'+id+'"':''} style="width:${val}%;background:${color};"></div></div>`;
+}
+function cardImgHtml(id, cls, placeholderCls) {
+  if (cardImages[id]) {
+    return `<img src="${cardImages[id]}" class="${cls}" alt="Card image" onerror="this.outerHTML='<div class=&quot;${placeholderCls}&quot;></div>'">`;
+  }
+  return `<div class="${placeholderCls}"></div>`;
+}
+
+function renderCardOfDay() {
+  const todayIndex = Math.floor(Date.now() / 86400000) % 4;
+  const c = cards[todayIndex];
+  const sc = scoreColor(c.score);
+  const dateStr = new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+  document.getElementById('cotdSection').innerHTML = `
+    <div class="cotd-banner">
+      <div class="cotd-label">Card of the Day &middot; ${dateStr}</div>
+      <div class="cotd-body">
+        <div class="cotd-img-wrap">${cardImgHtml(c.id, 'cotd-img', 'cotd-img-placeholder')}</div>
+        <div class="cotd-info">
+          ${pill(c.verdict, c.verdictBg, c.verdictColor)}
+          <div class="cotd-name" style="margin-top:8px;">${c.name}</div>
+          <div class="cotd-set">${c.set} · ${c.number}</div>
+          <div class="cotd-score-wrap">
+            <div class="score-header"><span>Investment score</span><span>${c.score}/100</span></div>
+            ${scoreBar(c.score, sc)}
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px;">
+            Entry: <strong style="color:var(--gold);">${c.price}</strong>
+            &nbsp;·&nbsp;
+            PSA 10 est: <strong style="color:var(--blue);">${c.psa10}</strong>
+          </div>
+          <button class="cotd-btn" onclick="switchCard('${c.id}')">View full analysis →</button>
+        </div>
+      </div>
+    </div>`;
 }
 
 function renderTabs() {
@@ -481,35 +708,40 @@ function renderHero() {
   const sc = scoreColor(c.score);
   return `
     <div class="hero">
-      <div class="hero-top">
-        ${pill(c.verdict, c.verdictBg, c.verdictColor)}
-        <span class="card-id">${c.number} · ${c.year}</span>
-      </div>
-      <div class="hero-name">${c.name}</div>
-      <div class="hero-subtitle">${c.subtitle} · ${c.set}</div>
-      <div class="stats-row">
-        <div class="stat-box"><div class="stat-label">Entry range</div><div class="stat-val" style="color:#f59e0b;">${c.price}</div></div>
-        <div class="stat-box"><div class="stat-label">PSA 10 est.</div><div class="stat-val" style="color:#60a5fa;">${c.psa10}</div></div>
-        <div class="stat-box"><div class="stat-label">Upside</div><div class="stat-val" style="color:#22c55e;">${c.upside}</div></div>
-      </div>
-      <div class="score-wrap">
-        <div class="score-header"><span>Investment score</span><span>${c.score}/100</span></div>
-        ${scoreBar(c.score, sc, 'heroScore')}
-      </div>
-      <div class="meta-row">
-        ${[['Artist',c.artist],['Type',c.type],['12m target','£'+c.t12],['24m target','£'+c.t24]].map(([k,v])=>`
-          <div class="meta-box">
-            <div class="meta-label">${k}</div>
-            <div class="meta-val">${v}</div>
-          </div>`).join('')}
+      <div class="hero-layout">
+        <div class="hero-img-wrap">${cardImgHtml(c.id, 'card-img', 'card-img-placeholder')}</div>
+        <div class="hero-text">
+          <div class="hero-top">
+            ${pill(c.verdict, c.verdictBg, c.verdictColor)}
+            <span class="card-id">${c.number} · ${c.year}</span>
+          </div>
+          <div class="hero-name">${c.name}</div>
+          <div class="hero-subtitle">${c.subtitle} · ${c.set}</div>
+          <div class="stats-row">
+            <div class="stat-box"><div class="stat-label">Entry range</div><div class="stat-val" style="color:#f59e0b;">${c.price}</div></div>
+            <div class="stat-box"><div class="stat-label">PSA 10 est.</div><div class="stat-val" style="color:#60a5fa;">${c.psa10}</div></div>
+            <div class="stat-box"><div class="stat-label">Upside</div><div class="stat-val" style="color:#22c55e;">${c.upside}</div></div>
+          </div>
+          <div class="score-wrap">
+            <div class="score-header"><span>Investment score</span><span>${c.score}/100</span></div>
+            ${scoreBar(c.score, sc, 'heroScore')}
+          </div>
+          <div class="meta-row">
+            ${[['Artist',c.artist],['Type',c.type],['12m target','£'+c.t12],['24m target','£'+c.t24]].map(([k,v])=>`
+              <div class="meta-box"><div class="meta-label">${k}</div><div class="meta-val">${v}</div></div>`).join('')}
+          </div>
+        </div>
       </div>
     </div>`;
 }
 
 function renderInnerTabs() {
+  const tabs = ['overview','price history','where to buy','catalysts & risks'];
   return `<div class="inner-tabs">
-    ${['overview','price history','catalysts & risks'].map(t=>`
-      <button class="inner-tab${innerTab===t?' active':''}" onclick="switchInner('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
+    ${tabs.map(t=>`
+      <button class="inner-tab${innerTab===t?' active':''}" onclick="switchInner('${t}')">
+        ${t.charAt(0).toUpperCase()+t.slice(1)}
+      </button>`).join('')}
   </div>`;
 }
 
@@ -540,21 +772,232 @@ function renderOverview() {
 }
 
 function renderPriceHistory() {
+  const c = active;
+  const p = cardPrices[c.id];
+  const cmUpdated = p && p.cm ? p.cm.updatedAt.replace(/\//g,'-') : null;
+  const tcpUpdated = p && p.tcp ? p.tcp.updatedAt.replace(/\//g,'-') : null;
+
+  // Build live prices panels
+  let cmHtml = '<div class="price-loading">Loading…</div>';
+  let tcpHtml = '<div class="price-loading">Loading…</div>';
+
+  if (p && p.cm) {
+    const cp = p.cm.prices;
+    cmHtml = `
+      <div class="price-row"><span class="price-row-label">30-day avg</span><span class="price-row-val" style="color:var(--gold);">${fmtEur(cp.avg30)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg30)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">7-day avg</span><span class="price-row-val">${fmtEur(cp.avg7)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg7)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">1-day avg</span><span class="price-row-val">${fmtEur(cp.avg1)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg1)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">Trend price</span><span class="price-row-val">${fmtEur(cp.trendPrice)}</span></div>
+      <div class="price-row"><span class="price-row-label">Low (EX+)</span><span class="price-row-val">${fmtEur(cp.lowPriceExPlus)}</span></div>
+      <div class="price-currency-note">EUR · GBP approx at ×0.855</div>`;
+  } else if (p === undefined) {
+    cmHtml = '<div class="price-loading">Fetching…</div>';
+  } else {
+    cmHtml = '<div class="price-loading" style="color:var(--dim);">Not available</div>';
+  }
+
+  if (p && p.tcp) {
+    const tp = p.tcp.prices;
+    const tpData = Object.values(tp)[0] || {};
+    cmHtml = cmHtml; // already set
+    tcpHtml = `
+      <div class="price-row"><span class="price-row-label">Market price</span><span class="price-row-val" style="color:var(--green);">${fmtUsd(tpData.market)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.market)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">Mid price</span><span class="price-row-val">${fmtUsd(tpData.mid)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.mid)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">Low</span><span class="price-row-val">${fmtUsd(tpData.low)}</span></div>
+      <div class="price-row"><span class="price-row-label">High</span><span class="price-row-val">${fmtUsd(tpData.high)}</span></div>
+      <div class="price-currency-note">USD · GBP approx at ×0.797</div>`;
+  } else if (p === undefined) {
+    tcpHtml = '<div class="price-loading">Fetching…</div>';
+  } else {
+    tcpHtml = '<div class="price-loading" style="color:var(--dim);">Not available</div>';
+  }
+
   return `
-    <div class="section-label">Price history (GBP, NM raw) + targets</div>
+    <div class="chart-note">
+      <strong style="color:var(--blue);">Chart</strong> shows an estimated NM-raw price trend (GBP) based on observed market activity — not sourced from a single live feed.
+      Live prices below are fetched directly from <strong>Cardmarket</strong> and <strong>TCGPlayer</strong> via the Pokémon TCG API.
+    </div>
     <div class="chart-legend">
-      <span class="legend-item"><span class="legend-line" style="background:#f59e0b;"></span>Actual price</span>
+      <span class="legend-item"><span class="legend-line" style="background:#f59e0b;"></span>Est. trend (GBP)</span>
       <span class="legend-item"><span class="legend-dash" style="border-color:#22c55e;"></span>12m target</span>
       <span class="legend-item"><span class="legend-dash" style="border-color:#60a5fa;"></span>24m target</span>
     </div>
-    <div class="chart-wrap"><canvas id="priceChart" role="img" aria-label="Price history chart for ${active.name}"></canvas></div>
+    <div class="chart-wrap"><canvas id="priceChart" role="img" aria-label="Price trend chart for ${c.name}"></canvas></div>
+
     <div class="events-grid">
-      ${active.events.map(e=>`
+      ${c.events.map(e=>`
         <div class="event-box">
           <div class="event-date">${e.d}</div>
           <div class="event-label">${e.l}</div>
           <div class="event-delta" style="color:${e.pos?'#22c55e':'#f87171'};">${e.v}</div>
         </div>`).join('')}
+    </div>
+
+    <div class="live-prices">
+      <div class="live-prices-header">Live market prices — from Pokémon TCG API</div>
+      <div class="price-sources">
+        <div class="price-source">
+          <div class="price-source-header">
+            <span class="price-source-name">Cardmarket</span>
+            ${cmUpdated ? `<span class="price-updated">as of ${cmUpdated}</span>` : ''}
+          </div>
+          ${cmHtml}
+        </div>
+        <div class="price-source">
+          <div class="price-source-header">
+            <span class="price-source-name">TCGPlayer</span>
+            ${tcpUpdated ? `<span class="price-updated">as of ${tcpUpdated}</span>` : ''}
+          </div>
+          ${tcpHtml}
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildChart() {
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const canvas = document.getElementById('priceChart');
+  if (!canvas) return;
+  const c = active;
+
+  const labels = [...c.history.map(h=>h.x), 'Apr 27*', 'Apr 28*'];
+  const actual = [...c.history.map(h=>h.y), null, null];
+  const lastVal = c.history[c.history.length-1].y;
+  const t12data = [...c.history.map((_,i)=>i===c.history.length-1?c.t12:null), c.t12, null];
+  const t24data = [...c.history.map((_,i)=>i===c.history.length-1?c.t24:null), null, c.t24];
+
+  chartInst = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Est. price (GBP)',
+          data: actual,
+          borderColor: '#f59e0b',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#f59e0b',
+          pointBorderColor: '#f59e0b',
+          spanGaps: false,
+          tension: 0.35,
+          fill: {
+            target: 'origin',
+            above: 'rgba(245,158,11,0.05)',
+          },
+        },
+        {
+          label: '12m target',
+          data: t12data,
+          borderColor: '#22c55e',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointBackgroundColor: '#22c55e',
+          pointBorderColor: '#22c55e',
+          spanGaps: true,
+          tension: 0,
+          fill: false,
+        },
+        {
+          label: '24m target',
+          data: t24data,
+          borderColor: '#60a5fa',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointBackgroundColor: '#60a5fa',
+          pointBorderColor: '#60a5fa',
+          spanGaps: true,
+          tension: 0,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#111124',
+          borderColor: '#2a2a4e',
+          borderWidth: 1,
+          titleColor: '#888',
+          bodyColor: '#e0e0f0',
+          padding: 10,
+          callbacks: {
+            title: ctx => ctx[0].label,
+            label: ctx => {
+              if (ctx.parsed.y === null) return null;
+              const suffix = ctx.datasetIndex === 0 ? ' (est.)' : ctx.datasetIndex === 1 ? ' (12m target)' : ' (24m target)';
+              return ' £' + ctx.parsed.y.toFixed(2) + suffix;
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { font: { size: 10 }, color: '#555', maxRotation: 40, autoSkip: true, maxTicksLimit: 8 },
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: {
+            font: { size: 10 },
+            color: '#555',
+            callback: v => '£' + v,
+          },
+          beginAtZero: false,
+        },
+      },
+    },
+  });
+}
+
+function renderWhereToBuy() {
+  const name = encodeURIComponent(active.name);
+  const sources = [
+    {
+      label: 'Cardmarket',
+      icon: 'CM', iconBg: '#003087', iconColor: '#fff',
+      desc: "Europe's largest TCG marketplace",
+      url: `https://www.cardmarket.com/en/Pokemon/Products/Singles?searchString=${name}`,
+    },
+    {
+      label: 'eBay UK',
+      icon: 'eB', iconBg: '#e53238', iconColor: '#fff',
+      desc: 'Real eBay sold prices (completed listings)',
+      url: `https://www.ebay.co.uk/sch/i.html?_nkw=${name}+pokemon+full+art&LH_Complete=1&LH_Sold=1`,
+    },
+    {
+      label: 'PriceCharting',
+      icon: 'PC', iconBg: '#22c55e', iconColor: '#000',
+      desc: 'Historical price tracking',
+      url: `https://www.pricecharting.com/search-products?q=${name}+pokemon`,
+    },
+  ];
+  return `
+    <div class="buy-disclaimer">
+      ⚠ Prices vary daily. Always check <strong>completed/sold listings</strong> on eBay for real transaction prices, not just asking prices.
+    </div>
+    <div class="buy-links">
+      ${sources.map(s => `
+        <a class="buy-link-card" href="${s.url}" target="_blank" rel="noopener noreferrer">
+          <div class="buy-icon" style="background:${s.iconBg};color:${s.iconColor};">${s.icon}</div>
+          <div class="buy-info">
+            <div class="buy-name">${s.label}</div>
+            <div class="buy-desc">${s.desc}</div>
+          </div>
+          <div class="buy-cta">Check prices →</div>
+        </a>`).join('')}
     </div>`;
 }
 
@@ -594,54 +1037,28 @@ function renderCompare() {
     </div>`).join('');
 }
 
-function buildChart() {
-  if (chartInst) { chartInst.destroy(); chartInst = null; }
-  const canvas = document.getElementById('priceChart');
-  if (!canvas) return;
-  const c = active;
-  const labels = [...c.history.map(h=>h.x), 'Apr 27*', 'Apr 28*'];
-  const actual = [...c.history.map(h=>h.y), null, null];
-  const t12data = [...c.history.map((_,i)=>i===c.history.length-1?c.t12:null), c.t12, null];
-  const t24data = [...c.history.map((_,i)=>i===c.history.length-1?c.t24:null), null, c.t24];
-
-  chartInst = new Chart(canvas, {
-    type:'line',
-    data:{
-      labels,
-      datasets:[
-        {label:'Price',data:actual,borderColor:'#f59e0b',borderWidth:2,pointRadius:3,pointBackgroundColor:'#f59e0b',spanGaps:false,tension:0.3,fill:false},
-        {label:'12m target',data:t12data,borderColor:'#22c55e',borderWidth:2,borderDash:[6,4],pointRadius:5,pointBackgroundColor:'#22c55e',spanGaps:true,fill:false},
-        {label:'24m target',data:t24data,borderColor:'#60a5fa',borderWidth:2,borderDash:[6,4],pointRadius:5,pointBackgroundColor:'#60a5fa',spanGaps:true,fill:false},
-      ]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'£'+ctx.parsed.y.toFixed(2)},backgroundColor:'#0f0f1a',borderColor:'#2a2a3e',borderWidth:1,titleColor:'#888',bodyColor:'#fff'}},
-      scales:{
-        x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:10},color:'#555',maxRotation:40,autoSkip:true,maxTicksLimit:8}},
-        y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:10},color:'#555',callback:v=>'£'+v},beginAtZero:false}
-      }
-    }
-  });
-}
-
 function renderMain() {
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
   const panel = document.getElementById('mainPanel');
   let content = '';
-  if (innerTab==='overview') content = renderOverview();
-  else if (innerTab==='price history') content = renderPriceHistory();
+  if (innerTab === 'overview') content = renderOverview();
+  else if (innerTab === 'price history') content = renderPriceHistory();
+  else if (innerTab === 'where to buy') content = renderWhereToBuy();
   else content = renderCatalysts();
   panel.innerHTML = renderHero() + renderInnerTabs() + content;
-  if (innerTab==='price history') setTimeout(buildChart,50);
+  if (innerTab === 'price history') setTimeout(buildChart, 50);
   renderCompare();
 }
 
 function switchCard(id) {
-  active = cards.find(c=>c.id===id);
+  active = cards.find(c => c.id === id);
   innerTab = 'overview';
   renderTabs();
   renderMain();
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  setTimeout(() => {
+    document.querySelector('.card-tab.active')?.scrollIntoView({inline: 'center', behavior: 'smooth', block: 'nearest'});
+  }, 50);
 }
 
 function switchInner(t) {
@@ -651,7 +1068,9 @@ function switchInner(t) {
 }
 
 renderTabs();
+renderCardOfDay();
 renderMain();
+fetchCardData();
 </script>
 </body>
 </html>
