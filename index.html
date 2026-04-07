@@ -70,7 +70,23 @@
     flex-shrink: 0;
   }
   .header h1 { font-size: clamp(18px, 5vw, 26px); font-weight: 800; letter-spacing: -0.5px; }
-  .header h1 span { color: var(--gold); }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-2px); }
+  }
+  .header h1 span {
+    background: linear-gradient(90deg, #f59e0b 0%, #fcd34d 25%, #fff8e1 50%, #fcd34d 75%, #f59e0b 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite, float 4s ease-in-out infinite;
+    display: inline-block;
+  }
   .header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
   .disclaimer {
     background: var(--surface);
@@ -312,7 +328,12 @@
   .legend-line { width: 18px; height: 2px; border-radius: 1px; }
   .legend-dash { width: 18px; height: 0; border-top: 2px dashed; }
   .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
-  .chart-wrap { position: relative; width: 100%; height: 240px; }
+  .chart-wrap {
+    position: relative; width: 100%; height: 280px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 8px;
+    padding: 8px 0;
+  }
 
   /* LIVE PRICES */
   .live-prices { margin-top: 20px; }
@@ -666,8 +687,9 @@ function cardImgHtml(id, cls, placeholderCls) {
 }
 
 function renderCardOfDay() {
-  const todayIndex = Math.floor(Date.now() / 86400000) % 4;
-  const c = cards[todayIndex];
+  const eligible = cards.filter(c => c.id !== active.id);
+  const todayIndex = Math.floor(Date.now() / 86400000) % eligible.length;
+  const c = eligible[todayIndex];
   const sc = scoreColor(c.score);
   const dateStr = new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
   document.getElementById('cotdSection').innerHTML = `
@@ -789,7 +811,8 @@ function renderPriceHistory() {
       <div class="price-row"><span class="price-row-label">1-day avg</span><span class="price-row-val">${fmtEur(cp.avg1)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg1)})</span></span></div>
       <div class="price-row"><span class="price-row-label">Trend price</span><span class="price-row-val">${fmtEur(cp.trendPrice)}</span></div>
       <div class="price-row"><span class="price-row-label">Low (EX+)</span><span class="price-row-val">${fmtEur(cp.lowPriceExPlus)}</span></div>
-      <div class="price-currency-note">EUR · GBP approx at ×0.855</div>`;
+      <div class="price-currency-note">EUR · GBP approx at ×0.855</div>
+      ${p.cm.url ? `<a href="${p.cm.url}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:var(--gold);text-decoration:none;">View listings on Cardmarket →</a>` : ''}`;
   } else if (p === undefined) {
     cmHtml = '<div class="price-loading">Fetching…</div>';
   } else {
@@ -805,7 +828,8 @@ function renderPriceHistory() {
       <div class="price-row"><span class="price-row-label">Mid price</span><span class="price-row-val">${fmtUsd(tpData.mid)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.mid)})</span></span></div>
       <div class="price-row"><span class="price-row-label">Low</span><span class="price-row-val">${fmtUsd(tpData.low)}</span></div>
       <div class="price-row"><span class="price-row-label">High</span><span class="price-row-val">${fmtUsd(tpData.high)}</span></div>
-      <div class="price-currency-note">USD · GBP approx at ×0.797</div>`;
+      <div class="price-currency-note">USD · GBP approx at ×0.797</div>
+      ${p.tcp.url ? `<a href="${p.tcp.url}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:var(--green);text-decoration:none;">View listings on TCGPlayer →</a>` : ''}`;
   } else if (p === undefined) {
     tcpHtml = '<div class="price-loading">Fetching…</div>';
   } else {
@@ -875,16 +899,17 @@ function buildChart() {
           label: 'Est. price (GBP)',
           data: actual,
           borderColor: '#f59e0b',
-          borderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 7,
+          borderWidth: 3,
+          pointRadius: 5,
+          pointHoverRadius: 8,
           pointBackgroundColor: '#f59e0b',
-          pointBorderColor: '#f59e0b',
+          pointBorderColor: '#080810',
+          pointBorderWidth: 2,
           spanGaps: false,
           tension: 0.35,
           fill: {
             target: 'origin',
-            above: 'rgba(245,158,11,0.05)',
+            above: 'rgba(245,158,11,0.10)',
           },
         },
         {
@@ -893,10 +918,11 @@ function buildChart() {
           borderColor: '#22c55e',
           borderWidth: 2,
           borderDash: [6, 4],
-          pointRadius: 5,
-          pointHoverRadius: 8,
+          pointRadius: 6,
+          pointHoverRadius: 9,
           pointBackgroundColor: '#22c55e',
-          pointBorderColor: '#22c55e',
+          pointBorderColor: '#080810',
+          pointBorderWidth: 2,
           spanGaps: true,
           tension: 0,
           fill: false,
@@ -907,10 +933,11 @@ function buildChart() {
           borderColor: '#60a5fa',
           borderWidth: 2,
           borderDash: [6, 4],
-          pointRadius: 5,
-          pointHoverRadius: 8,
+          pointRadius: 6,
+          pointHoverRadius: 9,
           pointBackgroundColor: '#60a5fa',
-          pointBorderColor: '#60a5fa',
+          pointBorderColor: '#080810',
+          pointBorderWidth: 2,
           spanGaps: true,
           tension: 0,
           fill: false,
@@ -945,14 +972,14 @@ function buildChart() {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(255,255,255,0.04)' },
-          ticks: { font: { size: 10 }, color: '#555', maxRotation: 40, autoSkip: true, maxTicksLimit: 8 },
+          grid: { color: 'rgba(255,255,255,0.08)' },
+          ticks: { font: { size: 11 }, color: '#777', maxRotation: 40, autoSkip: true, maxTicksLimit: 8 },
         },
         y: {
-          grid: { color: 'rgba(255,255,255,0.04)' },
+          grid: { color: 'rgba(255,255,255,0.08)' },
           ticks: {
-            font: { size: 10 },
-            color: '#555',
+            font: { size: 11 },
+            color: '#777',
             callback: v => '£' + v,
           },
           beginAtZero: false,
@@ -964,18 +991,28 @@ function buildChart() {
 
 function renderWhereToBuy() {
   const name = encodeURIComponent(active.name);
+  const setNum = encodeURIComponent(active.name + ' ' + active.setShort + ' ' + active.number);
+  const p = cardPrices[active.id];
+  const cmUrl = (p && p.cm && p.cm.url) ? p.cm.url : `https://www.cardmarket.com/en/Pokemon/Products/Singles?searchString=${name}`;
+  const tcpUrl = (p && p.tcp && p.tcp.url) ? p.tcp.url : `https://www.tcgplayer.com/search/pokemon/product?q=${name}`;
   const sources = [
     {
       label: 'Cardmarket',
       icon: 'CM', iconBg: '#003087', iconColor: '#fff',
-      desc: "Europe's largest TCG marketplace",
-      url: `https://www.cardmarket.com/en/Pokemon/Products/Singles?searchString=${name}`,
+      desc: "Direct link to this card's listings · Europe's largest TCG marketplace",
+      url: cmUrl,
     },
     {
-      label: 'eBay UK',
+      label: 'eBay UK — Sold listings',
       icon: 'eB', iconBg: '#e53238', iconColor: '#fff',
-      desc: 'Real eBay sold prices (completed listings)',
-      url: `https://www.ebay.co.uk/sch/i.html?_nkw=${name}+pokemon+full+art&LH_Complete=1&LH_Sold=1`,
+      desc: 'Real completed sale prices · filtered to full art only',
+      url: `https://www.ebay.co.uk/sch/i.html?_nkw=${setNum}+full+art&LH_Complete=1&LH_Sold=1`,
+    },
+    {
+      label: 'TCGPlayer',
+      icon: 'TC', iconBg: '#1a8fff', iconColor: '#fff',
+      desc: 'Direct link to this card · US market prices',
+      url: tcpUrl,
     },
     {
       label: 'PriceCharting',
