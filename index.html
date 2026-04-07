@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TJ's Pokémon Card Guide</title>
-<!-- LAST_UPDATED: 2026-04-07 -->
+<!-- LAST_UPDATED: 2026-04-08 -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,6 +26,7 @@
     --blue-bg: rgba(96,165,250,0.1);
     --red: #f87171;
     --red-bg: rgba(248,113,113,0.1);
+    --purple: #a78bfa;
   }
 
   body {
@@ -38,11 +39,50 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* HEADER */
+  /* ── ANIMATIONS ─────────────────────────────────────── */
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-3px); }
+  }
+  @keyframes pb-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes slideRight {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes pulseDot {
+    0%, 100% { box-shadow: 0 0 4px var(--green); }
+    50%       { box-shadow: 0 0 10px var(--green); }
+  }
+  @keyframes bylineGlow {
+    0%, 100% { opacity: 0.5; letter-spacing: 0.5px; }
+    50%       { opacity: 1;   letter-spacing: 1.5px; }
+  }
+  @keyframes cotdSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HEADER ─────────────────────────────────────────── */
   .header {
     background: linear-gradient(180deg, #0d0d1f 0%, var(--bg) 100%);
     border-bottom: 1px solid var(--border);
     padding: 16px 16px 0;
+    animation: fadeIn 0.5s ease;
   }
   .header-top {
     display: flex;
@@ -50,6 +90,11 @@
     align-items: flex-start;
     gap: 12px;
     margin-bottom: 12px;
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
   .live-dot {
     display: flex;
@@ -66,20 +111,17 @@
     width: 7px; height: 7px;
     border-radius: 50%;
     background: var(--green);
-    box-shadow: 0 0 6px var(--green);
+    animation: pulseDot 2s ease-in-out infinite;
     flex-shrink: 0;
   }
-  .header h1 { font-size: clamp(18px, 5vw, 26px); font-weight: 800; letter-spacing: -0.5px; }
-  @keyframes shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position:  200% center; }
-  }
-  @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-2px); }
+  .header h1 {
+    font-size: clamp(18px, 5vw, 26px);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    animation: slideRight 0.5s ease 0.1s both;
   }
   .header h1 span {
-    background: linear-gradient(90deg, #f59e0b 0%, #fcd34d 25%, #fff8e1 50%, #fcd34d 75%, #f59e0b 100%);
+    background: linear-gradient(90deg, #f59e0b 0%, #fcd34d 25%, #fffbeb 50%, #fcd34d 75%, #f59e0b 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
@@ -87,7 +129,42 @@
     animation: shimmer 3s linear infinite, float 4s ease-in-out infinite;
     display: inline-block;
   }
-  .header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .header-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    animation: fadeIn 0.6s ease 0.3s both;
+  }
+
+  /* ── POKÉBALL ──────────────────────────────────────── */
+  .pokeball {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid #1a1a2e;
+    background: linear-gradient(to bottom, #e53935 50%, #fff 50%);
+    position: relative;
+    animation: pb-spin 4s linear infinite, float 4s ease-in-out infinite;
+    flex-shrink: 0;
+    cursor: default;
+  }
+  .pokeball::before {
+    content: '';
+    position: absolute;
+    top: calc(50% - 1px); left: 0; right: 0;
+    height: 2px;
+    background: #1a1a2e;
+  }
+  .pokeball::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #1a1a2e;
+  }
+
   .disclaimer {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -98,17 +175,90 @@
     max-width: 200px;
     flex-shrink: 0;
     display: none;
+    animation: fadeIn 0.6s ease 0.4s both;
   }
   @media(min-width:600px){ .disclaimer { display: block; } }
 
-  /* CARD TABS */
+  /* ── CARD OF THE DAY STRIP ──────────────────────────── */
+  .cotd-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: linear-gradient(90deg, rgba(167,139,250,0.08) 0%, transparent 80%);
+    border-bottom: 1px solid rgba(167,139,250,0.18);
+    animation: cotdSlide 0.5s ease 0.3s both;
+    overflow: hidden;
+  }
+  .cotd-tag {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--purple);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .cotd-mini-img {
+    width: 40px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+  }
+  .cotd-mini-img:hover { transform: scale(1.15); }
+  .cotd-mini-placeholder {
+    width: 40px; height: 56px;
+    background: var(--surface2);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .cotd-mini-info { flex: 1; min-width: 0; }
+  .cotd-mini-name {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .cotd-mini-sub { font-size: 10px; color: var(--muted); }
+  .cotd-mini-price {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .cotd-mini-btn {
+    padding: 6px 12px;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 6px;
+    color: var(--purple);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+  }
+  .cotd-mini-btn:hover { background: rgba(167,139,250,0.22); transform: translateX(2px); }
+  @media(max-width:400px) {
+    .cotd-mini-price { display: none; }
+    .cotd-tag { display: none; }
+  }
+
+  /* ── CARD TABS ──────────────────────────────────────── */
   .card-tabs {
     display: flex;
     gap: 6px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-bottom: 0;
     margin-top: 12px;
   }
   .card-tabs::-webkit-scrollbar { display: none; }
@@ -121,80 +271,27 @@
     background: transparent;
     cursor: pointer;
     text-align: left;
-    transition: background 0.15s;
+    transition: background 0.15s, transform 0.15s;
     -webkit-tap-highlight-color: transparent;
     min-height: 44px;
+    animation: fadeUp 0.4s ease both;
   }
+  .card-tab:nth-child(1){ animation-delay: 0.05s; }
+  .card-tab:nth-child(2){ animation-delay: 0.10s; }
+  .card-tab:nth-child(3){ animation-delay: 0.15s; }
+  .card-tab:nth-child(4){ animation-delay: 0.20s; }
   .card-tab.active { background: var(--surface); border-color: var(--border2); }
-  .card-tab:hover:not(.active) { background: rgba(255,255,255,0.03); }
+  .card-tab:hover:not(.active) { background: rgba(255,255,255,0.04); transform: translateY(-1px); }
   .tab-name { font-size: 13px; font-weight: 600; color: var(--muted); }
   .card-tab.active .tab-name { color: var(--text); }
   .tab-set { font-size: 10px; color: var(--dim); margin-top: 1px; }
   .tab-badge {
-    display: inline-block;
-    margin-top: 4px;
-    padding: 2px 7px;
-    border-radius: 10px;
-    font-size: 9px;
-    font-weight: 700;
+    display: inline-block; margin-top: 4px;
+    padding: 2px 7px; border-radius: 10px;
+    font-size: 9px; font-weight: 700;
   }
 
-  /* CARD OF THE DAY */
-  .cotd-banner {
-    background: linear-gradient(135deg, #0f0f2a, #1a1a35);
-    border: 1px solid var(--gold);
-    border-radius: 12px;
-    padding: 18px;
-    margin: 12px 16px 8px;
-  }
-  .cotd-label {
-    font-size: 10px;
-    color: var(--gold);
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-  .cotd-body {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  .cotd-img-wrap { flex-shrink: 0; }
-  .cotd-img { width: 180px; display: block; }
-  .cotd-img-placeholder {
-    width: 180px; height: 250px;
-    background: var(--surface2); border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; color: var(--dim);
-  }
-  .cotd-info { flex: 1; min-width: 0; }
-  .cotd-name { font-size: clamp(20px, 5vw, 28px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
-  .cotd-set { font-size: 12px; color: var(--muted); margin-top: 3px; margin-bottom: 10px; }
-  .cotd-score-wrap { margin: 10px 0; }
-  .cotd-btn {
-    margin-top: 14px;
-    padding: 10px 18px;
-    background: var(--gold-bg);
-    border: 1px solid var(--gold);
-    border-radius: 8px;
-    color: var(--gold);
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    min-height: 44px;
-    transition: background 0.15s;
-  }
-  .cotd-btn:hover { background: rgba(245,158,11,0.2); }
-  @media(max-width:500px) {
-    .cotd-body { flex-direction: column; align-items: center; text-align: center; }
-    .cotd-img { width: 140px; }
-    .cotd-img-placeholder { width: 140px; height: 195px; }
-    .cotd-btn { width: 100%; }
-  }
-
-  /* MAIN PANEL */
+  /* ── MAIN PANEL ─────────────────────────────────────── */
   .main-panel {
     background: var(--surface);
     border: 1px solid var(--border2);
@@ -202,9 +299,10 @@
     border-radius: 0 10px 10px 10px;
     padding: 18px 16px;
     margin: 0 16px 16px;
+    transition: opacity 0.22s ease, transform 0.22s ease;
   }
 
-  /* HERO */
+  /* ── HERO ───────────────────────────────────────────── */
   .hero {
     padding-bottom: 16px;
     margin-bottom: 16px;
@@ -217,7 +315,11 @@
     align-items: flex-start;
   }
   .hero-img-wrap { flex-shrink: 0; }
-  .card-img { width: 240px; display: block; }
+  .card-img {
+    width: 240px; display: block;
+    transition: transform 0.3s ease;
+  }
+  .card-img:hover { transform: scale(1.03) rotate(1deg); }
   .card-img-placeholder {
     width: 240px; height: 335px;
     background: var(--surface2); border-radius: 10px;
@@ -226,33 +328,26 @@
   }
   .hero-text { flex: 1; min-width: 0; }
   .hero-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 8px;
+    display: flex; align-items: center;
+    gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
   }
-  .verdict-pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
   .card-id { font-size: 12px; color: var(--muted); }
   .hero-name { font-size: clamp(22px, 6vw, 32px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
   .hero-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
 
   .stats-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-top: 14px;
+    display: grid; grid-template-columns: repeat(3,1fr);
+    gap: 8px; margin-top: 14px;
   }
-  .stat-box { background: var(--surface2); border-radius: 8px; padding: 10px 12px; }
+  .stat-box {
+    background: var(--surface2); border-radius: 8px; padding: 10px 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .stat-box:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
   .stat-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 3px; }
   .stat-val { font-size: clamp(14px, 4vw, 18px); font-weight: 800; }
 
-  .meta-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 12px;
-  }
+  .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
   @media(min-width:500px){ .meta-row { grid-template-columns: repeat(4,1fr); } }
   .meta-box { background: var(--surface2); border-radius: 8px; padding: 8px 10px; }
   .meta-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
@@ -261,7 +356,7 @@
   .score-wrap { margin-top: 12px; }
   .score-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
   .score-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
-  .score-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .score-fill { height: 100%; border-radius: 3px; width: 0; transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
 
   @media(max-width:600px) {
     .hero-layout { flex-direction: column; align-items: center; }
@@ -274,28 +369,23 @@
     .stat-label { font-size: 0.65rem; }
   }
 
-  /* INNER TABS */
+  /* ── INNER TABS ─────────────────────────────────────── */
   .inner-tabs {
     display: flex; gap: 4px; margin-bottom: 16px;
     overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
   }
   .inner-tabs::-webkit-scrollbar { display: none; }
   .inner-tab {
-    padding: 7px 14px;
-    border-radius: 7px;
-    font-size: 12px;
-    border: none;
-    background: transparent;
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s;
+    padding: 7px 14px; border-radius: 7px; font-size: 12px;
+    border: none; background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.2s ease;
     -webkit-tap-highlight-color: transparent;
-    white-space: nowrap;
-    min-height: 44px;
+    white-space: nowrap; min-height: 44px;
   }
   .inner-tab.active { background: var(--surface2); color: var(--text); font-weight: 600; }
+  .inner-tab:hover:not(.active) { background: rgba(255,255,255,0.04); color: var(--text); }
 
-  /* OVERVIEW */
+  /* ── OVERVIEW ───────────────────────────────────────── */
   .two-col { display: grid; grid-template-columns: 1fr; gap: 16px; }
   @media(min-width:600px){ .two-col { grid-template-columns: 1fr 1fr; } }
   .section-label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 10px; }
@@ -312,43 +402,52 @@
   .target-label { font-size: 10px; color: var(--dim); }
   .target-val { font-size: 16px; font-weight: 800; margin-top: 2px; }
 
-  /* PRICE CHART */
+  /* ── CHART (in Overview) ────────────────────────────── */
+  .chart-section { margin-top: 22px; }
+  .chart-section-label {
+    font-size: 11px; color: var(--dim); text-transform: uppercase;
+    letter-spacing: 1px; font-weight: 600; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
   .chart-note {
-    background: rgba(96,165,250,0.07);
-    border: 1px solid rgba(96,165,250,0.15);
+    background: rgba(96,165,250,0.06);
+    border: 1px solid rgba(96,165,250,0.12);
     border-radius: 8px;
     padding: 9px 14px;
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 14px;
-    line-height: 1.6;
+    font-size: 11px; color: var(--muted);
+    margin-bottom: 12px; line-height: 1.6;
   }
   .chart-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
   .legend-line { width: 18px; height: 2px; border-radius: 1px; }
   .legend-dash { width: 18px; height: 0; border-top: 2px dashed; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
   .chart-wrap {
     position: relative; width: 100%; height: 280px;
     background: rgba(255,255,255,0.02);
-    border-radius: 8px;
-    padding: 8px 0;
+    border-radius: 8px; padding: 8px 0;
   }
+  .events-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 14px; }
+  @media(max-width:400px){ .events-grid { grid-template-columns: 1fr 1fr; } }
+  .event-box {
+    background: var(--surface2); border-radius: 8px; padding: 10px 12px;
+    transition: transform 0.2s ease;
+  }
+  .event-box:hover { transform: translateY(-2px); }
+  .event-date { font-size: 10px; color: var(--dim); }
+  .event-label { font-size: 12px; font-weight: 600; margin: 2px 0; }
+  .event-delta { font-size: 15px; font-weight: 800; }
 
-  /* LIVE PRICES */
+  /* ── LIVE PRICES ────────────────────────────────────── */
   .live-prices { margin-top: 20px; }
-  .live-prices-header {
-    font-size: 11px; color: var(--dim); text-transform: uppercase;
-    letter-spacing: 1px; font-weight: 600; margin-bottom: 10px;
-  }
+  .live-prices-header { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 10px; }
   .price-sources { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media(max-width:500px){ .price-sources { grid-template-columns: 1fr; } }
   .price-source {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+    transition: border-color 0.2s;
   }
+  .price-source:hover { border-color: var(--border2); }
   .price-source-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .price-source-name { font-size: 13px; font-weight: 700; }
   .price-updated { font-size: 10px; color: var(--dim); font-weight: 400; }
@@ -358,45 +457,32 @@
   .price-row-val { font-weight: 700; }
   .price-loading { font-size: 12px; color: var(--dim); padding: 8px 0; }
   .price-currency-note { font-size: 10px; color: var(--dim); margin-top: 8px; }
-  .events-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 16px; }
-  @media(max-width:400px){ .events-grid { grid-template-columns: 1fr 1fr; } }
-  .event-box { background: var(--surface2); border-radius: 8px; padding: 10px 12px; }
-  .event-date { font-size: 10px; color: var(--dim); }
-  .event-label { font-size: 12px; font-weight: 600; margin: 2px 0; }
-  .event-delta { font-size: 15px; font-weight: 800; }
+  .price-link { display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 700; text-decoration: none; transition: opacity 0.15s; }
+  .price-link:hover { opacity: 0.75; }
 
-  /* WHERE TO BUY */
+  /* ── WHERE TO BUY ───────────────────────────────────── */
   .buy-disclaimer {
-    background: rgba(245,158,11,0.08);
-    border: 1px solid rgba(245,158,11,0.2);
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 12px;
-    color: var(--muted);
-    margin-bottom: 16px;
-    line-height: 1.6;
+    background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px; padding: 10px 14px; font-size: 12px;
+    color: var(--muted); margin-bottom: 16px; line-height: 1.6;
   }
   .buy-links { display: flex; flex-direction: column; gap: 10px; }
   .buy-link-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
-    background: var(--surface2);
-    border: 1px solid var(--dim);
-    border-radius: 10px;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.15s;
+    display: flex; align-items: center; gap: 16px; padding: 14px 16px;
+    background: var(--surface2); border: 1px solid var(--dim);
+    border-radius: 10px; cursor: pointer; text-decoration: none; color: inherit;
+    transition: border-color 0.15s, transform 0.2s ease, box-shadow 0.2s ease;
+    animation: fadeUp 0.3s ease both;
   }
-  .buy-link-card:hover { border-color: var(--gold); }
+  .buy-link-card:nth-child(1){ animation-delay: 0.05s; }
+  .buy-link-card:nth-child(2){ animation-delay: 0.10s; }
+  .buy-link-card:nth-child(3){ animation-delay: 0.15s; }
+  .buy-link-card:nth-child(4){ animation-delay: 0.20s; }
+  .buy-link-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(0,0,0,0.3); }
   .buy-icon {
-    width: 44px; height: 44px;
-    border-radius: 10px;
+    width: 44px; height: 44px; border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 800; letter-spacing: -0.5px;
-    flex-shrink: 0;
+    font-size: 13px; font-weight: 800; letter-spacing: -0.5px; flex-shrink: 0;
   }
   .buy-info { flex: 1; min-width: 0; }
   .buy-name { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
@@ -407,36 +493,32 @@
     .buy-cta { align-self: flex-end; }
   }
 
-  /* CATALYSTS */
-  .bullet-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 11px; }
+  /* ── CATALYSTS ──────────────────────────────────────── */
+  .bullet-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 11px; animation: fadeUp 0.3s ease both; }
   .bullet-item:last-child { margin-bottom: 0; }
-  .bullet-icon {
-    width: 18px; height: 18px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
-  }
+  .bullet-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
   .bullet-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
 
-  /* COMPARE */
+  /* ── COMPARE ────────────────────────────────────────── */
   .compare-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    margin: 0 16px 24px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; margin: 0 16px 24px;
+    animation: fadeUp 0.5s ease 0.3s both;
   }
   .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   @media(min-width:600px){ .compare-grid { grid-template-columns: repeat(4,1fr); } }
   .compare-card {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-    background: var(--bg);
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px;
+    cursor: pointer; background: var(--bg);
+    transition: border-color 0.15s, transform 0.2s ease, box-shadow 0.2s ease;
     -webkit-tap-highlight-color: transparent;
+    animation: fadeUp 0.4s ease both;
   }
-  .compare-card:hover { border-color: var(--border2); }
+  .compare-card:nth-child(1){ animation-delay: 0.05s; }
+  .compare-card:nth-child(2){ animation-delay: 0.10s; }
+  .compare-card:nth-child(3){ animation-delay: 0.15s; }
+  .compare-card:nth-child(4){ animation-delay: 0.20s; }
+  .compare-card:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
   .compare-card.selected { border: 2px solid #60a5fa; }
   .compare-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; gap: 6px; }
   .compare-name { font-size: 13px; font-weight: 700; }
@@ -444,6 +526,34 @@
   .compare-bottom { display: flex; justify-content: space-between; margin-top: 8px; }
   .compare-stat-label { font-size: 9px; color: var(--dim); }
   .compare-stat-val { font-size: 12px; font-weight: 700; }
+
+  /* ── FOOTER ─────────────────────────────────────────── */
+  .footer {
+    text-align: center;
+    padding: 0 16px 32px;
+    animation: fadeUp 0.6s ease 0.5s both;
+  }
+  .footer-sources { font-size: 11px; color: var(--dim); margin-bottom: 16px; line-height: 1.8; }
+  .footer-divider { width: 40px; height: 1px; background: var(--border); margin: 16px auto; }
+  .byline-wrap {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px;
+  }
+  .byline {
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    transition: color 0.2s ease, letter-spacing 0.3s ease;
+    animation: bylineGlow 4s ease-in-out infinite;
+  }
+  .byline:hover { color: var(--gold); letter-spacing: 2px; animation: none; }
+  .byline-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--dim); animation: pulseDot 3s ease-in-out infinite;
+  }
 </style>
 </head>
 <body>
@@ -452,7 +562,10 @@
   <div class="header-top">
     <div>
       <div class="live-dot">TJ's Pokémon Card Guide · April 2026</div>
-      <h1>TJ's <span>Pokémon Card Guide</span></h1>
+      <div class="title-row">
+        <h1>TJ's <span>Pokémon Card Guide</span></h1>
+        <div class="pokeball" title="Gotta catch 'em all"></div>
+      </div>
       <div class="header-sub">Full Art cards · £9–£11 budget · 4 cards analysed</div>
     </div>
     <div class="disclaimer">
@@ -474,169 +587,160 @@
   <div class="compare-grid" id="compareGrid"></div>
 </div>
 
-<div style="text-align:center;padding:0 16px 24px;font-size:11px;color:var(--dim);">
-  Data sources: TCGplayer · Cardmarket · eBay UK · PriceCharting · Sports Card Investor<br>
-  Built April 2026 · benjobands
+<div class="footer">
+  <div class="footer-sources">
+    Data: TCGplayer · Cardmarket · eBay UK · PriceCharting · Pokémon TCG API<br>
+    Built April 2026
+  </div>
+  <div class="footer-divider"></div>
+  <div class="byline-wrap">
+    <div class="byline-dot"></div>
+    <a class="byline" href="https://twitter.com/builtbybenjo" target="_blank" rel="noopener noreferrer">@builtbybenjo</a>
+    <div class="byline-dot"></div>
+  </div>
 </div>
 
 <script>
+// ── CARD DATA ────────────────────────────────────────────
 const cards = [
   {
     id:'judge', name:'Judge', subtitle:'Full Art Ultra Rare',
     set:'Sun & Moon: Lost Thunder', setShort:'Lost Thunder', number:'#209/214', year:2018,
     price:'£9–£11', priceNum:10,
     verdict:'Strong buy', verdictBg:'rgba(34,197,94,0.15)', verdictColor:'#22c55e',
-    score:88,
-    artist:'Ryuta Fuse', type:'Supporter', character:'Trainer',
+    score:88, artist:'Ryuta Fuse', type:'Supporter', character:'Trainer',
     psa10:'£35–£55', upside:'+200–400%', reprint:'Very low', liquidity:'Medium',
     tag:'Top pick', tagBg:'rgba(245,158,11,0.18)', tagColor:'#f59e0b',
     t12:16, t24:22,
     summary:'The standout pick. With Iono rotating out of Standard format on 11 April 2026, Judge becomes the premier hand-disruption Supporter. The Lost Thunder Full Art is the oldest and rarest version — drawing both player demand and collector interest simultaneously. A mini-buyout in December 2025 held its price above the previous floor even after volume normalised, signalling organic demand rather than manipulation.',
-    catalysts:[
-      'Iono rotated out of Standard on 11 April 2026 — Judge is now the best replacement',
-      'Lost Thunder (2018) is a closed supply set; Near Mint copies naturally dwindling',
-      'Mini-buyout Dec 2025 held price above previous floor — healthy organic signal',
-      "Pokémon's 30th anniversary in Feb 2026 broadly lifted all older SM-era sets",
-    ],
-    risks:[
-      'Could be reprinted in a future Expanded-legal set — no reprint yet but possible',
-      'Illiquid at this price point — needs a specific buyer at time of sale',
-      'Requires a 12+ month hold for best returns; not a quick flip',
-    ],
+    catalysts:['Iono rotated out of Standard on 11 April 2026 — Judge is now the best replacement','Lost Thunder (2018) is a closed supply set; Near Mint copies naturally dwindling','Mini-buyout Dec 2025 held price above previous floor — healthy organic signal',"Pokémon's 30th anniversary in Feb 2026 broadly lifted all older SM-era sets"],
+    risks:['Could be reprinted in a future Expanded-legal set — no reprint yet but possible','Illiquid at this price point — needs a specific buyer at time of sale','Requires a 12+ month hold for best returns; not a quick flip'],
     history:[
-      {x:'Jan 20',y:3.5},{x:'Jan 21',y:4.2},{x:'Jul 21',y:7.8},{x:'Jan 22',y:6.9},
-      {x:'Jul 22',y:6.2},{x:'Jan 23',y:7.1},{x:'Jul 23',y:7.4},{x:'Jan 24',y:7.8},
-      {x:'Jul 24',y:8.2},{x:'Jan 25',y:8.5},{x:'Jul 25',y:9.0},{x:'Dec 25',y:9.8},{x:'Apr 26',y:10.5},
+      {x:'Dec 18',y:2.0},{x:'Mar 19',y:2.5},{x:'Jun 19',y:2.8},{x:'Sep 19',y:3.0},
+      {x:'Dec 19',y:3.2},{x:'Mar 20',y:3.5},{x:'Jun 20',y:4.8},{x:'Sep 20',y:5.8},
+      {x:'Dec 20',y:6.0},{x:'Mar 21',y:6.5},{x:'Jun 21',y:7.8},{x:'Sep 21',y:7.2},
+      {x:'Dec 21',y:6.9},{x:'Mar 22',y:6.5},{x:'Jun 22',y:6.2},{x:'Sep 22',y:6.5},
+      {x:'Dec 22',y:6.9},{x:'Mar 23',y:7.1},{x:'Jun 23',y:7.3},{x:'Sep 23',y:7.6},
+      {x:'Dec 23',y:7.8},{x:'Mar 24',y:8.1},{x:'Jun 24',y:8.2},{x:'Sep 24',y:8.6},
+      {x:'Dec 24',y:9.0},{x:'Mar 25',y:9.2},{x:'Jun 25',y:9.0},{x:'Sep 25',y:9.4},
+      {x:'Dec 25',y:9.8},{x:'Apr 26',y:10.5},
     ],
-    events:[
-      {d:'Jul 2021',l:'Pandemic peak',v:'+190%',pos:true},
-      {d:'Jan 2022',l:'Market correction',v:'−11%',pos:false},
-      {d:'Dec 2025',l:'Rotation buyout',v:'+12%',pos:true},
-    ],
+    events:[{d:'Jul 2021',l:'Pandemic peak',v:'+190%',pos:true},{d:'Jan 2022',l:'Market correction',v:'−11%',pos:false},{d:'Dec 2025',l:'Rotation buyout',v:'+12%',pos:true}],
   },
   {
     id:'cynthia', name:'Cynthia', subtitle:'Full Art Ultra Rare',
     set:'Sun & Moon: Ultra Prism', setShort:'Ultra Prism', number:'#148/156', year:2018,
     price:'£10–£14', priceNum:12,
     verdict:'Buy', verdictBg:'rgba(96,165,250,0.15)', verdictColor:'#60a5fa',
-    score:79,
-    artist:'Yusuke Ohmura', type:'Supporter', character:'Sinnoh Champion',
+    score:79, artist:'Yusuke Ohmura', type:'Supporter', character:'Sinnoh Champion',
     psa10:'£45–£70', upside:'+150–300%', reprint:'Low', liquidity:'Medium-high',
     tag:'Steady hold', tagBg:'rgba(139,92,246,0.18)', tagColor:'#a78bfa',
     t12:20, t24:30,
     summary:'Cynthia has near-universal Pokémon fan name recognition and a collector base spanning competitive players, anime fans, and nostalgics. Her Ultra Prism Full Art quietly appreciates year on year. The Sinnoh nostalgia wave from Legends: Arceus and BD/SP remakes remains active. Slightly above the £11 ceiling — worth stretching to £14 for the right copy.',
-    catalysts:[
-      'Cynthia is among the most-searched Pokémon characters globally — durable collector demand',
-      'Ultra Prism (2018) closed supply; NM copies become scarcer each year',
-      'Sinnoh nostalgia at sustained highs after Legends: Arceus and remakes',
-      'Yusuke Ohmura artwork consistently holds collector premium across all his cards',
-    ],
-    risks:[
-      'Slightly above the £11 ceiling — harder to find at target entry price',
-      'Cynthia reprinted in other forms; Full Art less so, but not impossible',
-      'Slower moving than Judge — no immediate competitive catalyst in 2026',
-    ],
+    catalysts:['Cynthia is among the most-searched Pokémon characters globally — durable collector demand','Ultra Prism (2018) closed supply; NM copies become scarcer each year','Sinnoh nostalgia at sustained highs after Legends: Arceus and remakes','Yusuke Ohmura artwork consistently holds collector premium across all his cards'],
+    risks:['Slightly above the £11 ceiling — harder to find at target entry price','Cynthia reprinted in other forms; Full Art less so, but not impossible','Slower moving than Judge — no immediate competitive catalyst in 2026'],
     history:[
-      {x:'Jan 20',y:5.0},{x:'Jan 21',y:8.0},{x:'Jul 21',y:14.0},{x:'Jan 22',y:11.5},
-      {x:'Jul 22',y:9.8},{x:'Jan 23',y:10.5},{x:'Jul 23',y:11.2},{x:'Jan 24',y:11.8},
-      {x:'Jul 24',y:12.5},{x:'Jan 25',y:13.0},{x:'Jul 25',y:13.5},{x:'Dec 25',y:13.8},{x:'Apr 26',y:14.2},
+      {x:'Mar 18',y:3.5},{x:'Jun 18',y:4.2},{x:'Sep 18',y:4.8},{x:'Dec 18',y:5.0},
+      {x:'Mar 19',y:5.5},{x:'Jun 19',y:6.2},{x:'Sep 19',y:6.5},{x:'Dec 19',y:7.0},
+      {x:'Mar 20',y:7.5},{x:'Jun 20',y:9.5},{x:'Sep 20',y:11.5},{x:'Dec 20',y:12.2},
+      {x:'Mar 21',y:13.0},{x:'Jun 21',y:14.0},{x:'Sep 21',y:12.5},{x:'Dec 21',y:11.5},
+      {x:'Mar 22',y:10.5},{x:'Jun 22',y:9.8},{x:'Sep 22',y:10.2},{x:'Dec 22',y:10.5},
+      {x:'Mar 23',y:11.0},{x:'Jun 23',y:11.2},{x:'Sep 23',y:11.5},{x:'Dec 23',y:11.8},
+      {x:'Mar 24',y:12.0},{x:'Jun 24',y:12.5},{x:'Sep 24',y:13.0},{x:'Dec 24',y:13.5},
+      {x:'Mar 25',y:13.8},{x:'Jun 25',y:13.5},{x:'Sep 25',y:13.8},{x:'Dec 25',y:13.8},
+      {x:'Apr 26',y:14.2},
     ],
-    events:[
-      {d:'Jul 2021',l:'Pandemic peak',v:'+180%',pos:true},
-      {d:'Jan 2022',l:'Correction',v:'−18%',pos:false},
-      {d:'Jan 2026',l:'30th anniv lift',v:'+5%',pos:true},
-    ],
+    events:[{d:'Jul 2021',l:'Pandemic peak',v:'+180%',pos:true},{d:'Jan 2022',l:'Correction',v:'−18%',pos:false},{d:'Jan 2026',l:'30th anniv lift',v:'+5%',pos:true}],
   },
   {
     id:'guzma', name:'Guzma', subtitle:'Full Art Ultra Rare',
     set:'Sun & Moon: Burning Shadows', setShort:'Burning Shadows', number:'#143/147', year:2017,
     price:'£9–£13', priceNum:11,
     verdict:'Buy', verdictBg:'rgba(96,165,250,0.15)', verdictColor:'#60a5fa',
-    score:76,
-    artist:'Naoki Saito', type:'Supporter', character:'Team Skull Boss',
+    score:76, artist:'Naoki Saito', type:'Supporter', character:'Team Skull Boss',
     psa10:'£40–£65', upside:'+150–250%', reprint:'Low', liquidity:'Medium',
     tag:'Character play', tagBg:'rgba(139,92,246,0.18)', tagColor:'#a78bfa',
     t12:16, t24:20,
     summary:"Guzma has a uniquely strong cult following. Team Skull's aesthetic has maintained cultural relevance for nearly a decade — social media, fan art, cosplay, and streaming all sustain collector interest independent of the competitive meta. Naoki Saito is a sought-after TCG illustrator whose cards consistently command premiums. Burning Shadows (2017) is older than Lost Thunder, adding an extra layer of supply scarcity.",
-    catalysts:[
-      'Naoki Saito is one of the most prized TCG artists — his cards hold premium across all eras',
-      'Burning Shadows (2017) predates Lost Thunder — even more supply constrained',
-      "Team Skull has maintained cultural relevance well past its in-game moment",
-      '2017 SM-era cards benefiting from 30th anniversary collector sentiment',
-    ],
-    risks:[
-      'No current competitive catalyst — purely collector and character driven',
-      'Price has been relatively flat since 2022; needs a fresh catalyst to break out',
-      "Cultural moment for Team Skull may be plateauing rather than growing",
-    ],
+    catalysts:['Naoki Saito is one of the most prized TCG artists — his cards hold premium across all eras','Burning Shadows (2017) predates Lost Thunder — even more supply constrained',"Team Skull has maintained cultural relevance well past its in-game moment",'2017 SM-era cards benefiting from 30th anniversary collector sentiment'],
+    risks:['No current competitive catalyst — purely collector and character driven','Price has been relatively flat since 2022; needs a fresh catalyst to break out',"Cultural moment for Team Skull may be plateauing rather than growing"],
     history:[
-      {x:'Jan 20',y:4.5},{x:'Jan 21',y:7.5},{x:'Jul 21',y:16.0},{x:'Jan 22',y:12.0},
-      {x:'Jul 22',y:9.5},{x:'Jan 23',y:10.0},{x:'Jul 23',y:10.5},{x:'Jan 24',y:11.0},
-      {x:'Jul 24',y:11.2},{x:'Jan 25',y:11.5},{x:'Jul 25',y:11.8},{x:'Dec 25',y:12.0},{x:'Apr 26',y:11.5},
+      {x:'Sep 17',y:2.5},{x:'Dec 17',y:3.0},{x:'Mar 18',y:3.5},{x:'Jun 18',y:4.0},
+      {x:'Sep 18',y:4.2},{x:'Dec 18',y:4.5},{x:'Mar 19',y:5.0},{x:'Jun 19',y:5.5},
+      {x:'Sep 19',y:5.0},{x:'Dec 19',y:4.8},{x:'Mar 20',y:5.5},{x:'Jun 20',y:7.2},
+      {x:'Sep 20',y:9.5},{x:'Dec 20',y:11.5},{x:'Mar 21',y:13.5},{x:'Jun 21',y:16.0},
+      {x:'Sep 21',y:13.5},{x:'Dec 21',y:12.0},{x:'Mar 22',y:10.5},{x:'Jun 22',y:9.5},
+      {x:'Sep 22',y:9.8},{x:'Dec 22',y:10.0},{x:'Mar 23',y:10.2},{x:'Jun 23',y:10.5},
+      {x:'Sep 23',y:10.8},{x:'Dec 23',y:11.0},{x:'Mar 24',y:11.0},{x:'Jun 24',y:11.2},
+      {x:'Sep 24',y:11.5},{x:'Dec 24',y:11.8},{x:'Mar 25',y:11.5},{x:'Jun 25',y:11.8},
+      {x:'Sep 25',y:12.0},{x:'Dec 25',y:12.0},{x:'Apr 26',y:11.5},
     ],
-    events:[
-      {d:'Jul 2021',l:'Pandemic peak',v:'+256%',pos:true},
-      {d:'Jan 2022',l:'Correction',v:'−25%',pos:false},
-      {d:'Jan 2026',l:'Flat movement',v:'±0%',pos:true},
-    ],
+    events:[{d:'Jul 2021',l:'Pandemic peak',v:'+256%',pos:true},{d:'Jan 2022',l:'Correction',v:'−25%',pos:false},{d:'Jan 2026',l:'Flat movement',v:'±0%',pos:true}],
   },
   {
     id:'lillie', name:'Lillie', subtitle:'Full Art Ultra Rare',
     set:'Sun & Moon Base', setShort:'SM Base', number:'#147/149', year:2017,
     price:'£8–£11', priceNum:9.5,
     verdict:'Watch', verdictBg:'rgba(245,158,11,0.15)', verdictColor:'#f59e0b',
-    score:68,
-    artist:'Megumi Mizutani', type:'Supporter', character:'Alola Trainer',
+    score:68, artist:'Megumi Mizutani', type:'Supporter', character:'Alola Trainer',
     psa10:'£30–£50', upside:'+100–200%', reprint:'Medium', liquidity:'Low-medium',
     tag:'Speculative', tagBg:'rgba(248,113,113,0.15)', tagColor:'#f87171',
     t12:13, t24:17,
     summary:'Lillie has multiple Full Art printings across the Sun & Moon era, which dilutes the scarcity argument for any individual version. The Base set version (2017) is the oldest and most scarce, but competes with the Ultra Prism Full Art for collector attention. Good entry at the bottom of the price range with asymmetric risk/reward, but lower conviction than the other three picks.',
-    catalysts:[
-      'Sun & Moon Base (2017) — the oldest Lillie Full Art, highest scarcity of any printing',
-      'Lillie is a beloved character with persistent demand across anime, manga, and TCG',
-      'Entry at £8–£9 gives the best risk/reward ratio in this budget window',
-      'Multiple Full Arts mean collector interest is split but consistently present',
-    ],
-    risks:[
-      'Multiple Full Art printings (Base, Ultra Prism) dilute perceived scarcity for each',
-      'Lower liquidity — fewer active buyers at any given time',
-      'Needs a specific catalyst to break out; no clear 2026 driver visible',
-      'PSA 10 population relatively high for this era; grade premium is lower',
-    ],
+    catalysts:['Sun & Moon Base (2017) — the oldest Lillie Full Art, highest scarcity of any printing','Lillie is a beloved character with persistent demand across anime, manga, and TCG','Entry at £8–£9 gives the best risk/reward ratio in this budget window','Multiple Full Arts mean collector interest is split but consistently present'],
+    risks:['Multiple Full Art printings (Base, Ultra Prism) dilute perceived scarcity for each','Lower liquidity — fewer active buyers at any given time','Needs a specific catalyst to break out; no clear 2026 driver visible','PSA 10 population relatively high for this era; grade premium is lower'],
     history:[
-      {x:'Jan 20',y:3.0},{x:'Jan 21',y:5.5},{x:'Jul 21',y:10.0},{x:'Jan 22',y:7.5},
-      {x:'Jul 22',y:6.0},{x:'Jan 23',y:7.0},{x:'Jul 23',y:7.5},{x:'Jan 24',y:8.0},
-      {x:'Jul 24',y:8.5},{x:'Jan 25',y:8.8},{x:'Jul 25',y:9.0},{x:'Dec 25',y:9.2},{x:'Apr 26',y:9.5},
+      {x:'Sep 17',y:2.0},{x:'Dec 17',y:2.5},{x:'Mar 18',y:2.8},{x:'Jun 18',y:3.0},
+      {x:'Sep 18',y:3.2},{x:'Dec 18',y:3.5},{x:'Mar 19',y:3.8},{x:'Jun 19',y:4.0},
+      {x:'Sep 19',y:3.8},{x:'Dec 19',y:3.5},{x:'Mar 20',y:4.2},{x:'Jun 20',y:5.8},
+      {x:'Sep 20',y:7.5},{x:'Dec 20',y:8.8},{x:'Mar 21',y:9.2},{x:'Jun 21',y:10.0},
+      {x:'Sep 21',y:8.5},{x:'Dec 21',y:7.5},{x:'Mar 22',y:6.5},{x:'Jun 22',y:6.0},
+      {x:'Sep 22',y:6.5},{x:'Dec 22',y:7.0},{x:'Mar 23',y:7.2},{x:'Jun 23',y:7.5},
+      {x:'Sep 23',y:7.8},{x:'Dec 23',y:8.0},{x:'Mar 24',y:8.2},{x:'Jun 24',y:8.5},
+      {x:'Sep 24',y:8.8},{x:'Dec 24',y:9.0},{x:'Mar 25',y:9.0},{x:'Jun 25',y:9.0},
+      {x:'Sep 25',y:9.2},{x:'Dec 25',y:9.2},{x:'Apr 26',y:9.5},
     ],
-    events:[
-      {d:'Jul 2021',l:'Pandemic peak',v:'+233%',pos:true},
-      {d:'Jan 2022',l:'Correction',v:'−25%',pos:false},
-      {d:'Jan 2026',l:'Steady climb',v:'+6%',pos:true},
-    ],
+    events:[{d:'Jul 2021',l:'Pandemic peak',v:'+233%',pos:true},{d:'Jan 2022',l:'Correction',v:'−25%',pos:false},{d:'Jan 2026',l:'Steady climb',v:'+6%',pos:true}],
   },
 ];
 
-// Card data fetched from Pokémon TCG API — images and real market prices
-const cardImages = {};
-const cardPrices = {}; // { id: { cm: cardmarket_obj, tcp: tcgplayer_obj } }
-let chartInst = null;
+// Card of the Day — Acerola, not in the main 4 tabs
+const cotdCard = {
+  id: 'acerola',
+  name: 'Acerola',
+  subtitle: 'Full Art Ultra Rare',
+  set: 'Sun & Moon: Burning Shadows',
+  setShort: 'Burning Shadows',
+  number: '#142/147',
+  year: 2017,
+  price: '£8–£12',
+  verdict: 'Hidden gem',
+  verdictBg: 'rgba(139,92,246,0.15)',
+  verdictColor: '#a78bfa',
+  score: 72,
+  psa10: '£30–£50',
+  upside: '+150–300%',
+};
+
+// ── API DATA CACHE ───────────────────────────────────────
+const cardImages = {};   // { id: url }
+const cardPrices = {};   // { id: { cm, tcp } }
 
 const cardApiQueries = {
   judge:   'name:Judge set.name:"Lost Thunder"',
   cynthia: 'name:Cynthia set.name:"Ultra Prism"',
   guzma:   'name:Guzma set.name:"Burning Shadows"',
   lillie:  'name:Lillie set.name:"Sun & Moon"',
+  acerola: 'name:Acerola set.name:"Burning Shadows"',
 };
 
-// Approximate exchange rates for display (EUR→GBP, USD→GBP)
 const EUR_GBP = 0.855;
 const USD_GBP = 0.797;
-
-function fmtGbp(v) { return '£' + Number(v).toFixed(2); }
-function fmtEur(v) { return '€' + Number(v).toFixed(2); }
-function fmtUsd(v) { return '$' + Number(v).toFixed(2); }
-function eurToGbp(v) { return fmtGbp(v * EUR_GBP); }
-function usdToGbp(v) { return fmtGbp(v * USD_GBP); }
+function fmtGbp(v){ return '£'+Number(v).toFixed(2); }
+function fmtEur(v){ return '€'+Number(v).toFixed(2); }
+function fmtUsd(v){ return '$'+Number(v).toFixed(2); }
+function eurToGbp(v){ return fmtGbp(v*EUR_GBP); }
+function usdToGbp(v){ return fmtGbp(v*USD_GBP); }
 
 async function fetchCardData() {
   const fetches = Object.entries(cardApiQueries).map(async ([id, q]) => {
@@ -645,78 +749,89 @@ async function fetchCardData() {
       const data = await res.json();
       const card = data.data && (data.data.find(c => c.rarity === 'Rare Ultra') || data.data[0]);
       if (!card) return;
-      if (card.images && card.images.large) cardImages[id] = card.images.large;
-      if (card.cardmarket || card.tcgplayer) {
-        cardPrices[id] = { cm: card.cardmarket || null, tcp: card.tcgplayer || null };
-      }
-    } catch (e) { /* fall back to placeholders */ }
+      if (card.images?.large) cardImages[id] = card.images.large;
+      if (card.cardmarket || card.tcgplayer) cardPrices[id] = { cm: card.cardmarket||null, tcp: card.tcgplayer||null };
+    } catch(e) {}
   });
   await Promise.all(fetches);
   renderCardOfDay();
   renderMain();
 }
 
+// ── STATE ────────────────────────────────────────────────
 let active = cards[0];
 let innerTab = 'overview';
+let chartInst = null;
 
+// ── HELPERS ──────────────────────────────────────────────
 const riskStyle = {
-  'Very low': 'background:rgba(34,197,94,0.12);color:#22c55e;',
-  'Low': 'background:rgba(96,165,250,0.12);color:#60a5fa;',
-  'Medium': 'background:rgba(245,158,11,0.12);color:#f59e0b;',
-  'Medium-high': 'background:rgba(245,158,11,0.12);color:#f59e0b;',
-  'Low-medium': 'background:rgba(96,165,250,0.12);color:#60a5fa;',
-  'High': 'background:rgba(248,113,113,0.12);color:#f87171;',
+  'Very low':'background:rgba(34,197,94,0.12);color:#22c55e;',
+  'Low':'background:rgba(96,165,250,0.12);color:#60a5fa;',
+  'Medium':'background:rgba(245,158,11,0.12);color:#f59e0b;',
+  'Medium-high':'background:rgba(245,158,11,0.12);color:#f59e0b;',
+  'Low-medium':'background:rgba(96,165,250,0.12);color:#60a5fa;',
+  'High':'background:rgba(248,113,113,0.12);color:#f87171;',
 };
 const scoreColor = s => s>=85?'#22c55e':s>=75?'#60a5fa':'#f59e0b';
 
-function pill(text, bg, color) {
+function pill(text, bg, color){
   return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${bg};color:${color};">${text}</span>`;
 }
-function riskPill(v) {
+function riskPill(v){
   const s = riskStyle[v]||'background:rgba(255,255,255,0.06);color:#888;';
   return `<span class="risk-pill" style="${s}">${v}</span>`;
 }
-function scoreBar(val, color, id) {
-  return `<div class="score-track"><div class="score-fill"${id?' id="'+id+'"':''} style="width:${val}%;background:${color};"></div></div>`;
+function scoreBar(val, color, id){
+  return `<div class="score-track"><div class="score-fill"${id?` id="${id}"`:''}  style="width:0;background:${color};" data-target="${val}"></div></div>`;
 }
-function cardImgHtml(id, cls, placeholderCls) {
-  if (cardImages[id]) {
-    return `<img src="${cardImages[id]}" class="${cls}" alt="Card image" onerror="this.outerHTML='<div class=&quot;${placeholderCls}&quot;></div>'">`;
-  }
+function cardImgHtml(id, cls, placeholderCls){
+  if (cardImages[id]) return `<img src="${cardImages[id]}" class="${cls}" alt="Card image" onerror="this.outerHTML='<div class=&quot;${placeholderCls}&quot;></div>'">`;
   return `<div class="${placeholderCls}"></div>`;
 }
 
-function renderCardOfDay() {
-  const eligible = cards.filter(c => c.id !== active.id);
-  const todayIndex = Math.floor(Date.now() / 86400000) % eligible.length;
-  const c = eligible[todayIndex];
-  const sc = scoreColor(c.score);
-  const dateStr = new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+// Animate score bars after render
+function animateBars(){
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.score-fill[data-target]').forEach(el => {
+      const target = el.getAttribute('data-target');
+      el.style.width = target + '%';
+    });
+  });
+}
+
+// Fade-in panel on switch
+function animatePanel(){
+  const p = document.getElementById('mainPanel');
+  p.style.opacity = '0';
+  p.style.transform = 'translateY(8px)';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    p.style.opacity = '1';
+    p.style.transform = 'none';
+  }));
+}
+
+// ── CARD OF THE DAY ──────────────────────────────────────
+function renderCardOfDay(){
+  const p = cardPrices[cotdCard.id];
+  const cmUrl = p?.cm?.url || `https://www.cardmarket.com/en/Pokemon/Products/Singles?searchString=${encodeURIComponent(cotdCard.name)}`;
+  const imgHtml = cardImages[cotdCard.id]
+    ? `<img class="cotd-mini-img" src="${cardImages[cotdCard.id]}" alt="${cotdCard.name}" onerror="this.outerHTML='<div class=&quot;cotd-mini-placeholder&quot;></div>'">`
+    : `<div class="cotd-mini-placeholder"></div>`;
   document.getElementById('cotdSection').innerHTML = `
-    <div class="cotd-banner">
-      <div class="cotd-label">Card of the Day &middot; ${dateStr}</div>
-      <div class="cotd-body">
-        <div class="cotd-img-wrap">${cardImgHtml(c.id, 'cotd-img', 'cotd-img-placeholder')}</div>
-        <div class="cotd-info">
-          ${pill(c.verdict, c.verdictBg, c.verdictColor)}
-          <div class="cotd-name" style="margin-top:8px;">${c.name}</div>
-          <div class="cotd-set">${c.set} · ${c.number}</div>
-          <div class="cotd-score-wrap">
-            <div class="score-header"><span>Investment score</span><span>${c.score}/100</span></div>
-            ${scoreBar(c.score, sc)}
-          </div>
-          <div style="font-size:12px;color:var(--muted);margin-top:6px;">
-            Entry: <strong style="color:var(--gold);">${c.price}</strong>
-            &nbsp;·&nbsp;
-            PSA 10 est: <strong style="color:var(--blue);">${c.psa10}</strong>
-          </div>
-          <button class="cotd-btn" onclick="switchCard('${c.id}')">View full analysis →</button>
-        </div>
+    <div class="cotd-strip">
+      <span class="cotd-tag">★ Card of the Day</span>
+      ${imgHtml}
+      <div class="cotd-mini-info">
+        <div class="cotd-mini-name">${cotdCard.name}</div>
+        <div class="cotd-mini-sub">${cotdCard.setShort} · ${cotdCard.number} · ${pill(cotdCard.verdict, cotdCard.verdictBg, cotdCard.verdictColor)}</div>
       </div>
+      <div class="cotd-mini-price">${cotdCard.price}</div>
+      <a class="cotd-mini-btn" href="${cmUrl}" target="_blank" rel="noopener noreferrer">See listings →</a>
     </div>`;
 }
 
-function renderTabs() {
+// ── TABS ─────────────────────────────────────────────────
+function renderTabs(){
   document.getElementById('cardTabs').innerHTML = cards.map(c => `
     <button class="card-tab${c.id===active.id?' active':''}" onclick="switchCard('${c.id}')">
       <div class="tab-name">${c.name}</div>
@@ -725,13 +840,14 @@ function renderTabs() {
     </button>`).join('');
 }
 
-function renderHero() {
+// ── HERO ─────────────────────────────────────────────────
+function renderHero(){
   const c = active;
   const sc = scoreColor(c.score);
   return `
     <div class="hero">
       <div class="hero-layout">
-        <div class="hero-img-wrap">${cardImgHtml(c.id, 'card-img', 'card-img-placeholder')}</div>
+        <div class="hero-img-wrap">${cardImgHtml(c.id,'card-img','card-img-placeholder')}</div>
         <div class="hero-text">
           <div class="hero-top">
             ${pill(c.verdict, c.verdictBg, c.verdictColor)}
@@ -757,8 +873,9 @@ function renderHero() {
     </div>`;
 }
 
-function renderInnerTabs() {
-  const tabs = ['overview','price history','where to buy','catalysts & risks'];
+// ── INNER TABS ───────────────────────────────────────────
+function renderInnerTabs(){
+  const tabs = ['overview','where to buy','catalysts & risks'];
   return `<div class="inner-tabs">
     ${tabs.map(t=>`
       <button class="inner-tab${innerTab===t?' active':''}" onclick="switchInner('${t}')">
@@ -767,126 +884,14 @@ function renderInnerTabs() {
   </div>`;
 }
 
-function renderOverview() {
-  const c = active;
-  return `<div class="two-col">
-    <div>
-      <div class="section-label">Analyst summary</div>
-      <p class="summary-text">${c.summary}</p>
-    </div>
-    <div>
-      <div class="section-label">Risk profile</div>
-      <div class="risk-row"><span class="risk-label">Reprint risk</span>${riskPill(c.reprint)}</div>
-      <div class="risk-row"><span class="risk-label">Liquidity</span>${riskPill(c.liquidity)}</div>
-      <div class="risk-row" style="border-bottom:none;"><span class="risk-label">Overall risk</span>${riskPill(c.score>=85?'Low':c.score>=75?'Low-medium':'Medium')}</div>
-      <div class="targets-box">
-        <div class="section-label" style="margin-bottom:8px;">Price targets</div>
-        <div class="targets-grid">
-          <div><div class="target-label">12 months</div><div class="target-val" style="color:#22c55e;">£${c.t12}</div></div>
-          <div class="target-divider"></div>
-          <div><div class="target-label">24 months</div><div class="target-val" style="color:#60a5fa;">£${c.t24}</div></div>
-          <div class="target-divider"></div>
-          <div><div class="target-label">PSA 10</div><div class="target-val" style="color:#f59e0b;font-size:13px;">${c.psa10}</div></div>
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderPriceHistory() {
-  const c = active;
-  const p = cardPrices[c.id];
-  const cmUpdated = p && p.cm ? p.cm.updatedAt.replace(/\//g,'-') : null;
-  const tcpUpdated = p && p.tcp ? p.tcp.updatedAt.replace(/\//g,'-') : null;
-
-  // Build live prices panels
-  let cmHtml = '<div class="price-loading">Loading…</div>';
-  let tcpHtml = '<div class="price-loading">Loading…</div>';
-
-  if (p && p.cm) {
-    const cp = p.cm.prices;
-    cmHtml = `
-      <div class="price-row"><span class="price-row-label">30-day avg</span><span class="price-row-val" style="color:var(--gold);">${fmtEur(cp.avg30)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg30)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">7-day avg</span><span class="price-row-val">${fmtEur(cp.avg7)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg7)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">1-day avg</span><span class="price-row-val">${fmtEur(cp.avg1)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg1)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">Trend price</span><span class="price-row-val">${fmtEur(cp.trendPrice)}</span></div>
-      <div class="price-row"><span class="price-row-label">Low (EX+)</span><span class="price-row-val">${fmtEur(cp.lowPriceExPlus)}</span></div>
-      <div class="price-currency-note">EUR · GBP approx at ×0.855</div>
-      ${p.cm.url ? `<a href="${p.cm.url}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:var(--gold);text-decoration:none;">View listings on Cardmarket →</a>` : ''}`;
-  } else if (p === undefined) {
-    cmHtml = '<div class="price-loading">Fetching…</div>';
-  } else {
-    cmHtml = '<div class="price-loading" style="color:var(--dim);">Not available</div>';
-  }
-
-  if (p && p.tcp) {
-    const tp = p.tcp.prices;
-    const tpData = Object.values(tp)[0] || {};
-    cmHtml = cmHtml; // already set
-    tcpHtml = `
-      <div class="price-row"><span class="price-row-label">Market price</span><span class="price-row-val" style="color:var(--green);">${fmtUsd(tpData.market)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.market)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">Mid price</span><span class="price-row-val">${fmtUsd(tpData.mid)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.mid)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">Low</span><span class="price-row-val">${fmtUsd(tpData.low)}</span></div>
-      <div class="price-row"><span class="price-row-label">High</span><span class="price-row-val">${fmtUsd(tpData.high)}</span></div>
-      <div class="price-currency-note">USD · GBP approx at ×0.797</div>
-      ${p.tcp.url ? `<a href="${p.tcp.url}" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:var(--green);text-decoration:none;">View listings on TCGPlayer →</a>` : ''}`;
-  } else if (p === undefined) {
-    tcpHtml = '<div class="price-loading">Fetching…</div>';
-  } else {
-    tcpHtml = '<div class="price-loading" style="color:var(--dim);">Not available</div>';
-  }
-
-  return `
-    <div class="chart-note">
-      <strong style="color:var(--blue);">Chart</strong> shows an estimated NM-raw price trend (GBP) based on observed market activity — not sourced from a single live feed.
-      Live prices below are fetched directly from <strong>Cardmarket</strong> and <strong>TCGPlayer</strong> via the Pokémon TCG API.
-    </div>
-    <div class="chart-legend">
-      <span class="legend-item"><span class="legend-line" style="background:#f59e0b;"></span>Est. trend (GBP)</span>
-      <span class="legend-item"><span class="legend-dash" style="border-color:#22c55e;"></span>12m target</span>
-      <span class="legend-item"><span class="legend-dash" style="border-color:#60a5fa;"></span>24m target</span>
-    </div>
-    <div class="chart-wrap"><canvas id="priceChart" role="img" aria-label="Price trend chart for ${c.name}"></canvas></div>
-
-    <div class="events-grid">
-      ${c.events.map(e=>`
-        <div class="event-box">
-          <div class="event-date">${e.d}</div>
-          <div class="event-label">${e.l}</div>
-          <div class="event-delta" style="color:${e.pos?'#22c55e':'#f87171'};">${e.v}</div>
-        </div>`).join('')}
-    </div>
-
-    <div class="live-prices">
-      <div class="live-prices-header">Live market prices — from Pokémon TCG API</div>
-      <div class="price-sources">
-        <div class="price-source">
-          <div class="price-source-header">
-            <span class="price-source-name">Cardmarket</span>
-            ${cmUpdated ? `<span class="price-updated">as of ${cmUpdated}</span>` : ''}
-          </div>
-          ${cmHtml}
-        </div>
-        <div class="price-source">
-          <div class="price-source-header">
-            <span class="price-source-name">TCGPlayer</span>
-            ${tcpUpdated ? `<span class="price-updated">as of ${tcpUpdated}</span>` : ''}
-          </div>
-          ${tcpHtml}
-        </div>
-      </div>
-    </div>`;
-}
-
-function buildChart() {
-  if (chartInst) { chartInst.destroy(); chartInst = null; }
+// ── CHART ─────────────────────────────────────────────────
+function buildChart(){
+  if (chartInst){ chartInst.destroy(); chartInst = null; }
   const canvas = document.getElementById('priceChart');
   if (!canvas) return;
   const c = active;
-
   const labels = [...c.history.map(h=>h.x), 'Apr 27*', 'Apr 28*'];
   const actual = [...c.history.map(h=>h.y), null, null];
-  const lastVal = c.history[c.history.length-1].y;
   const t12data = [...c.history.map((_,i)=>i===c.history.length-1?c.t12:null), c.t12, null];
   const t24data = [...c.history.map((_,i)=>i===c.history.length-1?c.t24:null), null, c.t24];
 
@@ -896,137 +901,179 @@ function buildChart() {
       labels,
       datasets: [
         {
-          label: 'Est. price (GBP)',
-          data: actual,
-          borderColor: '#f59e0b',
-          borderWidth: 3,
-          pointRadius: 5,
-          pointHoverRadius: 8,
-          pointBackgroundColor: '#f59e0b',
-          pointBorderColor: '#080810',
-          pointBorderWidth: 2,
-          spanGaps: false,
-          tension: 0.35,
-          fill: {
-            target: 'origin',
-            above: 'rgba(245,158,11,0.10)',
-          },
+          label:'Est. price (GBP)', data:actual,
+          borderColor:'#f59e0b', borderWidth:3,
+          pointRadius:4, pointHoverRadius:8,
+          pointBackgroundColor:'#f59e0b', pointBorderColor:'#080810', pointBorderWidth:2,
+          spanGaps:false, tension:0.35,
+          fill:{ target:'origin', above:'rgba(245,158,11,0.08)' },
         },
         {
-          label: '12m target',
-          data: t12data,
-          borderColor: '#22c55e',
-          borderWidth: 2,
-          borderDash: [6, 4],
-          pointRadius: 6,
-          pointHoverRadius: 9,
-          pointBackgroundColor: '#22c55e',
-          pointBorderColor: '#080810',
-          pointBorderWidth: 2,
-          spanGaps: true,
-          tension: 0,
-          fill: false,
+          label:'12m target', data:t12data,
+          borderColor:'#22c55e', borderWidth:2, borderDash:[6,4],
+          pointRadius:6, pointHoverRadius:9,
+          pointBackgroundColor:'#22c55e', pointBorderColor:'#080810', pointBorderWidth:2,
+          spanGaps:true, tension:0, fill:false,
         },
         {
-          label: '24m target',
-          data: t24data,
-          borderColor: '#60a5fa',
-          borderWidth: 2,
-          borderDash: [6, 4],
-          pointRadius: 6,
-          pointHoverRadius: 9,
-          pointBackgroundColor: '#60a5fa',
-          pointBorderColor: '#080810',
-          pointBorderWidth: 2,
-          spanGaps: true,
-          tension: 0,
-          fill: false,
+          label:'24m target', data:t24data,
+          borderColor:'#60a5fa', borderWidth:2, borderDash:[6,4],
+          pointRadius:6, pointHoverRadius:9,
+          pointBackgroundColor:'#60a5fa', pointBorderColor:'#080810', pointBorderWidth:2,
+          spanGaps:true, tension:0, fill:false,
         },
       ],
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: {
-        mode: 'index',
-        intersect: false,
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#111124',
-          borderColor: '#2a2a4e',
-          borderWidth: 1,
-          titleColor: '#888',
-          bodyColor: '#e0e0f0',
-          padding: 10,
-          callbacks: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{
+        legend:{ display:false },
+        tooltip:{
+          backgroundColor:'#111124', borderColor:'#2a2a4e', borderWidth:1,
+          titleColor:'#888', bodyColor:'#e0e0f0', padding:10,
+          callbacks:{
             title: ctx => ctx[0].label,
             label: ctx => {
-              if (ctx.parsed.y === null) return null;
-              const suffix = ctx.datasetIndex === 0 ? ' (est.)' : ctx.datasetIndex === 1 ? ' (12m target)' : ' (24m target)';
-              return ' £' + ctx.parsed.y.toFixed(2) + suffix;
+              if(ctx.parsed.y===null) return null;
+              const s = ctx.datasetIndex===0?' (est.)':ctx.datasetIndex===1?' (12m target)':' (24m target)';
+              return ' £'+ctx.parsed.y.toFixed(2)+s;
             },
           },
         },
       },
-      scales: {
-        x: {
-          grid: { color: 'rgba(255,255,255,0.08)' },
-          ticks: { font: { size: 11 }, color: '#777', maxRotation: 40, autoSkip: true, maxTicksLimit: 8 },
-        },
-        y: {
-          grid: { color: 'rgba(255,255,255,0.08)' },
-          ticks: {
-            font: { size: 11 },
-            color: '#777',
-            callback: v => '£' + v,
-          },
-          beginAtZero: false,
-        },
+      scales:{
+        x:{ grid:{color:'rgba(255,255,255,0.07)'}, ticks:{font:{size:11},color:'#777',maxRotation:40,autoSkip:true,maxTicksLimit:10} },
+        y:{ grid:{color:'rgba(255,255,255,0.07)'}, ticks:{font:{size:11},color:'#777',callback:v=>'£'+v}, beginAtZero:false },
       },
     },
   });
 }
 
-function renderWhereToBuy() {
+// ── LIVE PRICES ──────────────────────────────────────────
+function renderLivePrices(){
+  const c = active;
+  const p = cardPrices[c.id];
+  const cmUpdated = p?.cm ? p.cm.updatedAt.replace(/\//g,'-') : null;
+  const tcpUpdated = p?.tcp ? p.tcp.updatedAt.replace(/\//g,'-') : null;
+
+  let cmHtml = `<div class="price-loading">${p===undefined?'Fetching…':'Not available'}</div>`;
+  let tcpHtml = `<div class="price-loading">${p===undefined?'Fetching…':'Not available'}</div>`;
+
+  if (p?.cm) {
+    const cp = p.cm.prices;
+    cmHtml = `
+      <div class="price-row"><span class="price-row-label">30-day avg</span><span class="price-row-val" style="color:var(--gold);">${fmtEur(cp.avg30)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg30)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">7-day avg</span><span class="price-row-val">${fmtEur(cp.avg7)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg7)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">1-day avg</span><span class="price-row-val">${fmtEur(cp.avg1)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg1)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">Trend</span><span class="price-row-val">${fmtEur(cp.trendPrice)}</span></div>
+      <div class="price-row"><span class="price-row-label">Low (EX+)</span><span class="price-row-val">${fmtEur(cp.lowPriceExPlus)}</span></div>
+      <div class="price-currency-note">EUR · GBP approx ×0.855</div>
+      ${p.cm.url?`<a class="price-link" style="color:var(--gold);" href="${p.cm.url}" target="_blank" rel="noopener noreferrer">View on Cardmarket →</a>`:''}`;
+  }
+  if (p?.tcp) {
+    const tpData = Object.values(p.tcp.prices)[0]||{};
+    tcpHtml = `
+      <div class="price-row"><span class="price-row-label">Market price</span><span class="price-row-val" style="color:var(--green);">${fmtUsd(tpData.market)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.market)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">Mid price</span><span class="price-row-val">${fmtUsd(tpData.mid)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.mid)})</span></span></div>
+      <div class="price-row"><span class="price-row-label">Low</span><span class="price-row-val">${fmtUsd(tpData.low)}</span></div>
+      <div class="price-row"><span class="price-row-label">High</span><span class="price-row-val">${fmtUsd(tpData.high)}</span></div>
+      <div class="price-currency-note">USD · GBP approx ×0.797</div>
+      ${p.tcp.url?`<a class="price-link" style="color:var(--green);" href="${p.tcp.url}" target="_blank" rel="noopener noreferrer">View on TCGPlayer →</a>`:''}`;
+  }
+
+  return `
+    <div class="live-prices">
+      <div class="live-prices-header">Live market prices — Pokémon TCG API</div>
+      <div class="price-sources">
+        <div class="price-source">
+          <div class="price-source-header">
+            <span class="price-source-name">Cardmarket</span>
+            ${cmUpdated?`<span class="price-updated">as of ${cmUpdated}</span>`:''}
+          </div>
+          ${cmHtml}
+        </div>
+        <div class="price-source">
+          <div class="price-source-header">
+            <span class="price-source-name">TCGPlayer</span>
+            ${tcpUpdated?`<span class="price-updated">as of ${tcpUpdated}</span>`:''}
+          </div>
+          ${tcpHtml}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── OVERVIEW (includes chart + live prices) ──────────────
+function renderOverview(){
+  const c = active;
+  return `
+    <div class="two-col">
+      <div>
+        <div class="section-label">Analyst summary</div>
+        <p class="summary-text">${c.summary}</p>
+      </div>
+      <div>
+        <div class="section-label">Risk profile</div>
+        <div class="risk-row"><span class="risk-label">Reprint risk</span>${riskPill(c.reprint)}</div>
+        <div class="risk-row"><span class="risk-label">Liquidity</span>${riskPill(c.liquidity)}</div>
+        <div class="risk-row" style="border-bottom:none;"><span class="risk-label">Overall risk</span>${riskPill(c.score>=85?'Low':c.score>=75?'Low-medium':'Medium')}</div>
+        <div class="targets-box">
+          <div class="section-label" style="margin-bottom:8px;">Price targets</div>
+          <div class="targets-grid">
+            <div><div class="target-label">12 months</div><div class="target-val" style="color:#22c55e;">£${c.t12}</div></div>
+            <div class="target-divider"></div>
+            <div><div class="target-label">24 months</div><div class="target-val" style="color:#60a5fa;">£${c.t24}</div></div>
+            <div class="target-divider"></div>
+            <div><div class="target-label">PSA 10</div><div class="target-val" style="color:#f59e0b;font-size:13px;">${c.psa10}</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-section">
+      <div class="chart-section-label">
+        Price history
+        <span style="font-size:10px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0;">— estimated NM trend + targets</span>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-line" style="background:#f59e0b;"></span>Est. trend (GBP)</span>
+        <span class="legend-item"><span class="legend-dash" style="border-color:#22c55e;"></span>12m target</span>
+        <span class="legend-item"><span class="legend-dash" style="border-color:#60a5fa;"></span>24m target</span>
+      </div>
+      <div class="chart-wrap"><canvas id="priceChart" role="img" aria-label="Price trend for ${c.name}"></canvas></div>
+      <div class="events-grid">
+        ${c.events.map(e=>`
+          <div class="event-box">
+            <div class="event-date">${e.d}</div>
+            <div class="event-label">${e.l}</div>
+            <div class="event-delta" style="color:${e.pos?'#22c55e':'#f87171'};">${e.v}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    ${renderLivePrices()}`;
+}
+
+// ── WHERE TO BUY ─────────────────────────────────────────
+function renderWhereToBuy(){
   const name = encodeURIComponent(active.name);
-  const setNum = encodeURIComponent(active.name + ' ' + active.setShort + ' ' + active.number);
+  const setNum = encodeURIComponent(active.name+' '+active.setShort+' '+active.number);
   const p = cardPrices[active.id];
-  const cmUrl = (p && p.cm && p.cm.url) ? p.cm.url : `https://www.cardmarket.com/en/Pokemon/Products/Singles?searchString=${name}`;
-  const tcpUrl = (p && p.tcp && p.tcp.url) ? p.tcp.url : `https://www.tcgplayer.com/search/pokemon/product?q=${name}`;
+  const cmUrl = p?.cm?.url || `https://www.cardmarket.com/en/Pokemon/Products/Singles?searchString=${name}`;
+  const tcpUrl = p?.tcp?.url || `https://www.tcgplayer.com/search/pokemon/product?q=${name}`;
   const sources = [
-    {
-      label: 'Cardmarket',
-      icon: 'CM', iconBg: '#003087', iconColor: '#fff',
-      desc: "Direct link to this card's listings · Europe's largest TCG marketplace",
-      url: cmUrl,
-    },
-    {
-      label: 'eBay UK — Sold listings',
-      icon: 'eB', iconBg: '#e53238', iconColor: '#fff',
-      desc: 'Real completed sale prices · filtered to full art only',
-      url: `https://www.ebay.co.uk/sch/i.html?_nkw=${setNum}+full+art&LH_Complete=1&LH_Sold=1`,
-    },
-    {
-      label: 'TCGPlayer',
-      icon: 'TC', iconBg: '#1a8fff', iconColor: '#fff',
-      desc: 'Direct link to this card · US market prices',
-      url: tcpUrl,
-    },
-    {
-      label: 'PriceCharting',
-      icon: 'PC', iconBg: '#22c55e', iconColor: '#000',
-      desc: 'Historical price tracking',
-      url: `https://www.pricecharting.com/search-products?q=${name}+pokemon`,
-    },
+    { label:'Cardmarket', icon:'CM', iconBg:'#003087', iconColor:'#fff', desc:"Direct link to this card's listings · Europe's largest TCG marketplace", url:cmUrl },
+    { label:'eBay UK — Sold listings', icon:'eB', iconBg:'#e53238', iconColor:'#fff', desc:'Real completed sale prices · filtered to full art', url:`https://www.ebay.co.uk/sch/i.html?_nkw=${setNum}+full+art&LH_Complete=1&LH_Sold=1` },
+    { label:'TCGPlayer', icon:'TC', iconBg:'#1a8fff', iconColor:'#fff', desc:'Direct link to this card · US market prices', url:tcpUrl },
+    { label:'PriceCharting', icon:'PC', iconBg:'#22c55e', iconColor:'#000', desc:'Historical price tracking across all platforms', url:`https://www.pricecharting.com/search-products?q=${name}+pokemon` },
   ];
   return `
     <div class="buy-disclaimer">
-      ⚠ Prices vary daily. Always check <strong>completed/sold listings</strong> on eBay for real transaction prices, not just asking prices.
+      ⚠ Always check <strong>completed/sold listings</strong> on eBay for real transaction prices — not just asking prices. Prices vary daily.
     </div>
     <div class="buy-links">
-      ${sources.map(s => `
+      ${sources.map(s=>`
         <a class="buy-link-card" href="${s.url}" target="_blank" rel="noopener noreferrer">
           <div class="buy-icon" style="background:${s.iconBg};color:${s.iconColor};">${s.icon}</div>
           <div class="buy-info">
@@ -1038,7 +1085,8 @@ function renderWhereToBuy() {
     </div>`;
 }
 
-function renderCatalysts() {
+// ── CATALYSTS ────────────────────────────────────────────
+function renderCatalysts(){
   const c = active;
   return `<div class="two-col">
     <div>
@@ -1058,7 +1106,8 @@ function renderCatalysts() {
   </div>`;
 }
 
-function renderCompare() {
+// ── COMPARE ──────────────────────────────────────────────
+function renderCompare(){
   document.getElementById('compareGrid').innerHTML = cards.map(c=>`
     <div class="compare-card${c.id===active.id?' selected':''}" onclick="switchCard('${c.id}')">
       <div class="compare-card-header">
@@ -1072,38 +1121,41 @@ function renderCompare() {
         <div style="text-align:right;"><div class="compare-stat-label">UPSIDE</div><div class="compare-stat-val" style="color:#22c55e;">${c.upside}</div></div>
       </div>
     </div>`).join('');
+  animateBars();
 }
 
-function renderMain() {
-  if (chartInst) { chartInst.destroy(); chartInst = null; }
-  const panel = document.getElementById('mainPanel');
+// ── MAIN RENDER ──────────────────────────────────────────
+function renderMain(){
+  if (chartInst){ chartInst.destroy(); chartInst = null; }
   let content = '';
-  if (innerTab === 'overview') content = renderOverview();
-  else if (innerTab === 'price history') content = renderPriceHistory();
-  else if (innerTab === 'where to buy') content = renderWhereToBuy();
-  else content = renderCatalysts();
-  panel.innerHTML = renderHero() + renderInnerTabs() + content;
-  if (innerTab === 'price history') setTimeout(buildChart, 50);
+  if (innerTab==='overview')          content = renderOverview();
+  else if (innerTab==='where to buy') content = renderWhereToBuy();
+  else                                content = renderCatalysts();
+  document.getElementById('mainPanel').innerHTML = renderHero() + renderInnerTabs() + content;
+  animatePanel();
+  animateBars();
+  if (innerTab==='overview') setTimeout(buildChart, 80);
   renderCompare();
 }
 
-function switchCard(id) {
-  active = cards.find(c => c.id === id);
+function switchCard(id){
+  active = cards.find(c=>c.id===id);
   innerTab = 'overview';
   renderTabs();
   renderMain();
-  window.scrollTo({top: 0, behavior: 'smooth'});
-  setTimeout(() => {
-    document.querySelector('.card-tab.active')?.scrollIntoView({inline: 'center', behavior: 'smooth', block: 'nearest'});
+  window.scrollTo({top:0, behavior:'smooth'});
+  setTimeout(()=>{
+    document.querySelector('.card-tab.active')?.scrollIntoView({inline:'center', behavior:'smooth', block:'nearest'});
   }, 50);
 }
 
-function switchInner(t) {
+function switchInner(t){
   innerTab = t;
   renderMain();
   renderTabs();
 }
 
+// ── INIT ─────────────────────────────────────────────────
 renderTabs();
 renderCardOfDay();
 renderMain();
