@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TJ's Pokémon Card Guide</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080810;
+    --surface: #0f0f1a;
+    --surface2: #141420;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e0e0f0;
+    --muted: #888;
+    --dim: #444;
+    --gold: #f59e0b;
+    --gold-bg: rgba(245,158,11,0.12);
+    --green: #22c55e;
+    --green-bg: rgba(34,197,94,0.1);
+    --blue: #60a5fa;
+    --blue-bg: rgba(96,165,250,0.1);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.1);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(180deg, #0d0d1f 0%, var(--bg) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 16px 0;
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .live-dot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .live-dot::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    flex-shrink: 0;
+  }
+  .header h1 { font-size: clamp(18px, 5vw, 26px); font-weight: 800; letter-spacing: -0.5px; }
+  .header h1 span { color: var(--gold); }
+  .header-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .disclaimer {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--muted);
+    max-width: 200px;
+    flex-shrink: 0;
+    display: none;
+  }
+  @media(min-width:600px){ .disclaimer { display: block; } }
+
+  /* CARD TABS */
+  .card-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0;
+    margin-top: 12px;
+  }
+  .card-tabs::-webkit-scrollbar { display: none; }
+  .card-tab {
+    flex-shrink: 0;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card-tab.active { background: var(--surface); border-color: var(--border2); }
+  .card-tab:hover:not(.active) { background: rgba(255,255,255,0.03); }
+  .tab-name { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .card-tab.active .tab-name { color: var(--text); }
+  .tab-set { font-size: 10px; color: var(--dim); margin-top: 1px; }
+  .tab-badge {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 9px;
+    font-weight: 700;
+  }
+
+  /* MAIN PANEL */
+  .main-panel {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-top: none;
+    border-radius: 0 10px 10px 10px;
+    padding: 18px 16px;
+    margin: 0 16px 16px;
+  }
+
+  /* HERO */
+  .hero {
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .verdict-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .card-id { font-size: 12px; color: var(--muted); }
+  .hero-name { font-size: clamp(22px, 6vw, 32px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
+  .hero-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .stat-box {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .stat-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 3px; }
+  .stat-val { font-size: clamp(14px, 4vw, 18px); font-weight: 800; }
+
+  .meta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  @media(min-width:500px){ .meta-row { grid-template-columns: repeat(4,1fr); } }
+  .meta-box { background: var(--surface2); border-radius: 8px; padding: 8px 10px; }
+  .meta-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
+  .meta-val { font-size: 12px; font-weight: 600; }
+
+  .score-wrap { margin-top: 12px; }
+  .score-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+  .score-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .score-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+
+  /* INNER TABS */
+  .inner-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .inner-tab {
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 12px;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+  .inner-tab.active { background: var(--surface2); color: var(--text); font-weight: 600; }
+
+  /* OVERVIEW */
+  .two-col { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media(min-width:600px){ .two-col { grid-template-columns: 1fr 1fr; } }
+  .section-label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 10px; }
+  .summary-text { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+  .risk-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .risk-row:last-of-type { border-bottom: none; }
+  .risk-label { color: var(--muted); }
+  .risk-pill { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+
+  .targets-box {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px;
+    margin-top: 12px;
+  }
+  .targets-grid { display: flex; justify-content: space-between; text-align: center; margin-top: 8px; }
+  .target-divider { width: 1px; background: var(--border); }
+  .target-label { font-size: 10px; color: var(--dim); }
+  .target-val { font-size: 16px; font-weight: 800; margin-top: 2px; }
+
+  /* PRICE CHART */
+  .chart-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+  .legend-line { width: 18px; height: 2px; }
+  .legend-dash { width: 18px; height: 0; border-top: 2px dashed; }
+  .chart-wrap { position: relative; width: 100%; height: 220px; }
+  .events-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 14px; }
+  .event-box { background: var(--surface2); border-radius: 8px; padding: 10px 12px; }
+  .event-date { font-size: 10px; color: var(--dim); }
+  .event-label { font-size: 12px; font-weight: 600; margin: 2px 0; }
+  .event-delta { font-size: 15px; font-weight: 800; }
+
+  /* CATALYSTS */
+  .bullet-item { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 11px; }
+  .bullet-item:last-child { margin-bottom: 0; }
+  .bullet-icon {
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .bullet-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* COMPARE */
+  .compare-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 0 16px 24px;
+  }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media(min-width:600px){ .compare-grid { grid-template-columns: repeat(4,1fr); } }
+  .compare-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    background: var(--bg);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .compare-card:hover { border-color: var(--border2); }
+  .compare-card.selected { border: 2px solid #60a5fa; }
+  .compare-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; gap: 6px; }
+  .compare-name { font-size: 13px; font-weight: 700; }
+  .compare-set { font-size: 10px; color: var(--dim); margin-bottom: 7px; }
+  .compare-bottom { display: flex; justify-content: space-between; margin-top: 8px; }
+  .compare-stat-label { font-size: 9px; color: var(--dim); }
+  .compare-stat-val { font-size: 12px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="live-dot">TJ's Pokémon Card Guide · April 2026</div>
+      <h1>TJ's <span>Pokémon Card Guide</span></h1>
+      <div class="header-sub">Full Art cards · £9–£11 budget · 4 cards analysed</div>
+    </div>
+    <div class="disclaimer">
+      <strong style="color:var(--gold);font-size:11px;">⚠ Disclaimer</strong><br>
+      Not financial advice. Prices are estimates. Always verify on Cardmarket or eBay before buying.
+    </div>
+  </div>
+  <div class="card-tabs" id="cardTabs"></div>
+</div>
+
+<div style="padding: 0 16px;">
+  <div class="main-panel" id="mainPanel"></div>
+</div>
+
+<div class="compare-section">
+  <div class="section-label" style="margin-bottom:12px;">All cards at a glance — tap to switch</div>
+  <div class="compare-grid" id="compareGrid"></div>
+</div>
+
+<div style="text-align:center;padding:0 16px 24px;font-size:11px;color:var(--dim);">
+  Data sources: TCGplayer · Cardmarket · eBay UK · PriceCharting · Sports Card Investor<br>
+  Built April 2026 · benjobands
+</div>
+
+<script>
+const cards = [
+  {
+    id:'judge', name:'Judge', subtitle:'Full Art Ultra Rare',
+    set:'Sun & Moon: Lost Thunder', setShort:'Lost Thunder', number:'#209/214', year:2018,
+    price:'£9–£11', priceNum:10,
+    verdict:'Strong buy', verdictBg:'rgba(34,197,94,0.15)', verdictColor:'#22c55e',
+    score:88,
+    artist:'Ryuta Fuse', type:'Supporter', character:'Trainer',
+    psa10:'£35–£55', upside:'+200–400%', reprint:'Very low', liquidity:'Medium',
+    tag:'Top pick', tagBg:'rgba(245,158,11,0.18)', tagColor:'#f59e0b',
+    t12:16, t24:22,
+    summary:'The standout pick. With Iono rotating out of Standard format on 11 April 2026, Judge becomes the premier hand-disruption Supporter. The Lost Thunder Full Art is the oldest and rarest version — drawing both player demand and collector interest simultaneously. A mini-buyout in December 2025 held its price above the previous floor even after volume normalised, signalling organic demand rather than manipulation.',
+    catalysts:[
+      'Iono rotated out of Standard on 11 April 2026 — Judge is now the best replacement',
+      'Lost Thunder (2018) is a closed supply set; Near Mint copies naturally dwindling',
+      'Mini-buyout Dec 2025 held price above previous floor — healthy organic signal',
+      "Pokémon's 30th anniversary in Feb 2026 broadly lifted all older SM-era sets",
+    ],
+    risks:[
+      'Could be reprinted in a future Expanded-legal set — no reprint yet but possible',
+      'Illiquid at this price point — needs a specific buyer at time of sale',
+      'Requires a 12+ month hold for best returns; not a quick flip',
+    ],
+    history:[
+      {x:'Jan 20',y:3.5},{x:'Jan 21',y:4.2},{x:'Jul 21',y:7.8},{x:'Jan 22',y:6.9},
+      {x:'Jul 22',y:6.2},{x:'Jan 23',y:7.1},{x:'Jul 23',y:7.4},{x:'Jan 24',y:7.8},
+      {x:'Jul 24',y:8.2},{x:'Jan 25',y:8.5},{x:'Jul 25',y:9.0},{x:'Dec 25',y:9.8},{x:'Apr 26',y:10.5},
+    ],
+    events:[
+      {d:'Jul 2021',l:'Pandemic peak',v:'+190%',pos:true},
+      {d:'Jan 2022',l:'Market correction',v:'−11%',pos:false},
+      {d:'Dec 2025',l:'Rotation buyout',v:'+12%',pos:true},
+    ],
+  },
+  {
+    id:'cynthia', name:'Cynthia', subtitle:'Full Art Ultra Rare',
+    set:'Sun & Moon: Ultra Prism', setShort:'Ultra Prism', number:'#148/156', year:2018,
+    price:'£10–£14', priceNum:12,
+    verdict:'Buy', verdictBg:'rgba(96,165,250,0.15)', verdictColor:'#60a5fa',
+    score:79,
+    artist:'Yusuke Ohmura', type:'Supporter', character:'Sinnoh Champion',
+    psa10:'£45–£70', upside:'+150–300%', reprint:'Low', liquidity:'Medium-high',
+    tag:'Steady hold', tagBg:'rgba(139,92,246,0.18)', tagColor:'#a78bfa',
+    t12:20, t24:30,
+    summary:'Cynthia has near-universal Pokémon fan name recognition and a collector base spanning competitive players, anime fans, and nostalgics. Her Ultra Prism Full Art quietly appreciates year on year. The Sinnoh nostalgia wave from Legends: Arceus and BD/SP remakes remains active. Slightly above the £11 ceiling — worth stretching to £14 for the right copy.',
+    catalysts:[
+      'Cynthia is among the most-searched Pokémon characters globally — durable collector demand',
+      'Ultra Prism (2018) closed supply; NM copies become scarcer each year',
+      'Sinnoh nostalgia at sustained highs after Legends: Arceus and remakes',
+      'Yusuke Ohmura artwork consistently holds collector premium across all his cards',
+    ],
+    risks:[
+      'Slightly above the £11 ceiling — harder to find at target entry price',
+      'Cynthia reprinted in other forms; Full Art less so, but not impossible',
+      'Slower moving than Judge — no immediate competitive catalyst in 2026',
+    ],
+    history:[
+      {x:'Jan 20',y:5.0},{x:'Jan 21',y:8.0},{x:'Jul 21',y:14.0},{x:'Jan 22',y:11.5},
+      {x:'Jul 22',y:9.8},{x:'Jan 23',y:10.5},{x:'Jul 23',y:11.2},{x:'Jan 24',y:11.8},
+      {x:'Jul 24',y:12.5},{x:'Jan 25',y:13.0},{x:'Jul 25',y:13.5},{x:'Dec 25',y:13.8},{x:'Apr 26',y:14.2},
+    ],
+    events:[
+      {d:'Jul 2021',l:'Pandemic peak',v:'+180%',pos:true},
+      {d:'Jan 2022',l:'Correction',v:'−18%',pos:false},
+      {d:'Jan 2026',l:'30th anniv lift',v:'+5%',pos:true},
+    ],
+  },
+  {
+    id:'guzma', name:'Guzma', subtitle:'Full Art Ultra Rare',
+    set:'Sun & Moon: Burning Shadows', setShort:'Burning Shadows', number:'#143/147', year:2017,
+    price:'£9–£13', priceNum:11,
+    verdict:'Buy', verdictBg:'rgba(96,165,250,0.15)', verdictColor:'#60a5fa',
+    score:76,
+    artist:'Naoki Saito', type:'Supporter', character:'Team Skull Boss',
+    psa10:'£40–£65', upside:'+150–250%', reprint:'Low', liquidity:'Medium',
+    tag:'Character play', tagBg:'rgba(139,92,246,0.18)', tagColor:'#a78bfa',
+    t12:16, t24:20,
+    summary:"Guzma has a uniquely strong cult following. Team Skull's aesthetic has maintained cultural relevance for nearly a decade — social media, fan art, cosplay, and streaming all sustain collector interest independent of the competitive meta. Naoki Saito is a sought-after TCG illustrator whose cards consistently command premiums. Burning Shadows (2017) is older than Lost Thunder, adding an extra layer of supply scarcity.",
+    catalysts:[
+      'Naoki Saito is one of the most prized TCG artists — his cards hold premium across all eras',
+      'Burning Shadows (2017) predates Lost Thunder — even more supply constrained',
+      "Team Skull has maintained cultural relevance well past its in-game moment",
+      '2017 SM-era cards benefiting from 30th anniversary collector sentiment',
+    ],
+    risks:[
+      'No current competitive catalyst — purely collector and character driven',
+      'Price has been relatively flat since 2022; needs a fresh catalyst to break out',
+      "Cultural moment for Team Skull may be plateauing rather than growing",
+    ],
+    history:[
+      {x:'Jan 20',y:4.5},{x:'Jan 21',y:7.5},{x:'Jul 21',y:16.0},{x:'Jan 22',y:12.0},
+      {x:'Jul 22',y:9.5},{x:'Jan 23',y:10.0},{x:'Jul 23',y:10.5},{x:'Jan 24',y:11.0},
+      {x:'Jul 24',y:11.2},{x:'Jan 25',y:11.5},{x:'Jul 25',y:11.8},{x:'Dec 25',y:12.0},{x:'Apr 26',y:11.5},
+    ],
+    events:[
+      {d:'Jul 2021',l:'Pandemic peak',v:'+256%',pos:true},
+      {d:'Jan 2022',l:'Correction',v:'−25%',pos:false},
+      {d:'Jan 2026',l:'Flat movement',v:'±0%',pos:true},
+    ],
+  },
+  {
+    id:'lillie', name:'Lillie', subtitle:'Full Art Ultra Rare',
+    set:'Sun & Moon Base', setShort:'SM Base', number:'#147/149', year:2017,
+    price:'£8–£11', priceNum:9.5,
+    verdict:'Watch', verdictBg:'rgba(245,158,11,0.15)', verdictColor:'#f59e0b',
+    score:68,
+    artist:'Megumi Mizutani', type:'Supporter', character:'Alola Trainer',
+    psa10:'£30–£50', upside:'+100–200%', reprint:'Medium', liquidity:'Low-medium',
+    tag:'Speculative', tagBg:'rgba(248,113,113,0.15)', tagColor:'#f87171',
+    t12:13, t24:17,
+    summary:'Lillie has multiple Full Art printings across the Sun & Moon era, which dilutes the scarcity argument for any individual version. The Base set version (2017) is the oldest and most scarce, but competes with the Ultra Prism Full Art for collector attention. Good entry at the bottom of the price range with asymmetric risk/reward, but lower conviction than the other three picks.',
+    catalysts:[
+      'Sun & Moon Base (2017) — the oldest Lillie Full Art, highest scarcity of any printing',
+      'Lillie is a beloved character with persistent demand across anime, manga, and TCG',
+      'Entry at £8–£9 gives the best risk/reward ratio in this budget window',
+      'Multiple Full Arts mean collector interest is split but consistently present',
+    ],
+    risks:[
+      'Multiple Full Art printings (Base, Ultra Prism) dilute perceived scarcity for each',
+      'Lower liquidity — fewer active buyers at any given time',
+      'Needs a specific catalyst to break out; no clear 2026 driver visible',
+      'PSA 10 population relatively high for this era; grade premium is lower',
+    ],
+    history:[
+      {x:'Jan 20',y:3.0},{x:'Jan 21',y:5.5},{x:'Jul 21',y:10.0},{x:'Jan 22',y:7.5},
+      {x:'Jul 22',y:6.0},{x:'Jan 23',y:7.0},{x:'Jul 23',y:7.5},{x:'Jan 24',y:8.0},
+      {x:'Jul 24',y:8.5},{x:'Jan 25',y:8.8},{x:'Jul 25',y:9.0},{x:'Dec 25',y:9.2},{x:'Apr 26',y:9.5},
+    ],
+    events:[
+      {d:'Jul 2021',l:'Pandemic peak',v:'+233%',pos:true},
+      {d:'Jan 2022',l:'Correction',v:'−25%',pos:false},
+      {d:'Jan 2026',l:'Steady climb',v:'+6%',pos:true},
+    ],
+  },
+];
+
+let active = cards[0];
+let innerTab = 'overview';
+let chartInst = null;
+
+const riskStyle = {
+  'Very low': 'background:rgba(34,197,94,0.12);color:#22c55e;',
+  'Low': 'background:rgba(96,165,250,0.12);color:#60a5fa;',
+  'Medium': 'background:rgba(245,158,11,0.12);color:#f59e0b;',
+  'Medium-high': 'background:rgba(245,158,11,0.12);color:#f59e0b;',
+  'Low-medium': 'background:rgba(96,165,250,0.12);color:#60a5fa;',
+  'High': 'background:rgba(248,113,113,0.12);color:#f87171;',
+};
+const scoreColor = s => s>=85?'#22c55e':s>=75?'#60a5fa':'#f59e0b';
+
+function pill(text, bg, color) {
+  return `<span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;background:${bg};color:${color};">${text}</span>`;
+}
+function riskPill(v) {
+  const s = riskStyle[v]||'background:rgba(255,255,255,0.06);color:#888;';
+  return `<span class="risk-pill" style="${s}">${v}</span>`;
+}
+function scoreBar(val, color, id) {
+  return `<div class="score-track"><div class="score-fill" id="${id||'sb'}" style="width:${val}%;background:${color};"></div></div>`;
+}
+
+function renderTabs() {
+  document.getElementById('cardTabs').innerHTML = cards.map(c => `
+    <button class="card-tab${c.id===active.id?' active':''}" onclick="switchCard('${c.id}')">
+      <div class="tab-name">${c.name}</div>
+      <div class="tab-set">${c.setShort}</div>
+      ${c.tag?`<span class="tab-badge" style="background:${c.tagBg};color:${c.tagColor};">${c.tag}</span>`:''}
+    </button>`).join('');
+}
+
+function renderHero() {
+  const c = active;
+  const sc = scoreColor(c.score);
+  return `
+    <div class="hero">
+      <div class="hero-top">
+        ${pill(c.verdict, c.verdictBg, c.verdictColor)}
+        <span class="card-id">${c.number} · ${c.year}</span>
+      </div>
+      <div class="hero-name">${c.name}</div>
+      <div class="hero-subtitle">${c.subtitle} · ${c.set}</div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="stat-label">Entry range</div><div class="stat-val" style="color:#f59e0b;">${c.price}</div></div>
+        <div class="stat-box"><div class="stat-label">PSA 10 est.</div><div class="stat-val" style="color:#60a5fa;">${c.psa10}</div></div>
+        <div class="stat-box"><div class="stat-label">Upside</div><div class="stat-val" style="color:#22c55e;">${c.upside}</div></div>
+      </div>
+      <div class="score-wrap">
+        <div class="score-header"><span>Investment score</span><span>${c.score}/100</span></div>
+        ${scoreBar(c.score, sc, 'heroScore')}
+      </div>
+      <div class="meta-row">
+        ${[['Artist',c.artist],['Type',c.type],['12m target','£'+c.t12],['24m target','£'+c.t24]].map(([k,v])=>`
+          <div class="meta-box">
+            <div class="meta-label">${k}</div>
+            <div class="meta-val">${v}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function renderInnerTabs() {
+  return `<div class="inner-tabs">
+    ${['overview','price history','catalysts & risks'].map(t=>`
+      <button class="inner-tab${innerTab===t?' active':''}" onclick="switchInner('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
+  </div>`;
+}
+
+function renderOverview() {
+  const c = active;
+  return `<div class="two-col">
+    <div>
+      <div class="section-label">Analyst summary</div>
+      <p class="summary-text">${c.summary}</p>
+    </div>
+    <div>
+      <div class="section-label">Risk profile</div>
+      <div class="risk-row"><span class="risk-label">Reprint risk</span>${riskPill(c.reprint)}</div>
+      <div class="risk-row"><span class="risk-label">Liquidity</span>${riskPill(c.liquidity)}</div>
+      <div class="risk-row" style="border-bottom:none;"><span class="risk-label">Overall risk</span>${riskPill(c.score>=85?'Low':c.score>=75?'Low-medium':'Medium')}</div>
+      <div class="targets-box">
+        <div class="section-label" style="margin-bottom:8px;">Price targets</div>
+        <div class="targets-grid">
+          <div><div class="target-label">12 months</div><div class="target-val" style="color:#22c55e;">£${c.t12}</div></div>
+          <div class="target-divider"></div>
+          <div><div class="target-label">24 months</div><div class="target-val" style="color:#60a5fa;">£${c.t24}</div></div>
+          <div class="target-divider"></div>
+          <div><div class="target-label">PSA 10</div><div class="target-val" style="color:#f59e0b;font-size:13px;">${c.psa10}</div></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPriceHistory() {
+  return `
+    <div class="section-label">Price history (GBP, NM raw) + targets</div>
+    <div class="chart-legend">
+      <span class="legend-item"><span class="legend-line" style="background:#f59e0b;"></span>Actual price</span>
+      <span class="legend-item"><span class="legend-dash" style="border-color:#22c55e;"></span>12m target</span>
+      <span class="legend-item"><span class="legend-dash" style="border-color:#60a5fa;"></span>24m target</span>
+    </div>
+    <div class="chart-wrap"><canvas id="priceChart" role="img" aria-label="Price history chart for ${active.name}"></canvas></div>
+    <div class="events-grid">
+      ${active.events.map(e=>`
+        <div class="event-box">
+          <div class="event-date">${e.d}</div>
+          <div class="event-label">${e.l}</div>
+          <div class="event-delta" style="color:${e.pos?'#22c55e':'#f87171'};">${e.v}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderCatalysts() {
+  const c = active;
+  return `<div class="two-col">
+    <div>
+      <div class="section-label" style="color:#22c55e;">Bullish catalysts</div>
+      ${c.catalysts.map(t=>`<div class="bullet-item">
+        <div class="bullet-icon" style="background:rgba(34,197,94,0.12);color:#22c55e;">✓</div>
+        <p class="bullet-text">${t}</p>
+      </div>`).join('')}
+    </div>
+    <div>
+      <div class="section-label" style="color:#f87171;">Risk factors</div>
+      ${c.risks.map(t=>`<div class="bullet-item">
+        <div class="bullet-icon" style="background:rgba(248,113,113,0.12);color:#f87171;">!</div>
+        <p class="bullet-text">${t}</p>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderCompare() {
+  document.getElementById('compareGrid').innerHTML = cards.map(c=>`
+    <div class="compare-card${c.id===active.id?' selected':''}" onclick="switchCard('${c.id}')">
+      <div class="compare-card-header">
+        <div class="compare-name">${c.name}</div>
+        ${pill(c.verdict, c.verdictBg, c.verdictColor)}
+      </div>
+      <div class="compare-set">${c.setShort}</div>
+      ${scoreBar(c.score, scoreColor(c.score))}
+      <div class="compare-bottom">
+        <div><div class="compare-stat-label">ENTRY</div><div class="compare-stat-val" style="color:#f59e0b;">${c.price}</div></div>
+        <div style="text-align:right;"><div class="compare-stat-label">UPSIDE</div><div class="compare-stat-val" style="color:#22c55e;">${c.upside}</div></div>
+      </div>
+    </div>`).join('');
+}
+
+function buildChart() {
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const canvas = document.getElementById('priceChart');
+  if (!canvas) return;
+  const c = active;
+  const labels = [...c.history.map(h=>h.x), 'Apr 27*', 'Apr 28*'];
+  const actual = [...c.history.map(h=>h.y), null, null];
+  const t12data = [...c.history.map((_,i)=>i===c.history.length-1?c.t12:null), c.t12, null];
+  const t24data = [...c.history.map((_,i)=>i===c.history.length-1?c.t24:null), null, c.t24];
+
+  chartInst = new Chart(canvas, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'Price',data:actual,borderColor:'#f59e0b',borderWidth:2,pointRadius:3,pointBackgroundColor:'#f59e0b',spanGaps:false,tension:0.3,fill:false},
+        {label:'12m target',data:t12data,borderColor:'#22c55e',borderWidth:2,borderDash:[6,4],pointRadius:5,pointBackgroundColor:'#22c55e',spanGaps:true,fill:false},
+        {label:'24m target',data:t24data,borderColor:'#60a5fa',borderWidth:2,borderDash:[6,4],pointRadius:5,pointBackgroundColor:'#60a5fa',spanGaps:true,fill:false},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'£'+ctx.parsed.y.toFixed(2)},backgroundColor:'#0f0f1a',borderColor:'#2a2a3e',borderWidth:1,titleColor:'#888',bodyColor:'#fff'}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:10},color:'#555',maxRotation:40,autoSkip:true,maxTicksLimit:8}},
+        y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:10},color:'#555',callback:v=>'£'+v},beginAtZero:false}
+      }
+    }
+  });
+}
+
+function renderMain() {
+  const panel = document.getElementById('mainPanel');
+  let content = '';
+  if (innerTab==='overview') content = renderOverview();
+  else if (innerTab==='price history') content = renderPriceHistory();
+  else content = renderCatalysts();
+  panel.innerHTML = renderHero() + renderInnerTabs() + content;
+  if (innerTab==='price history') setTimeout(buildChart,50);
+  renderCompare();
+}
+
+function switchCard(id) {
+  active = cards.find(c=>c.id===id);
+  innerTab = 'overview';
+  renderTabs();
+  renderMain();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function switchInner(t) {
+  innerTab = t;
+  renderMain();
+  renderTabs();
+}
+
+renderTabs();
+renderMain();
+</script>
+</body>
+</html>
