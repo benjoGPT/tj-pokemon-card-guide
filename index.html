@@ -384,32 +384,32 @@
     border: 1px solid var(--border2);
     border-top: none;
     border-radius: 0 10px 10px 10px;
-    padding: 18px 16px;
-    margin: 0 16px 16px;
+    padding: 14px 14px;
+    margin: 0 16px 14px;
     transition: opacity 0.22s ease, transform 0.22s ease;
   }
 
   /* ── HERO ───────────────────────────────────────────── */
   .hero {
-    padding-bottom: 16px;
-    margin-bottom: 16px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
     border-bottom: 1px solid var(--border);
   }
   .hero-layout {
     display: flex;
     flex-direction: row-reverse;
-    gap: 20px;
+    gap: 14px;
     align-items: flex-start;
   }
   .hero-img-wrap { flex-shrink: 0; }
   .card-img {
-    width: 160px; display: block;
+    width: 120px; display: block;
     transition: transform 0.3s ease;
     filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
   }
   .card-img:hover { transform: scale(1.05) rotate(1.5deg); filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(245,158,11,0.2)); }
   .card-img-placeholder {
-    width: 160px; height: 224px;
+    width: 120px; height: 168px;
     background: var(--surface2); border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; color: var(--dim);
@@ -417,39 +417,41 @@
   .hero-text { flex: 1; min-width: 0; }
   .hero-top {
     display: flex; align-items: center;
-    gap: 8px; flex-wrap: wrap; margin-bottom: 8px;
+    gap: 8px; flex-wrap: wrap; margin-bottom: 4px;
   }
-  .card-id { font-size: 12px; color: var(--muted); }
-  .hero-name { font-size: clamp(22px, 6vw, 32px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
-  .hero-subtitle { font-size: 13px; color: var(--muted); margin-top: 3px; }
+  .card-id { font-size: 11px; color: var(--muted); }
+  .hero-name { font-size: clamp(18px, 5vw, 26px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; }
+  .hero-subtitle { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
   .stats-row {
-    display: grid; grid-template-columns: repeat(3,1fr);
-    gap: 8px; margin-top: 14px;
+    display: grid; grid-template-columns: repeat(2,1fr);
+    gap: 6px; margin-top: 8px;
   }
+  @media(min-width:480px){ .stats-row { grid-template-columns: repeat(4,1fr); } }
   .stat-box {
-    background: var(--surface2); border-radius: 8px; padding: 10px 12px;
+    background: var(--surface2); border-radius: 8px; padding: 8px 10px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   .stat-box:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
-  .stat-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 3px; }
-  .stat-val { font-size: clamp(14px, 4vw, 18px); font-weight: 800; }
+  .stat-label { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 2px; }
+  .stat-val { font-size: clamp(12px, 3.5vw, 15px); font-weight: 800; }
+  .stat-live-src { font-size: 9px; color: var(--green); margin-top: 1px; font-weight: 600; }
 
-  .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 7px; }
   @media(min-width:500px){ .meta-row { grid-template-columns: repeat(4,1fr); } }
-  .meta-box { background: var(--surface2); border-radius: 8px; padding: 8px 10px; }
-  .meta-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
-  .meta-val { font-size: 12px; font-weight: 600; }
+  .meta-box { background: var(--surface2); border-radius: 7px; padding: 6px 8px; }
+  .meta-label { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 1px; }
+  .meta-val { font-size: 11px; font-weight: 600; }
 
-  .score-wrap { margin-top: 12px; }
-  .score-header { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+  .score-wrap { margin-top: 8px; }
+  .score-header { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
   .score-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
   .score-fill { height: 100%; border-radius: 3px; width: 0; transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
 
   @media(max-width:600px) {
     .hero-layout { flex-direction: column; align-items: center; }
-    .card-img { width: 140px; }
-    .card-img-placeholder { width: 140px; height: 196px; }
+    .card-img { width: 110px; }
+    .card-img-placeholder { width: 110px; height: 154px; }
     .hero-text { width: 100%; }
   }
   @media(max-width:360px) {
@@ -459,7 +461,7 @@
 
   /* ── INNER TABS ─────────────────────────────────────── */
   .inner-tabs {
-    display: flex; gap: 4px; margin-bottom: 16px;
+    display: flex; gap: 4px; margin-bottom: 12px;
     overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
   }
   .inner-tabs::-webkit-scrollbar { display: none; }
@@ -474,7 +476,7 @@
   .inner-tab:hover:not(.active) { background: rgba(255,255,255,0.04); color: var(--text); }
 
   /* ── OVERVIEW ───────────────────────────────────────── */
-  .two-col { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  .two-col { display: grid; grid-template-columns: 1fr; gap: 12px; }
   @media(min-width:600px){ .two-col { grid-template-columns: 1fr 1fr; } }
   .section-label { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 10px; }
   .summary-text { font-size: 13px; color: var(--muted); line-height: 1.7; }
@@ -491,7 +493,7 @@
   .target-val { font-size: 16px; font-weight: 800; margin-top: 2px; }
 
   /* ── CHART (in Overview) ────────────────────────────── */
-  .chart-section { margin-top: 22px; }
+  .chart-section { margin-top: 16px; }
   .chart-section-label {
     font-size: 11px; color: var(--dim); text-transform: uppercase;
     letter-spacing: 1px; font-weight: 600; margin-bottom: 10px;
@@ -1182,6 +1184,10 @@ function renderTabs(){
 function renderHero(){
   const c = active;
   const sc = scoreColor(c.score);
+  const live = getLivePrice(c.id);
+  const liveStatHtml = live
+    ? `<div class="stat-val" style="color:var(--green);">£${live.gbp.toFixed(2)}</div><div class="stat-live-src">${live.source.split('·')[0].trim()}</div>`
+    : `<div class="stat-val" style="color:var(--muted);">${c.price}</div><div class="stat-live-src" style="color:var(--dim);">Est.</div>`;
   return `
     <div class="hero">
       <div class="hero-layout">
@@ -1195,6 +1201,7 @@ function renderHero(){
           <div class="hero-subtitle">${c.subtitle} · ${c.set}</div>
           <div class="stats-row">
             <div class="stat-box"><div class="stat-label">Entry range</div><div class="stat-val" style="color:#f59e0b;">${c.price}</div></div>
+            <div class="stat-box"><div class="stat-label">Current price</div>${liveStatHtml}</div>
             <div class="stat-box"><div class="stat-label">PSA 10 est.</div><div class="stat-val" style="color:#60a5fa;">${c.psa10}</div></div>
             <div class="stat-box"><div class="stat-label">Upside</div><div class="stat-val" style="color:#22c55e;">${c.upside}</div></div>
           </div>
@@ -1307,26 +1314,6 @@ function getLivePrice(id) {
 function renderLivePrices(){
   const c = active;
   const p = cardPrices[c.id];
-  const live = getLivePrice(c.id);
-
-  // ── Current price banner ──
-  const bannerHtml = live
-    ? `<div class="current-price-banner">
-        <div class="current-price-left">
-          <div class="current-price-label">Current price · ungraded NM</div>
-          <div class="current-price-value">£${live.gbp.toFixed(2)}</div>
-          <div class="current-price-sub">${live.raw} · ${live.source}</div>
-        </div>
-        <div class="current-price-source">Live</div>
-      </div>`
-    : `<div class="current-price-banner" style="border-color:var(--border);">
-        <div class="current-price-left">
-          <div class="current-price-label">Current price · ungraded NM</div>
-          <div class="current-price-value" style="font-size:18px;color:var(--muted);">${c.price}</div>
-          <div class="current-price-sub">${p===undefined?'Live data loading…':'Live data unavailable — showing estimate'}</div>
-        </div>
-        <div class="current-price-source" style="background:rgba(255,255,255,0.06);color:var(--muted);">Est.</div>
-      </div>`;
 
   // ── Cardmarket detail ──
   let cmHtml = `<div class="price-loading">${p===undefined?'Loading…':'Not available'}</div>`;
@@ -1369,8 +1356,7 @@ function renderLivePrices(){
 
   return `
     <div class="live-prices">
-      <div class="live-prices-header">Live market data · Pokémon TCG API · ungraded NM</div>
-      ${bannerHtml}
+      <div class="live-prices-header">Market data · Pokémon TCG API · ungraded NM</div>
       <div class="price-sources">
         <div class="price-source">
           <div class="price-source-header">
