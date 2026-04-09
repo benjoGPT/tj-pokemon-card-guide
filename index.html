@@ -528,6 +528,26 @@
   /* ── LIVE PRICES ────────────────────────────────────── */
   .live-prices { margin-top: 20px; }
   .live-prices-header { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 10px; }
+
+  /* Current price banner */
+  .current-price-banner {
+    background: linear-gradient(135deg, rgba(245,158,11,0.1) 0%, rgba(245,158,11,0.04) 100%);
+    border: 1px solid rgba(245,158,11,0.25);
+    border-radius: 10px; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .current-price-left { min-width: 0; }
+  .current-price-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; }
+  .current-price-value { font-size: 28px; font-weight: 900; color: var(--gold); line-height: 1; letter-spacing: -0.5px; }
+  .current-price-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .current-price-source {
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 6px; background: rgba(245,158,11,0.15);
+    color: var(--gold); white-space: nowrap; flex-shrink: 0;
+  }
+
+  /* Price breakdown table */
   .price-sources { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   @media(max-width:500px){ .price-sources { grid-template-columns: 1fr; } }
   .price-source {
@@ -539,6 +559,8 @@
   .price-source-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
   .price-source-name { font-size: 13px; font-weight: 700; }
   .price-updated { font-size: 10px; color: var(--dim); font-weight: 400; }
+  .price-row-gbp { font-size: 13px; font-weight: 800; }
+  .price-row-native { font-size: 10px; color: var(--dim); font-weight: 400; }
   .price-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
   .price-row:last-child { border-bottom: none; }
   .price-row-label { color: var(--muted); }
@@ -1266,53 +1288,101 @@ function buildChart(){
   });
 }
 
+// ── LIVE PRICE HELPER ────────────────────────────────────
+// Returns best estimate of current ungraded NM price in GBP
+function getLivePrice(id) {
+  const p = cardPrices[id];
+  if (!p) return null;
+  const cp = p.cm?.prices;
+  // Priority: CM avg1 (most recent sales) → CM trend → TCP market
+  if (cp?.avg1 && cp.avg1 > 0)         return { gbp: cp.avg1 * EUR_GBP,    raw: fmtEur(cp.avg1),       source: 'Cardmarket · 1-day avg' };
+  if (cp?.trendPrice && cp.trendPrice > 0) return { gbp: cp.trendPrice * EUR_GBP, raw: fmtEur(cp.trendPrice), source: 'Cardmarket · trend price' };
+  if (cp?.avg7 && cp.avg7 > 0)         return { gbp: cp.avg7 * EUR_GBP,    raw: fmtEur(cp.avg7),       source: 'Cardmarket · 7-day avg' };
+  const tp = p.tcp?.prices ? Object.values(p.tcp.prices)[0] : null;
+  if (tp?.market && tp.market > 0)     return { gbp: tp.market * USD_GBP,  raw: fmtUsd(tp.market),     source: 'TCGPlayer · market price' };
+  return null;
+}
+
 // ── LIVE PRICES ──────────────────────────────────────────
 function renderLivePrices(){
   const c = active;
   const p = cardPrices[c.id];
-  const cmUpdated = p?.cm ? p.cm.updatedAt.replace(/\//g,'-') : null;
-  const tcpUpdated = p?.tcp ? p.tcp.updatedAt.replace(/\//g,'-') : null;
+  const live = getLivePrice(c.id);
 
-  let cmHtml = `<div class="price-loading">${p===undefined?'Fetching…':'Not available'}</div>`;
-  let tcpHtml = `<div class="price-loading">${p===undefined?'Fetching…':'Not available'}</div>`;
+  // ── Current price banner ──
+  const bannerHtml = live
+    ? `<div class="current-price-banner">
+        <div class="current-price-left">
+          <div class="current-price-label">Current price · ungraded NM</div>
+          <div class="current-price-value">£${live.gbp.toFixed(2)}</div>
+          <div class="current-price-sub">${live.raw} · ${live.source}</div>
+        </div>
+        <div class="current-price-source">Live</div>
+      </div>`
+    : `<div class="current-price-banner" style="border-color:var(--border);">
+        <div class="current-price-left">
+          <div class="current-price-label">Current price · ungraded NM</div>
+          <div class="current-price-value" style="font-size:18px;color:var(--muted);">${c.price}</div>
+          <div class="current-price-sub">${p===undefined?'Live data loading…':'Live data unavailable — showing estimate'}</div>
+        </div>
+        <div class="current-price-source" style="background:rgba(255,255,255,0.06);color:var(--muted);">Est.</div>
+      </div>`;
 
+  // ── Cardmarket detail ──
+  let cmHtml = `<div class="price-loading">${p===undefined?'Loading…':'Not available'}</div>`;
   if (p?.cm) {
     const cp = p.cm.prices;
-    cmHtml = `
-      <div class="price-row"><span class="price-row-label">30-day avg</span><span class="price-row-val" style="color:var(--gold);">${fmtEur(cp.avg30)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg30)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">7-day avg</span><span class="price-row-val">${fmtEur(cp.avg7)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg7)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">1-day avg</span><span class="price-row-val">${fmtEur(cp.avg1)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${eurToGbp(cp.avg1)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">Trend</span><span class="price-row-val">${fmtEur(cp.trendPrice)}</span></div>
-      <div class="price-row"><span class="price-row-label">Low (EX+)</span><span class="price-row-val">${fmtEur(cp.lowPriceExPlus)}</span></div>
-      <div class="price-currency-note">EUR · GBP approx ×0.855</div>
-      ${p.cm.url?`<a class="price-link" style="color:var(--gold);" href="${p.cm.url}" target="_blank" rel="noopener noreferrer">View on Cardmarket →</a>`:''}`;
+    const rows = [
+      ['Last 1-day avg', cp.avg1,          v => `<span class="price-row-gbp" style="color:var(--gold);">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
+      ['7-day avg',      cp.avg7,          v => `<span class="price-row-gbp">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
+      ['30-day avg',     cp.avg30,         v => `<span class="price-row-gbp">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
+      ['Trend price',    cp.trendPrice,    v => `<span class="price-row-gbp">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
+      ['Low (EX+)',      cp.lowPriceExPlus,v => `<span class="price-row-gbp">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
+    ].filter(([,v])=>v>0);
+    cmHtml = rows.map(([label,,fmt],i)=>`
+      <div class="price-row"${i===0?' style="border-top:none;"':''}>
+        <span class="price-row-label">${label}</span>
+        <span class="price-row-val">${fmt(rows[i][1])}</span>
+      </div>`).join('')
+      + (p.cm.url ? `<a class="price-link" style="color:var(--gold);" href="${p.cm.url}" target="_blank" rel="noopener noreferrer">View listings →</a>` : '');
   }
+
+  // ── TCGPlayer detail ──
+  let tcpHtml = `<div class="price-loading">${p===undefined?'Loading…':'Not available'}</div>`;
   if (p?.tcp) {
-    const tpData = Object.values(p.tcp.prices)[0]||{};
-    tcpHtml = `
-      <div class="price-row"><span class="price-row-label">Market price</span><span class="price-row-val" style="color:var(--green);">${fmtUsd(tpData.market)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.market)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">Mid price</span><span class="price-row-val">${fmtUsd(tpData.mid)} <span style="font-size:10px;color:var(--dim);font-weight:400;">(~${usdToGbp(tpData.mid)})</span></span></div>
-      <div class="price-row"><span class="price-row-label">Low</span><span class="price-row-val">${fmtUsd(tpData.low)}</span></div>
-      <div class="price-row"><span class="price-row-label">High</span><span class="price-row-val">${fmtUsd(tpData.high)}</span></div>
-      <div class="price-currency-note">USD · GBP approx ×0.797</div>
-      ${p.tcp.url?`<a class="price-link" style="color:var(--green);" href="${p.tcp.url}" target="_blank" rel="noopener noreferrer">View on TCGPlayer →</a>`:''}`;
+    const tp = Object.values(p.tcp.prices)[0]||{};
+    const rows = [
+      ['Market price', tp.market, v=>`<span class="price-row-gbp" style="color:var(--green);">£${(v*USD_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtUsd(v)}</span>`],
+      ['Low',          tp.low,    v=>`<span class="price-row-gbp">£${(v*USD_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtUsd(v)}</span>`],
+      ['High',         tp.high,   v=>`<span class="price-row-gbp">£${(v*USD_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtUsd(v)}</span>`],
+    ].filter(([,v])=>v>0);
+    tcpHtml = rows.map(([label,,fmt],i)=>`
+      <div class="price-row"${i===0?' style="border-top:none;"':''}>
+        <span class="price-row-label">${label}</span>
+        <span class="price-row-val">${fmt(rows[i][1])}</span>
+      </div>`).join('')
+      + (p.tcp.url ? `<a class="price-link" style="color:var(--green);" href="${p.tcp.url}" target="_blank" rel="noopener noreferrer">View listings →</a>` : '');
   }
+
+  const cmUpdated = p?.cm?.updatedAt?.replace(/\//g,'-') || '';
+  const tcpUpdated = p?.tcp?.updatedAt?.replace(/\//g,'-') || '';
 
   return `
     <div class="live-prices">
-      <div class="live-prices-header">Live market prices — Pokémon TCG API</div>
+      <div class="live-prices-header">Live market data · Pokémon TCG API · ungraded NM</div>
+      ${bannerHtml}
       <div class="price-sources">
         <div class="price-source">
           <div class="price-source-header">
             <span class="price-source-name">Cardmarket</span>
-            ${cmUpdated?`<span class="price-updated">as of ${cmUpdated}</span>`:''}
+            ${cmUpdated?`<span class="price-updated">${cmUpdated}</span>`:''}
           </div>
           ${cmHtml}
         </div>
         <div class="price-source">
           <div class="price-source-header">
             <span class="price-source-name">TCGPlayer</span>
-            ${tcpUpdated?`<span class="price-updated">as of ${tcpUpdated}</span>`:''}
+            ${tcpUpdated?`<span class="price-updated">${tcpUpdated}</span>`:''}
           </div>
           ${tcpHtml}
         </div>
