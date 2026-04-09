@@ -96,6 +96,48 @@
     0%, 100% { opacity: 0; transform: scale(0) translateY(0); }
     40%, 60%  { opacity: 1; transform: scale(1) translateY(-5px); }
   }
+  @keyframes statPop {
+    0%   { opacity: 0; transform: translateY(14px) scale(0.88); }
+    60%  { transform: translateY(-3px) scale(1.04); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes glitchTitle {
+    0%, 86%, 100% { transform: skewX(0deg); filter: none; }
+    87% { transform: skewX(-10deg); filter: hue-rotate(80deg) brightness(1.4); }
+    88% { transform: skewX(10deg); filter: hue-rotate(160deg) brightness(1.2); }
+    89% { transform: skewX(-4deg); filter: hue-rotate(0deg); }
+  }
+  @keyframes particleRise {
+    0%   { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-80px) translateX(var(--pdx,0px)) scale(0.2); }
+  }
+  @keyframes ringPulse {
+    0%   { transform: translate(-50%,-50%) scale(0.6); opacity: 0.7; }
+    100% { transform: translate(-50%,-50%) scale(2.5); opacity: 0; }
+  }
+  @keyframes holoShift {
+    0%   { background-position: 0% 0%; opacity: 0.12; }
+    33%  { background-position: 100% 0%; opacity: 0.28; }
+    66%  { background-position: 100% 100%; opacity: 0.18; }
+    100% { background-position: 0% 0%; opacity: 0.12; }
+  }
+  @keyframes scoreGlow {
+    0%, 100% { filter: brightness(1); }
+    50%       { filter: brightness(1.5) drop-shadow(0 0 6px currentColor); }
+  }
+  @keyframes cotdScanline {
+    0%   { top: -10%; opacity: 0.7; }
+    40%  { opacity: 0.5; }
+    100% { top: 110%; opacity: 0; }
+  }
+  @keyframes borderBeam {
+    0%   { transform: translate(-50%,-50%) rotate(0deg); }
+    100% { transform: translate(-50%,-50%) rotate(360deg); }
+  }
+  @keyframes fadeScale {
+    from { opacity: 0; transform: scale(0.94) translateY(10px); filter: blur(4px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+  }
 
   /* ── HEADER ─────────────────────────────────────────── */
   .header {
@@ -141,12 +183,12 @@
     animation: slideRight 0.5s ease 0.1s both;
   }
   .header h1 span {
-    background: linear-gradient(90deg, #f59e0b 0%, #fcd34d 25%, #fffbeb 50%, #fcd34d 75%, #f59e0b 100%);
+    background: linear-gradient(90deg, #f59e0b 0%, #fcd34d 20%, #fffbeb 40%, #fcd34d 60%, #f59e0b 80%, #fcd34d 100%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: shimmer 3s linear infinite, float 4s ease-in-out infinite;
+    animation: shimmer 2.5s linear infinite, float 4s ease-in-out infinite, glitchTitle 8s ease-in-out infinite;
     display: inline-block;
   }
   .header-sub {
@@ -212,26 +254,55 @@
     border-radius: 16px;
     padding: 2px;
     overflow: hidden;
-    animation: cotdSlide 0.5s ease 0.3s both, cotdGlowPulse 3s ease-in-out 0.8s infinite;
+    animation: cotdSlide 0.5s ease 0.3s both, cotdGlowPulse 2.5s ease-in-out 0.8s infinite;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    transform-style: preserve-3d;
   }
   .cotd-outer::before {
     content: '';
     position: absolute;
     top: 50%; left: 50%;
     width: 300%; aspect-ratio: 1;
-    background: conic-gradient(from 0deg, #f59e0b 0%, #f87171 16%, #a78bfa 33%, #60a5fa 50%, #22c55e 66%, #fcd34d 83%, #f59e0b 100%);
-    animation: rainbowRot 4s linear infinite;
+    background: conic-gradient(from 0deg, #f59e0b 0%, #f87171 12%, #a78bfa 25%, #60a5fa 37%, #22c55e 50%, #fcd34d 62%, #f59e0b 75%, #ff6b9d 87%, #f59e0b 100%);
+    animation: rainbowRot 1.8s linear infinite;
     z-index: 0;
+  }
+  .cotd-scan {
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.6) 50%, transparent 100%);
+    z-index: 5;
+    pointer-events: none;
+    animation: cotdScanline 3.5s ease-in-out infinite;
   }
   .cotd-inner {
     position: relative;
     z-index: 1;
-    background: linear-gradient(135deg, #0c0c1e 0%, #111128 100%);
+    background: linear-gradient(135deg, #0a0a1e 0%, #0f0f2a 50%, #0c1020 100%);
     border-radius: 14px;
     padding: 14px 16px;
     display: flex;
     align-items: center;
     gap: 14px;
+    overflow: hidden;
+  }
+  .cotd-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg,
+      transparent 20%,
+      rgba(167,139,250,0.04) 35%,
+      rgba(96,165,250,0.06) 50%,
+      rgba(34,197,94,0.04) 65%,
+      transparent 80%);
+    background-size: 300% 300%;
+    animation: holoShift 4s ease infinite;
+    pointer-events: none;
+    border-radius: 14px;
+    z-index: 0;
   }
   .cotd-img-wrap {
     position: relative;
@@ -239,37 +310,64 @@
     width: 60px;
   }
   .cotd-img {
-    width: 60px;
+    width: 68px;
     display: block;
     border-radius: 6px;
     position: relative;
-    z-index: 1;
-    animation: cotdImgFloat 4s ease-in-out infinite;
-    filter: drop-shadow(0 6px 16px rgba(167,139,250,0.5));
+    z-index: 2;
+    animation: cotdImgFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 8px 20px rgba(167,139,250,0.65)) drop-shadow(0 0 8px rgba(245,158,11,0.3));
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+  .cotd-img:hover {
+    filter: drop-shadow(0 12px 32px rgba(167,139,250,0.8)) drop-shadow(0 0 20px rgba(245,158,11,0.5));
   }
   .cotd-img-placeholder {
-    width: 60px; height: 84px;
-    background: var(--surface2);
+    width: 68px; height: 95px;
+    background: linear-gradient(135deg, var(--surface2), #1a1a30);
     border-radius: 6px;
-    animation: cotdImgFloat 4s ease-in-out infinite;
+    animation: cotdImgFloat 3s ease-in-out infinite;
   }
   .cotd-img-glow {
     position: absolute;
-    inset: -12px;
-    background: radial-gradient(ellipse at center, rgba(167,139,250,0.55) 0%, transparent 70%);
-    filter: blur(10px);
+    inset: -18px;
+    background: radial-gradient(ellipse at center, rgba(167,139,250,0.7) 0%, rgba(245,158,11,0.15) 50%, transparent 70%);
+    filter: blur(14px);
     z-index: 0;
-    animation: cotdGlowPulse 3s ease-in-out infinite;
+    animation: cotdGlowPulse 2s ease-in-out infinite;
   }
   .cotd-img-shimmer {
     position: absolute;
     inset: 0;
-    z-index: 2;
+    z-index: 3;
     border-radius: 6px;
-    background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.22) 50%, transparent 65%);
+    background: linear-gradient(105deg,
+      transparent 20%,
+      rgba(255,255,255,0.35) 40%,
+      rgba(167,139,250,0.2) 50%,
+      rgba(255,255,255,0.35) 60%,
+      transparent 80%);
     background-size: 200% 100%;
-    animation: cotdShimmer 2.5s ease-in-out infinite;
+    animation: cotdShimmer 1.8s ease-in-out infinite;
     pointer-events: none;
+  }
+  .cotd-holo {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    border-radius: 6px;
+    background: linear-gradient(125deg,
+      rgba(255,0,128,0) 0%,
+      rgba(255,165,0,0.08) 20%,
+      rgba(255,255,0,0.08) 35%,
+      rgba(0,255,128,0.08) 50%,
+      rgba(0,200,255,0.08) 65%,
+      rgba(128,0,255,0.08) 80%,
+      rgba(255,0,128,0) 100%);
+    background-size: 300% 300%;
+    animation: holoShift 3s ease infinite;
+    pointer-events: none;
+    mix-blend-mode: screen;
   }
   .spark {
     position: absolute;
@@ -277,12 +375,15 @@
     color: #fcd34d;
     animation: sparkleAnim 2s ease-in-out infinite;
     pointer-events: none;
-    z-index: 3;
+    z-index: 5;
     line-height: 1;
   }
-  .spark-1 { top: -6px; right: -4px; animation-delay: 0s; }
-  .spark-2 { top: 4px; left: -6px; animation-delay: 0.8s; color: var(--purple); font-size: 9px; }
-  .spark-3 { bottom: -4px; right: 0; animation-delay: 1.6s; color: var(--blue); font-size: 9px; }
+  .spark-1 { top: -8px; right: -5px; animation-delay: 0s; }
+  .spark-2 { top: 4px; left: -8px; animation-delay: 0.55s; color: var(--purple); font-size: 9px; }
+  .spark-3 { bottom: -6px; right: -2px; animation-delay: 1.1s; color: var(--blue); font-size: 9px; }
+  .spark-4 { bottom: 8px; left: -5px; animation-delay: 1.65s; color: var(--green); font-size: 8px; }
+  .spark-5 { top: -4px; left: 18px; animation-delay: 0.3s; color: #f87171; font-size: 8px; }
+  .spark-6 { bottom: -2px; left: 10px; animation-delay: 1.9s; font-size: 10px; }
   .cotd-content { flex: 1; min-width: 0; }
   .cotd-badge {
     font-size: 9px;
@@ -336,7 +437,10 @@
   }
   @media(prefers-reduced-motion: reduce) {
     .cotd-outer::before, .cotd-img, .cotd-img-placeholder,
-    .cotd-img-shimmer, .cotd-img-glow, .spark { animation: none; }
+    .cotd-img-shimmer, .cotd-img-glow, .cotd-holo, .cotd-scan,
+    .spark, .stat-box, .card-img-holo, .score-fill,
+    .header h1 span { animation: none; }
+    .stat-box { opacity: 1; }
   }
 
   /* ── CARD TABS ──────────────────────────────────────── */
@@ -386,7 +490,7 @@
     border-radius: 0 10px 10px 10px;
     padding: 14px 14px;
     margin: 0 16px 14px;
-    transition: opacity 0.22s ease, transform 0.22s ease;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s ease;
   }
 
   /* ── HERO ───────────────────────────────────────────── */
@@ -401,16 +505,50 @@
     gap: 14px;
     align-items: flex-start;
   }
-  .hero-img-wrap { flex-shrink: 0; }
+  .hero-img-wrap {
+    flex-shrink: 0;
+    perspective: 800px;
+    cursor: pointer;
+  }
+  .hero-img-tilt {
+    position: relative;
+    transition: transform 0.1s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .hero-img-tilt:hover .card-img {
+    filter: drop-shadow(0 16px 40px rgba(0,0,0,0.7)) drop-shadow(0 0 30px rgba(245,158,11,0.35));
+  }
   .card-img {
     width: 120px; display: block;
-    transition: transform 0.3s ease;
-    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+    transition: filter 0.3s ease;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6)) drop-shadow(0 0 12px rgba(167,139,250,0.2));
+    position: relative; z-index: 1;
   }
-  .card-img:hover { transform: scale(1.05) rotate(1.5deg); filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(245,158,11,0.2)); }
+  .card-img-holo {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    z-index: 2;
+    pointer-events: none;
+    background: linear-gradient(125deg,
+      rgba(255,0,128,0) 0%,
+      rgba(255,165,0,0.1) 20%,
+      rgba(255,255,0,0.1) 35%,
+      rgba(0,255,128,0.1) 50%,
+      rgba(0,200,255,0.1) 65%,
+      rgba(128,0,255,0.1) 80%,
+      rgba(255,0,128,0) 100%);
+    background-size: 300% 300%;
+    animation: holoShift 3.5s ease infinite;
+    mix-blend-mode: screen;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .hero-img-tilt:hover .card-img-holo { opacity: 1; }
   .card-img-placeholder {
     width: 120px; height: 168px;
-    background: var(--surface2); border-radius: 10px;
+    background: linear-gradient(135deg, var(--surface2), #1a1a30); border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; color: var(--dim);
   }
@@ -430,9 +568,29 @@
   @media(min-width:480px){ .stats-row { grid-template-columns: repeat(4,1fr); } }
   .stat-box {
     background: var(--surface2); border-radius: 8px; padding: 8px 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, border-color 0.25s ease;
+    border: 1px solid transparent;
+    opacity: 0;
+    animation: statPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+    position: relative; overflow: hidden;
   }
-  .stat-box:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
+  .stat-box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+    pointer-events: none;
+  }
+  .stat-box:nth-child(1) { animation-delay: 0.15s; }
+  .stat-box:nth-child(2) { animation-delay: 0.25s; }
+  .stat-box:nth-child(3) { animation-delay: 0.35s; }
+  .stat-box:nth-child(4) { animation-delay: 0.45s; }
+  .stat-box:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.1);
+  }
   .stat-label { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 2px; }
   .stat-val { font-size: clamp(12px, 3.5vw, 15px); font-weight: 800; }
   .stat-live-src { font-size: 9px; color: var(--green); margin-top: 1px; font-weight: 600; }
@@ -445,8 +603,17 @@
 
   .score-wrap { margin-top: 8px; }
   .score-header { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
-  .score-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
-  .score-fill { height: 100%; border-radius: 3px; width: 0; transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+  .score-track {
+    height: 6px; background: var(--surface2); border-radius: 3px; overflow: visible;
+    position: relative;
+  }
+  .score-fill {
+    height: 100%; border-radius: 3px; width: 0;
+    transition: width 1s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    box-shadow: 0 0 8px currentColor;
+    animation: scoreGlow 2.5s ease-in-out 1.2s infinite;
+  }
 
   @media(max-width:600px) {
     .hero-layout { flex-direction: column; align-items: center; }
@@ -639,16 +806,18 @@
     border-radius: 10px;
     padding: 6px 6px 8px;
     cursor: pointer; background: var(--bg);
-    transition: border-color 0.2s, transform 0.2s ease, box-shadow 0.25s ease;
+    transition: border-color 0.25s, transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease;
     -webkit-tap-highlight-color: transparent;
-    animation: fadeUp 0.4s ease both;
+    animation: statPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
     display: flex; flex-direction: column; align-items: center; gap: 5px;
     text-align: center;
+    perspective: 600px;
+    transform-style: preserve-3d;
   }
   .compare-card:hover {
-    border-color: var(--border2);
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+    border-color: rgba(167,139,250,0.5);
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 14px 36px rgba(0,0,0,0.6), 0 0 20px rgba(167,139,250,0.15);
     z-index: 2; position: relative;
   }
   .compare-card.selected {
@@ -1125,16 +1294,87 @@ function animateBars(){
       el.style.width = target + '%';
     });
   });
+  // Counter animation for stat values
+  setTimeout(() => {
+    document.querySelectorAll('.stat-val[data-count]').forEach(el => {
+      const target = parseFloat(el.getAttribute('data-count'));
+      const prefix = el.getAttribute('data-prefix') || '';
+      const suffix = el.getAttribute('data-suffix') || '';
+      const dur = 600, steps = 24;
+      let step = 0;
+      const interval = setInterval(() => {
+        step++;
+        const ease = step/steps;
+        const val = target * (ease < 0.5 ? 2*ease*ease : -1+(4-2*ease)*ease);
+        el.textContent = prefix + val.toFixed(0) + suffix;
+        if(step >= steps){ el.textContent = prefix + target.toFixed(0) + suffix; clearInterval(interval); }
+      }, dur/steps);
+    });
+  }, 200);
 }
 
-// Fade-in panel on switch
+// 3D tilt effect
+function addTilt(el, intensity, cardEl){
+  if(!el) return;
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+    const y = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+    const tilt = cardEl || el;
+    tilt.style.transition = 'transform 0.08s ease';
+    tilt.style.transform = `perspective(700px) rotateX(${-y*intensity}deg) rotateY(${x*intensity}deg) scale(1.04)`;
+  });
+  el.addEventListener('mouseleave', () => {
+    const tilt = cardEl || el;
+    tilt.style.transition = 'transform 0.6s cubic-bezier(0.34,1.56,0.64,1)';
+    tilt.style.transform = '';
+  });
+}
+
+// COTD tilt + particle emitter
+function initCotdTilt(){
+  const outer = document.getElementById('cotdOuter');
+  if(!outer) return;
+  addTilt(outer, 8);
+
+  // Particle emitter
+  const inner = outer.querySelector('.cotd-inner');
+  if(!inner) return;
+  let ptimer = setInterval(() => {
+    if(!document.body.contains(outer)){ clearInterval(ptimer); return; }
+    const p = document.createElement('div');
+    const colors = ['#f59e0b','#a78bfa','#60a5fa','#22c55e','#f87171','#fcd34d'];
+    const x = Math.random() * 100;
+    const dx = (Math.random() - 0.5) * 30;
+    p.style.cssText = `
+      position:absolute; bottom:10px; left:${x}%; width:4px; height:4px;
+      border-radius:50%; background:${colors[Math.floor(Math.random()*colors.length)]};
+      pointer-events:none; z-index:6; --pdx:${dx}px;
+      animation: particleRise ${0.8+Math.random()*0.8}s ease forwards;
+    `;
+    inner.appendChild(p);
+    setTimeout(() => p.remove(), 1600);
+  }, 400);
+}
+
+// Hero card tilt
+function initHeroTilt(){
+  const wrap = document.getElementById('heroImgWrap');
+  const tilt = document.getElementById('heroImgTilt');
+  if(!wrap || !tilt) return;
+  addTilt(wrap, 14, tilt);
+}
+
+// Fade-in panel on switch (blur + scale)
 function animatePanel(){
   const p = document.getElementById('mainPanel');
   p.style.opacity = '0';
-  p.style.transform = 'translateY(8px)';
+  p.style.transform = 'translateY(12px) scale(0.98)';
+  p.style.filter = 'blur(4px)';
   requestAnimationFrame(() => requestAnimationFrame(() => {
     p.style.opacity = '1';
     p.style.transform = 'none';
+    p.style.filter = 'none';
   }));
 }
 
@@ -1146,17 +1386,22 @@ function renderCardOfDay(){
     ? `<img class="cotd-img" src="${cardImages[cotdCard.id]}" alt="${cotdCard.name}" onerror="this.style.display='none'">`
     : `<div class="cotd-img-placeholder"></div>`;
   document.getElementById('cotdSection').innerHTML = `
-    <div class="cotd-outer">
+    <div class="cotd-outer" id="cotdOuter">
+      <div class="cotd-scan"></div>
       <div class="cotd-inner">
         <div class="cotd-img-wrap">
           <div class="cotd-img-glow"></div>
           ${imgHtml}
           <div class="cotd-img-shimmer"></div>
+          <div class="cotd-holo"></div>
           <span class="spark spark-1">✦</span>
           <span class="spark spark-2">✦</span>
           <span class="spark spark-3">✦</span>
+          <span class="spark spark-4">✦</span>
+          <span class="spark spark-5">✦</span>
+          <span class="spark spark-6">✦</span>
         </div>
-        <div class="cotd-content">
+        <div class="cotd-content" style="position:relative;z-index:1;">
           <div class="cotd-badge">★ Card of the Day</div>
           <div class="cotd-name">${cotdCard.name}</div>
           <div class="cotd-meta">${cotdCard.setShort} · ${cotdCard.number}</div>
@@ -1168,6 +1413,7 @@ function renderCardOfDay(){
         </div>
       </div>
     </div>`;
+  initCotdTilt();
 }
 
 // ── TABS ─────────────────────────────────────────────────
@@ -1191,7 +1437,12 @@ function renderHero(){
   return `
     <div class="hero">
       <div class="hero-layout">
-        <div class="hero-img-wrap">${cardImgHtml(c.id,'card-img','card-img-placeholder')}</div>
+        <div class="hero-img-wrap" id="heroImgWrap">
+          <div class="hero-img-tilt" id="heroImgTilt">
+            ${cardImgHtml(c.id,'card-img','card-img-placeholder')}
+            <div class="card-img-holo"></div>
+          </div>
+        </div>
         <div class="hero-text">
           <div class="hero-top">
             ${pill(c.verdict, c.verdictBg, c.verdictColor)}
@@ -1206,7 +1457,7 @@ function renderHero(){
             <div class="stat-box"><div class="stat-label">Upside</div><div class="stat-val" style="color:#22c55e;">${c.upside}</div></div>
           </div>
           <div class="score-wrap">
-            <div class="score-header"><span>Investment score</span><span>${c.score}/100</span></div>
+            <div class="score-header"><span>Investment score</span><span data-count="${c.score}" data-suffix="/100" style="color:${sc};">0/100</span></div>
             ${scoreBar(c.score, sc, 'heroScore')}
           </div>
           <div class="meta-row">
@@ -1526,6 +1777,7 @@ function renderMain(){
   animatePanel();
   animateBars();
   if (innerTab==='overview') setTimeout(buildChart, 80);
+  setTimeout(initHeroTilt, 50);
 }
 
 function switchCard(id){
