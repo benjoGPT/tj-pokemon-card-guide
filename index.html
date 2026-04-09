@@ -865,50 +865,329 @@
     width: 5px; height: 5px; border-radius: 50%;
     background: var(--dim); animation: pulseDot 3s ease-in-out infinite;
   }
+
+  /* ═══════════════════════════════════════════════════════
+     TWO-PAGE REDESIGN
+     ═══════════════════════════════════════════════════════ */
+
+  /* Page transitions */
+  @keyframes pIn {
+    from { opacity:0; transform:scale(0.97) translateY(10px); filter:blur(3px); }
+    to   { opacity:1; transform:none; filter:none; }
+  }
+  .page { display: none; }
+  .page.p-active { display: block; animation: pIn 0.38s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+  /* ── HOME HEADER ── */
+  .home-hdr {
+    position: sticky; top: 0; z-index: 100;
+    padding: 11px 16px;
+    background: rgba(8,8,16,0.94);
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .home-hdr-left { display: flex; align-items: center; gap: 10px; }
+  .home-logo { font-size: 17px; font-weight: 900; letter-spacing: -0.3px; }
+  .home-logo span {
+    background: linear-gradient(90deg,#f59e0b,#fcd34d,#fffbeb,#fcd34d,#f59e0b);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: shimmer 2.5s linear infinite, glitchTitle 10s ease-in-out infinite;
+    display: inline-block;
+  }
+  .home-hdr-live {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px;
+  }
+  .home-hdr-live::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green); animation: pulseDot 2s ease-in-out infinite; flex-shrink:0;
+  }
+
+  /* ── COTD HERO ── */
+  .home-cotd { padding: 14px 16px 0; }
+  .hcotd-outer {
+    position: relative; border-radius: 20px; padding: 2px; overflow: hidden;
+    animation: cotdGlowPulse 2.5s ease-in-out infinite; cursor: pointer;
+  }
+  .hcotd-rail {
+    position: absolute; inset: 0; overflow: hidden;
+    border-radius: 20px; pointer-events: none; z-index: 0;
+  }
+  .hcotd-rail::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 300%; aspect-ratio: 1;
+    background: conic-gradient(from 0deg,#f59e0b 0%,#f87171 12%,#a78bfa 25%,#60a5fa 37%,#22c55e 50%,#fcd34d 62%,#f59e0b 75%,#ff6b9d 87%,#f59e0b 100%);
+    animation: rainbowRot 1.6s linear infinite;
+  }
+  .hcotd-body {
+    position: relative; z-index: 1;
+    background: linear-gradient(145deg,#0b0b1f 0%,#0f0f2c 60%,#09101d 100%);
+    border-radius: 18px; overflow: hidden;
+    display: flex; align-items: stretch;
+  }
+  .hcotd-body::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(105deg,transparent 20%,rgba(167,139,250,0.04) 35%,rgba(96,165,250,0.06) 50%,rgba(34,197,94,0.04) 65%,transparent 80%);
+    background-size: 300% 300%; animation: holoShift 4s ease infinite;
+  }
+  .hcotd-scan {
+    position: absolute; left: 0; right: 0; height: 2px; z-index: 10; pointer-events: none;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);
+    animation: cotdScanline 3s ease-in-out infinite;
+  }
+  .hcotd-img-col {
+    width: 118px; flex-shrink: 0;
+    padding: 20px 0 20px 18px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .hcotd-glow {
+    position: absolute; inset: -10px;
+    background: radial-gradient(ellipse at center,rgba(167,139,250,0.5) 0%,transparent 70%);
+    filter: blur(20px); z-index: 0; animation: cotdGlowPulse 2s ease-in-out infinite;
+  }
+  .hcotd-img-wrap { position: relative; z-index: 2; }
+  .hcotd-img {
+    width: 88px; display: block; border-radius: 8px;
+    animation: cotdImgFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 10px 28px rgba(167,139,250,0.7)) drop-shadow(0 0 10px rgba(245,158,11,0.3));
+  }
+  .hcotd-img-ph {
+    width: 88px; height: 123px; border-radius: 8px;
+    background: linear-gradient(135deg,var(--surface2),#1a1a30);
+    animation: cotdImgFloat 3s ease-in-out infinite;
+  }
+  .hcotd-shimmer {
+    position: absolute; inset: 0; border-radius: 8px; z-index: 3; pointer-events: none;
+    background: linear-gradient(105deg,transparent 20%,rgba(255,255,255,0.3) 40%,rgba(167,139,250,0.15) 50%,rgba(255,255,255,0.3) 60%,transparent 80%);
+    background-size: 200% 100%; animation: cotdShimmer 1.8s ease-in-out infinite;
+  }
+  .hcotd-holo {
+    position: absolute; inset: 0; border-radius: 8px; z-index: 4; pointer-events: none;
+    background: linear-gradient(125deg,transparent 0%,rgba(255,165,0,.1) 25%,rgba(0,255,128,.1) 50%,rgba(0,200,255,.1) 75%,transparent 100%);
+    background-size: 300% 300%; animation: holoShift 3s ease infinite; mix-blend-mode: screen;
+  }
+  .hcotd-sparks { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+  .hcotd-info {
+    flex: 1; min-width: 0; padding: 18px 18px 18px 14px;
+    display: flex; flex-direction: column; position: relative; z-index: 2;
+  }
+  .hcotd-eye {
+    font-size: 9px; font-weight: 800; color: var(--purple);
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 5px; display: flex; align-items: center; gap: 5px;
+  }
+  .hcotd-eye::before { content: '★'; }
+  .hcotd-name { font-size: clamp(16px,4.5vw,22px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 2px; }
+  .hcotd-sub { font-size: 10px; color: var(--muted); margin-bottom: 7px; }
+  .hcotd-verdict { margin-bottom: 8px; }
+  .hcotd-prices { display: flex; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+  .hcotd-price-lbl { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 1px; }
+  .hcotd-price-val { font-size: 14px; font-weight: 800; }
+  .hcotd-score-hdr { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); margin-bottom: 3px; }
+  .hcotd-score-track { height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-bottom: 10px; }
+  .hcotd-score-fill {
+    height: 100%; border-radius: 3px; width: 0;
+    transition: width 1s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 0 8px currentColor; animation: scoreGlow 2.5s ease-in-out 1.2s infinite;
+  }
+  .hcotd-cta {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.35);
+    border-radius: 9px; color: var(--purple); font-size: 12px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent; min-height: 38px; width: fit-content;
+    text-decoration: none;
+  }
+  .hcotd-cta:hover { background: rgba(167,139,250,0.22); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(167,139,250,0.3); }
+
+  /* ── BROWSE GRID ── */
+  .browse-section { padding: 16px 16px 80px; }
+  .browse-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .browse-hdr-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; }
+  .browse-hdr-count { font-size: 11px; color: var(--dim); }
+  .browse-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; }
+  @media(min-width:480px) { .browse-grid { grid-template-columns: repeat(3,1fr); } }
+  @media(min-width:680px) { .browse-grid { grid-template-columns: repeat(4,1fr); } }
+  .browse-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 10px; cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.2s;
+    animation: statPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+    -webkit-tap-highlight-color: transparent;
+    display: flex; flex-direction: column; gap: 7px; position: relative; overflow: hidden;
+  }
+  .browse-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: 14px;
+    background: linear-gradient(135deg,rgba(255,255,255,0.025) 0%,transparent 60%); pointer-events: none;
+  }
+  .browse-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.6), 0 0 24px rgba(167,139,250,0.12);
+    border-color: rgba(167,139,250,0.35);
+  }
+  .browse-card.b-sel { border-color: rgba(96,165,250,0.5); box-shadow: 0 0 0 1px rgba(96,165,250,0.2); }
+  .browse-img { width: 100%; display: block; border-radius: 8px; transition: filter 0.3s ease; }
+  .browse-card:hover .browse-img { filter: drop-shadow(0 6px 16px rgba(167,139,250,0.5)); }
+  .browse-img-ph { width: 100%; aspect-ratio: 0.714; background: linear-gradient(135deg,var(--surface2),#1a1a30); border-radius: 8px; }
+  .browse-name { font-size: 12px; font-weight: 700; line-height: 1.2; }
+  .browse-set { font-size: 10px; color: var(--dim); }
+  .browse-foot { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: auto; }
+  .browse-price { font-size: 12px; font-weight: 800; color: var(--gold); }
+  .browse-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+  .home-foot { text-align: center; padding: 0 16px 40px; }
+
+  /* ── DETAIL TOPBAR ── */
+  .det-topbar {
+    position: sticky; top: 0; z-index: 100;
+    padding: 10px 14px;
+    background: rgba(8,8,16,0.95); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .det-back {
+    display: flex; align-items: center; gap: 5px; padding: 6px 12px;
+    border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    color: var(--muted); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent; min-height: 34px;
+  }
+  .det-back:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+  .det-topbar-name { flex: 1; min-width: 0; font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .det-topbar-score { font-size: 11px; font-weight: 800; padding: 4px 9px; border-radius: 7px; flex-shrink: 0; }
+
+  /* ── DETAIL CONTENT ── */
+  .det-content { padding: 14px 16px 80px; max-width: 680px; margin: 0 auto; }
+  .det-hero-card {
+    background: var(--surface); border: 1px solid var(--border2); border-radius: 18px;
+    padding: 16px; margin-bottom: 12px; position: relative; overflow: hidden;
+    animation: pIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  .det-hero-card::before {
+    content: ''; position: absolute; inset: 0; border-radius: 18px;
+    background: linear-gradient(135deg,rgba(255,255,255,0.02) 0%,transparent 50%); pointer-events: none;
+  }
+  .det-hero-layout { display: flex; gap: 14px; align-items: flex-start; }
+  .det-img-col { flex-shrink: 0; perspective: 800px; cursor: pointer; }
+  .det-img-tilt { transition: transform 0.1s ease; transform-style: preserve-3d; position: relative; }
+  .det-img {
+    width: 130px; display: block; border-radius: 8px;
+    filter: drop-shadow(0 10px 28px rgba(0,0,0,0.6)) drop-shadow(0 0 14px rgba(167,139,250,0.25));
+    position: relative; z-index: 1;
+  }
+  .det-img-holo {
+    position: absolute; inset: 0; border-radius: 8px; z-index: 2; pointer-events: none;
+    background: linear-gradient(125deg,transparent 0%,rgba(255,165,0,.1) 20%,rgba(0,255,128,.1) 50%,rgba(0,200,255,.1) 80%,transparent 100%);
+    background-size: 300% 300%; animation: holoShift 3.5s ease infinite; mix-blend-mode: screen;
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .det-img-col:hover .det-img-holo { opacity: 1; }
+  .det-img-ph { width: 130px; height: 182px; background: linear-gradient(135deg,var(--surface2),#1a1a30); border-radius: 10px; }
+  .det-info-col { flex: 1; min-width: 0; }
+  .det-verdict-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 5px; }
+  .det-card-num { font-size: 11px; color: var(--muted); }
+  .det-name { font-size: clamp(19px,5vw,27px); font-weight: 900; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 2px; }
+  .det-sub { font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+  .det-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+  .det-stat {
+    background: var(--surface2); border-radius: 8px; padding: 8px 10px;
+    border: 1px solid transparent;
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), border-color 0.2s;
+    opacity: 0; animation: statPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  .det-stat:nth-child(1) { animation-delay: 0.1s; }
+  .det-stat:nth-child(2) { animation-delay: 0.18s; }
+  .det-stat:nth-child(3) { animation-delay: 0.26s; }
+  .det-stat:nth-child(4) { animation-delay: 0.34s; }
+  .det-stat:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.08); }
+  .det-stat-lbl { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 2px; }
+  .det-stat-val { font-size: clamp(12px,3.5vw,15px); font-weight: 800; }
+  .det-stat-src { font-size: 9px; color: var(--green); margin-top: 1px; font-weight: 600; }
+  .det-score-row { margin-bottom: 10px; }
+  .det-score-hdr { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .det-score-track { height: 6px; background: var(--surface2); border-radius: 3px; }
+  .det-score-fill {
+    height: 100%; border-radius: 3px; width: 0;
+    transition: width 1s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 0 8px currentColor; animation: scoreGlow 2.5s ease-in-out 1.2s infinite;
+  }
+  .det-meta { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; }
+  @media(max-width:450px) { .det-meta { grid-template-columns: repeat(2,1fr); } }
+  .det-meta-box { background: var(--surface2); border-radius: 7px; padding: 6px 8px; }
+  .det-meta-lbl { font-size: 9px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 1px; }
+  .det-meta-val { font-size: 11px; font-weight: 600; }
+  @media(max-width:480px) { .det-img { width: 110px; } .det-img-ph { width: 110px; height: 154px; } }
+  @media(max-width:360px) {
+    .det-hero-layout { flex-direction: column; align-items: center; }
+    .det-info-col { width: 100%; }
+    .det-img, .det-img-ph { width: 140px; }
+    .det-img-ph { height: 196px; }
+  }
+
+  /* ── DETAIL TABS ── */
+  .det-tabs {
+    display: flex; gap: 3px; margin-bottom: 14px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 4px;
+  }
+  .det-tab {
+    flex: 1; padding: 8px 6px; border-radius: 9px; font-size: 11px; font-weight: 600;
+    border: none; background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
+    white-space: nowrap; min-height: 38px; text-align: center;
+  }
+  .det-tab.active { background: var(--surface2); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .det-tab:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.03); }
+  .det-tab-panel { animation: pIn 0.28s ease both; }
+
+  @media(prefers-reduced-motion:reduce) {
+    .page.p-active, .det-hero-card, .browse-card, .det-stat,
+    .hcotd-img, .hcotd-shimmer, .hcotd-holo, .hcotd-rail::before,
+    .hcotd-score-fill, .det-score-fill { animation: none !important; }
+    .browse-card, .det-stat { opacity: 1 !important; }
+  }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <div>
-      <div class="live-dot">TJ's Pokémon Card Guide · April 2026</div>
-      <div class="title-row">
-        <h1>TJ's <span>Pokémon Card Guide</span></h1>
-        <div class="pokeball" title="Gotta catch 'em all"></div>
-      </div>
-      <div class="header-sub">Full Art cards · £9–£11 budget · 4 cards analysed</div>
+<!-- ── PAGE: HOME ─────────────────────────────────────── -->
+<div class="page p-active" id="pageHome">
+  <div class="home-hdr">
+    <div class="home-hdr-left">
+      <div class="pokeball" title="Gotta catch 'em all"></div>
+      <div class="home-logo">TJ's <span>Pokémon Card Guide</span></div>
     </div>
-    <div class="disclaimer">
-      <strong style="color:var(--gold);font-size:11px;">⚠ Disclaimer</strong><br>
-      Not financial advice. Prices are estimates. Always verify on Cardmarket or eBay before buying.
+    <div class="home-hdr-live">Live prices</div>
+  </div>
+  <div class="home-cotd" id="homeCotd"></div>
+  <div class="browse-section">
+    <div class="browse-hdr">
+      <div class="browse-hdr-title">All Cards</div>
+      <div class="browse-hdr-count" id="browseCount"></div>
+    </div>
+    <div class="browse-grid" id="browseGrid"></div>
+  </div>
+  <div class="home-foot">
+    <div class="footer-sources">Data: TCGplayer · Cardmarket · eBay UK · PriceCharting · Pokémon TCG API · Built April 2026</div>
+    <div class="footer-divider"></div>
+    <div class="byline-wrap">
+      <div class="byline-dot"></div>
+      <a class="byline" href="https://instagram.com/benjobands" target="_blank" rel="noopener noreferrer">@benjobands</a>
+      <div class="byline-dot"></div>
     </div>
   </div>
-  <div class="card-tabs" id="cardTabs"></div>
 </div>
 
-<div id="cotdSection"></div>
-
-<div>
-  <div class="main-panel" id="mainPanel"></div>
-</div>
-
-<div class="compare-section">
-  <div class="section-label" style="margin-bottom:12px;" id="compareLabel">All cards — tap to view</div>
-  <div class="compare-grid" id="compareGrid"></div>
-</div>
-
-<div class="footer">
-  <div class="footer-sources">
-    Data: TCGplayer · Cardmarket · eBay UK · PriceCharting · Pokémon TCG API<br>
-    Built April 2026
+<!-- ── PAGE: DETAIL ───────────────────────────────────── -->
+<div class="page" id="pageDetail">
+  <div class="det-topbar">
+    <button class="det-back" onclick="goHome()">← Back</button>
+    <div class="det-topbar-name" id="detTopName"></div>
+    <div class="det-topbar-score" id="detTopScore"></div>
   </div>
-  <div class="footer-divider"></div>
-  <div class="byline-wrap">
-    <div class="byline-dot"></div>
-    <a class="byline" href="https://instagram.com/benjobands" target="_blank" rel="noopener noreferrer">@benjobands</a>
-    <div class="byline-dot"></div>
-  </div>
+  <div class="det-content" id="detContent"></div>
 </div>
 
 <script>
@@ -1243,14 +1522,15 @@ async function fetchCardData() {
     } catch(e) {}
   }
 
-  // Fetch priority cards immediately, then refresh hero + cotd
+  // Fetch priority cards immediately, then refresh home + detail
   await Promise.all(priority.map(id => fetchOne(id, cardApiQueries[id])));
-  renderCardOfDay(); renderMain();
+  renderHomeCotd();
+  if (currentPage === 'detail') renderDetailPage();
 
-  // Fetch remaining cards in batches — only update compare images (no full rerender)
+  // Fetch remaining cards in batches — only update browse images
   for (let i = 0; i < rest.length; i += 8) {
     await Promise.all(rest.slice(i, i+8).map(([id,q]) => fetchOne(id,q)));
-    renderCompare(); // incremental: just swaps placeholder → img for newly loaded cards
+    renderBrowseGrid(); // incremental: swap placeholders for loaded images
     if (i + 8 < rest.length) await new Promise(r => setTimeout(r, 500));
   }
 }
@@ -1289,9 +1569,8 @@ function cardImgHtml(id, cls, placeholderCls){
 // Animate score bars after render
 function animateBars(){
   requestAnimationFrame(() => {
-    document.querySelectorAll('.score-fill[data-target]').forEach(el => {
-      const target = el.getAttribute('data-target');
-      el.style.width = target + '%';
+    document.querySelectorAll('[data-target]').forEach(el => {
+      if(el.getAttribute('data-target')) el.style.width = el.getAttribute('data-target') + '%';
     });
   });
   // Counter animation for stat values
@@ -1331,481 +1610,265 @@ function addTilt(el, intensity, cardEl){
   });
 }
 
-// COTD tilt + particle emitter
-function initCotdTilt(){
-  const outer = document.getElementById('cotdOuter');
-  if(!outer) return;
-  addTilt(outer, 8);
-
-  // Particle emitter
-  const inner = outer.querySelector('.cotd-inner');
-  if(!inner) return;
-  let ptimer = setInterval(() => {
-    if(!document.body.contains(outer)){ clearInterval(ptimer); return; }
+// Particle emitter (generic)
+function startParticles(container, intervalMs) {
+  if (!container) return;
+  const colors = ['#f59e0b','#a78bfa','#60a5fa','#22c55e','#f87171','#fcd34d'];
+  const timer = setInterval(() => {
+    if (!document.body.contains(container)) { clearInterval(timer); return; }
     const p = document.createElement('div');
-    const colors = ['#f59e0b','#a78bfa','#60a5fa','#22c55e','#f87171','#fcd34d'];
-    const x = Math.random() * 100;
-    const dx = (Math.random() - 0.5) * 30;
+    const x  = Math.random() * 100;
+    const dx = (Math.random() - 0.5) * 40;
+    const sz = 3 + Math.random() * 3;
     p.style.cssText = `
-      position:absolute; bottom:10px; left:${x}%; width:4px; height:4px;
-      border-radius:50%; background:${colors[Math.floor(Math.random()*colors.length)]};
+      position:absolute; bottom:8px; left:${x}%;
+      width:${sz}px; height:${sz}px; border-radius:50%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
       pointer-events:none; z-index:6; --pdx:${dx}px;
-      animation: particleRise ${0.8+Math.random()*0.8}s ease forwards;
+      animation:particleRise ${0.7+Math.random()*0.9}s ease forwards; opacity:1;
     `;
-    inner.appendChild(p);
-    setTimeout(() => p.remove(), 1600);
-  }, 400);
+    container.appendChild(p);
+    setTimeout(() => p.remove(), 1800);
+  }, intervalMs);
 }
 
-// Hero card tilt
-function initHeroTilt(){
-  const wrap = document.getElementById('heroImgWrap');
-  const tilt = document.getElementById('heroImgTilt');
-  if(!wrap || !tilt) return;
-  addTilt(wrap, 14, tilt);
+// ── PAGE SYSTEM ───────────────────────────────────────────
+let currentPage = 'home';
+
+function showPage(name) {
+  if (name === currentPage) return;
+  const ids = { home: 'pageHome', detail: 'pageDetail' };
+  const from = document.getElementById(ids[currentPage]);
+  const to   = document.getElementById(ids[name]);
+  if (!from || !to) return;
+  from.classList.remove('p-active');
+  from.style.display = 'none';
+  to.style.display = 'block';
+  requestAnimationFrame(() => to.classList.add('p-active'));
+  currentPage = name;
+  if (name === 'home') {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    renderBrowseGrid();
+  }
 }
 
-// Fade-in panel on switch (blur + scale)
-function animatePanel(){
-  const p = document.getElementById('mainPanel');
-  p.style.opacity = '0';
-  p.style.transform = 'translateY(12px) scale(0.98)';
-  p.style.filter = 'blur(4px)';
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    p.style.opacity = '1';
-    p.style.transform = 'none';
-    p.style.filter = 'none';
-  }));
+function goHome() { showPage('home'); }
+
+function openCard(id) {
+  active = cards.find(c => c.id === id) || active;
+  innerTab = 'overview';
+  renderDetailPage();
+  showPage('detail');
+  window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
-// ── CARD OF THE DAY ──────────────────────────────────────
-function renderCardOfDay(){
-  const p = cardPrices[cotdCard.id];
-  const cmUrl = p?.cm?.url || `https://www.cardmarket.com/en/Pokemon/Products/Singles?searchString=${encodeURIComponent(cotdCard.name)}`;
-  const imgHtml = cardImages[cotdCard.id]
-    ? `<img class="cotd-img" src="${cardImages[cotdCard.id]}" alt="${cotdCard.name}" onerror="this.style.display='none'">`
-    : `<div class="cotd-img-placeholder"></div>`;
-  document.getElementById('cotdSection').innerHTML = `
-    <div class="cotd-outer" id="cotdOuter">
-      <div class="cotd-scan"></div>
-      <div class="cotd-inner">
-        <div class="cotd-img-wrap">
-          <div class="cotd-img-glow"></div>
-          ${imgHtml}
-          <div class="cotd-img-shimmer"></div>
-          <div class="cotd-holo"></div>
-          <span class="spark spark-1">✦</span>
-          <span class="spark spark-2">✦</span>
-          <span class="spark spark-3">✦</span>
-          <span class="spark spark-4">✦</span>
-          <span class="spark spark-5">✦</span>
-          <span class="spark spark-6">✦</span>
-        </div>
-        <div class="cotd-content" style="position:relative;z-index:1;">
-          <div class="cotd-badge">★ Card of the Day</div>
-          <div class="cotd-name">${cotdCard.name}</div>
-          <div class="cotd-meta">${cotdCard.setShort} · ${cotdCard.number}</div>
-          <div class="cotd-verdict-row">
-            ${pill(cotdCard.verdict, cotdCard.verdictBg, cotdCard.verdictColor)}
-            <span class="cotd-price">${cotdCard.price}</span>
-          </div>
-          <a class="cotd-btn" href="${cmUrl}" target="_blank" rel="noopener noreferrer">See listings →</a>
-        </div>
-      </div>
-    </div>`;
-  initCotdTilt();
-}
-
-// ── TABS ─────────────────────────────────────────────────
-function renderTabs(){
-  document.getElementById('cardTabs').innerHTML = cards.map(c => `
-    <button class="card-tab${c.id===active.id?' active':''}" onclick="switchCard('${c.id}')">
-      <div class="tab-name">${c.name}</div>
-      <div class="tab-set">${c.setShort}</div>
-      ${c.tag?`<span class="tab-badge" style="background:${c.tagBg};color:${c.tagColor};">${c.tag}</span>`:''}
-    </button>`).join('');
-}
-
-// ── HERO ─────────────────────────────────────────────────
-function renderHero(){
-  const c = active;
+// ── HOME: COTD HERO ───────────────────────────────────────────────
+function renderHomeCotd() {
+  const c  = cotdCard;
   const sc = scoreColor(c.score);
   const live = getLivePrice(c.id);
-  const liveStatHtml = live
-    ? `<div class="stat-val" style="color:var(--green);">£${live.gbp.toFixed(2)}</div><div class="stat-live-src">${live.source.split('·')[0].trim()}</div>`
-    : `<div class="stat-val" style="color:var(--muted);">${c.price}</div><div class="stat-live-src" style="color:var(--dim);">Est.</div>`;
-  return `
-    <div class="hero">
-      <div class="hero-layout">
-        <div class="hero-img-wrap" id="heroImgWrap">
-          <div class="hero-img-tilt" id="heroImgTilt">
-            ${cardImgHtml(c.id,'card-img','card-img-placeholder')}
-            <div class="card-img-holo"></div>
+  const imgHtml = cardImages[c.id]
+    ? `<img class="hcotd-img" src="${cardImages[c.id]}" alt="${c.name}" onerror="this.style.display='none'">`
+    : `<div class="hcotd-img-ph"></div>`;
+  const liveHtml = live
+    ? `<div><div class="hcotd-price-lbl">Live</div><div class="hcotd-price-val" style="color:var(--green);">£${live.gbp.toFixed(2)}</div></div>`
+    : '';
+
+  document.getElementById('homeCotd').innerHTML = `
+    <div class="hcotd-outer" id="hcotdOuter" onclick="openCard('${c.id}')">
+      <div class="hcotd-rail"></div>
+      <div class="hcotd-body" id="hcotdBody">
+        <div class="hcotd-scan"></div>
+        <div class="hcotd-img-col">
+          <div class="hcotd-glow"></div>
+          <div class="hcotd-img-wrap">
+            ${imgHtml}
+            <div class="hcotd-shimmer"></div>
+            <div class="hcotd-holo"></div>
           </div>
+          <span class="spark spark-1">✶</span>
+          <span class="spark spark-2">✶</span>
+          <span class="spark spark-3">✶</span>
+          <span class="spark spark-4">✶</span>
+          <span class="spark spark-5">✶</span>
+          <span class="spark spark-6">✶</span>
         </div>
-        <div class="hero-text">
-          <div class="hero-top">
-            ${pill(c.verdict, c.verdictBg, c.verdictColor)}
-            <span class="card-id">${c.number} · ${c.year}</span>
+        <div class="hcotd-info">
+          <div class="hcotd-eye">Card of the Day</div>
+          <div class="hcotd-name">${c.name}</div>
+          <div class="hcotd-sub">${c.setShort} · ${c.number} · ${c.year}</div>
+          <div class="hcotd-verdict">${pill(c.verdict, c.verdictBg, c.verdictColor)}</div>
+          <div class="hcotd-prices">
+            <div><div class="hcotd-price-lbl">Entry</div><div class="hcotd-price-val" style="color:var(--gold);">${c.price}</div></div>
+            ${liveHtml}
+            <div><div class="hcotd-price-lbl">Upside</div><div class="hcotd-price-val" style="color:#22c55e;">${c.upside}</div></div>
           </div>
-          <div class="hero-name">${c.name}</div>
-          <div class="hero-subtitle">${c.subtitle} · ${c.set}</div>
-          <div class="stats-row">
-            <div class="stat-box"><div class="stat-label">Entry range</div><div class="stat-val" style="color:#f59e0b;">${c.price}</div></div>
-            <div class="stat-box"><div class="stat-label">Current price</div>${liveStatHtml}</div>
-            <div class="stat-box"><div class="stat-label">PSA 10 est.</div><div class="stat-val" style="color:#60a5fa;">${c.psa10}</div></div>
-            <div class="stat-box"><div class="stat-label">Upside</div><div class="stat-val" style="color:#22c55e;">${c.upside}</div></div>
+          <div class="hcotd-score-hdr"><span>Score</span><span style="color:${sc};">${c.score}/100</span></div>
+          <div class="hcotd-score-track">
+            <div class="hcotd-score-fill" id="hcotdFill"
+                 style="width:0;background:${sc};color:${sc};"
+                 data-target="${c.score}"></div>
           </div>
-          <div class="score-wrap">
-            <div class="score-header"><span>Investment score</span><span data-count="${c.score}" data-suffix="/100" style="color:${sc};">0/100</span></div>
-            ${scoreBar(c.score, sc, 'heroScore')}
-          </div>
-          <div class="meta-row">
-            ${[['Artist',c.artist],['Type',c.type],['12m target','£'+c.t12],['24m target','£'+c.t24]].map(([k,v])=>`
-              <div class="meta-box"><div class="meta-label">${k}</div><div class="meta-val">${v}</div></div>`).join('')}
-          </div>
+          <div class="hcotd-cta" onclick="event.stopPropagation();openCard('${c.id}')">View Analysis →</div>
         </div>
       </div>
     </div>`;
-}
 
-// ── INNER TABS ───────────────────────────────────────────
-function renderInnerTabs(){
-  const tabs = ['overview','where to buy','catalysts & risks'];
-  return `<div class="inner-tabs">
-    ${tabs.map(t=>`
-      <button class="inner-tab${innerTab===t?' active':''}" onclick="switchInner('${t}')">
-        ${t.charAt(0).toUpperCase()+t.slice(1)}
-      </button>`).join('')}
-  </div>`;
-}
-
-// ── CHART ─────────────────────────────────────────────────
-function buildChart(){
-  if (chartInst){ chartInst.destroy(); chartInst = null; }
-  const canvas = document.getElementById('priceChart');
-  if (!canvas) return;
-  const c = active;
-  const labels = [...c.history.map(h=>h.x), 'Apr 27*', 'Apr 28*'];
-  const actual = [...c.history.map(h=>h.y), null, null];
-  const t12data = [...c.history.map((_,i)=>i===c.history.length-1?c.t12:null), c.t12, null];
-  const t24data = [...c.history.map((_,i)=>i===c.history.length-1?c.t24:null), null, c.t24];
-
-  chartInst = new Chart(canvas, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label:'Est. price (GBP)', data:actual,
-          borderColor:'#f59e0b', borderWidth:3,
-          pointRadius:4, pointHoverRadius:8,
-          pointBackgroundColor:'#f59e0b', pointBorderColor:'#080810', pointBorderWidth:2,
-          spanGaps:false, tension:0.35,
-          fill:{ target:'origin', above:'rgba(245,158,11,0.08)' },
-        },
-        {
-          label:'12m target', data:t12data,
-          borderColor:'#22c55e', borderWidth:2, borderDash:[6,4],
-          pointRadius:6, pointHoverRadius:9,
-          pointBackgroundColor:'#22c55e', pointBorderColor:'#080810', pointBorderWidth:2,
-          spanGaps:true, tension:0, fill:false,
-        },
-        {
-          label:'24m target', data:t24data,
-          borderColor:'#60a5fa', borderWidth:2, borderDash:[6,4],
-          pointRadius:6, pointHoverRadius:9,
-          pointBackgroundColor:'#60a5fa', pointBorderColor:'#080810', pointBorderWidth:2,
-          spanGaps:true, tension:0, fill:false,
-        },
-      ],
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      interaction:{ mode:'index', intersect:false },
-      plugins:{
-        legend:{ display:false },
-        tooltip:{
-          backgroundColor:'#111124', borderColor:'#2a2a4e', borderWidth:1,
-          titleColor:'#888', bodyColor:'#e0e0f0', padding:10,
-          callbacks:{
-            title: ctx => ctx[0].label,
-            label: ctx => {
-              if(ctx.parsed.y===null) return null;
-              const s = ctx.datasetIndex===0?' (est.)':ctx.datasetIndex===1?' (12m target)':' (24m target)';
-              return ' £'+ctx.parsed.y.toFixed(2)+s;
-            },
-          },
-        },
-      },
-      scales:{
-        x:{ grid:{color:'rgba(255,255,255,0.07)'}, ticks:{font:{size:11},color:'#777',maxRotation:40,autoSkip:true,maxTicksLimit:10} },
-        y:{ grid:{color:'rgba(255,255,255,0.07)'}, ticks:{font:{size:11},color:'#777',callback:v=>'£'+v}, beginAtZero:false },
-      },
-    },
+  requestAnimationFrame(() => {
+    const fill = document.getElementById('hcotdFill');
+    if (fill) fill.style.width = c.score + '%';
   });
-}
-
-// ── LIVE PRICE HELPER ────────────────────────────────────
-// Returns best estimate of current ungraded NM price in GBP
-function getLivePrice(id) {
-  const p = cardPrices[id];
-  if (!p) return null;
-  const cp = p.cm?.prices;
-  // Priority: CM avg1 (most recent sales) → CM trend → TCP market
-  if (cp?.avg1 && cp.avg1 > 0)         return { gbp: cp.avg1 * EUR_GBP,    raw: fmtEur(cp.avg1),       source: 'Cardmarket · 1-day avg' };
-  if (cp?.trendPrice && cp.trendPrice > 0) return { gbp: cp.trendPrice * EUR_GBP, raw: fmtEur(cp.trendPrice), source: 'Cardmarket · trend price' };
-  if (cp?.avg7 && cp.avg7 > 0)         return { gbp: cp.avg7 * EUR_GBP,    raw: fmtEur(cp.avg7),       source: 'Cardmarket · 7-day avg' };
-  const tp = p.tcp?.prices ? Object.values(p.tcp.prices)[0] : null;
-  if (tp?.market && tp.market > 0)     return { gbp: tp.market * USD_GBP,  raw: fmtUsd(tp.market),     source: 'TCGPlayer · market price' };
-  return null;
-}
-
-// ── LIVE PRICES ──────────────────────────────────────────
-function renderLivePrices(){
-  const c = active;
-  const p = cardPrices[c.id];
-
-  // ── Cardmarket detail ──
-  let cmHtml = `<div class="price-loading">${p===undefined?'Loading…':'Not available'}</div>`;
-  if (p?.cm) {
-    const cp = p.cm.prices;
-    const rows = [
-      ['Last 1-day avg', cp.avg1,          v => `<span class="price-row-gbp" style="color:var(--gold);">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
-      ['7-day avg',      cp.avg7,          v => `<span class="price-row-gbp">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
-      ['30-day avg',     cp.avg30,         v => `<span class="price-row-gbp">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
-      ['Trend price',    cp.trendPrice,    v => `<span class="price-row-gbp">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
-      ['Low (EX+)',      cp.lowPriceExPlus,v => `<span class="price-row-gbp">£${(v*EUR_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtEur(v)}</span>`],
-    ].filter(([,v])=>v>0);
-    cmHtml = rows.map(([label,,fmt],i)=>`
-      <div class="price-row"${i===0?' style="border-top:none;"':''}>
-        <span class="price-row-label">${label}</span>
-        <span class="price-row-val">${fmt(rows[i][1])}</span>
-      </div>`).join('')
-      + (p.cm.url ? `<a class="price-link" style="color:var(--gold);" href="${p.cm.url}" target="_blank" rel="noopener noreferrer">View listings →</a>` : '');
-  }
-
-  // ── TCGPlayer detail ──
-  let tcpHtml = `<div class="price-loading">${p===undefined?'Loading…':'Not available'}</div>`;
-  if (p?.tcp) {
-    const tp = Object.values(p.tcp.prices)[0]||{};
-    const rows = [
-      ['Market price', tp.market, v=>`<span class="price-row-gbp" style="color:var(--green);">£${(v*USD_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtUsd(v)}</span>`],
-      ['Low',          tp.low,    v=>`<span class="price-row-gbp">£${(v*USD_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtUsd(v)}</span>`],
-      ['High',         tp.high,   v=>`<span class="price-row-gbp">£${(v*USD_GBP).toFixed(2)}</span> <span class="price-row-native">${fmtUsd(v)}</span>`],
-    ].filter(([,v])=>v>0);
-    tcpHtml = rows.map(([label,,fmt],i)=>`
-      <div class="price-row"${i===0?' style="border-top:none;"':''}>
-        <span class="price-row-label">${label}</span>
-        <span class="price-row-val">${fmt(rows[i][1])}</span>
-      </div>`).join('')
-      + (p.tcp.url ? `<a class="price-link" style="color:var(--green);" href="${p.tcp.url}" target="_blank" rel="noopener noreferrer">View listings →</a>` : '');
-  }
-
-  const cmUpdated = p?.cm?.updatedAt?.replace(/\//g,'-') || '';
-  const tcpUpdated = p?.tcp?.updatedAt?.replace(/\//g,'-') || '';
-
-  return `
-    <div class="live-prices">
-      <div class="live-prices-header">Market data · Pokémon TCG API · ungraded NM</div>
-      <div class="price-sources">
-        <div class="price-source">
-          <div class="price-source-header">
-            <span class="price-source-name">Cardmarket</span>
-            ${cmUpdated?`<span class="price-updated">${cmUpdated}</span>`:''}
-          </div>
-          ${cmHtml}
-        </div>
-        <div class="price-source">
-          <div class="price-source-header">
-            <span class="price-source-name">TCGPlayer</span>
-            ${tcpUpdated?`<span class="price-updated">${tcpUpdated}</span>`:''}
-          </div>
-          ${tcpHtml}
-        </div>
-      </div>
-    </div>`;
-}
-
-// ── OVERVIEW (includes chart + live prices) ──────────────
-function renderOverview(){
-  const c = active;
-  return `
-    <div class="two-col">
-      <div>
-        <div class="section-label">Analyst summary</div>
-        <p class="summary-text">${c.summary}</p>
-      </div>
-      <div>
-        <div class="section-label">Risk profile</div>
-        <div class="risk-row"><span class="risk-label">Reprint risk</span>${riskPill(c.reprint)}</div>
-        <div class="risk-row"><span class="risk-label">Liquidity</span>${riskPill(c.liquidity)}</div>
-        <div class="risk-row" style="border-bottom:none;"><span class="risk-label">Overall risk</span>${riskPill(c.score>=85?'Low':c.score>=75?'Low-medium':'Medium')}</div>
-        <div class="targets-box">
-          <div class="section-label" style="margin-bottom:8px;">Price targets</div>
-          <div class="targets-grid">
-            <div><div class="target-label">12 months</div><div class="target-val" style="color:#22c55e;">£${c.t12}</div></div>
-            <div class="target-divider"></div>
-            <div><div class="target-label">24 months</div><div class="target-val" style="color:#60a5fa;">£${c.t24}</div></div>
-            <div class="target-divider"></div>
-            <div><div class="target-label">PSA 10</div><div class="target-val" style="color:#f59e0b;font-size:13px;">${c.psa10}</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="chart-section">
-      <div class="chart-section-label">
-        Price history
-        <span style="font-size:10px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0;">— estimated NM trend + targets</span>
-      </div>
-      <div class="chart-legend">
-        <span class="legend-item"><span class="legend-line" style="background:#f59e0b;"></span>Est. trend (GBP)</span>
-        <span class="legend-item"><span class="legend-dash" style="border-color:#22c55e;"></span>12m target</span>
-        <span class="legend-item"><span class="legend-dash" style="border-color:#60a5fa;"></span>24m target</span>
-      </div>
-      <div class="chart-wrap"><canvas id="priceChart" role="img" aria-label="Price trend for ${c.name}"></canvas></div>
-      <div class="events-grid">
-        ${c.events.map(e=>`
-          <div class="event-box">
-            <div class="event-date">${e.d}</div>
-            <div class="event-label">${e.l}</div>
-            <div class="event-delta" style="color:${e.pos?'#22c55e':'#f87171'};">${e.v}</div>
-          </div>`).join('')}
-      </div>
-    </div>
-
-    ${renderLivePrices()}`;
-}
-
-// ── WHERE TO BUY ─────────────────────────────────────────
-function renderWhereToBuy(){
-  const name = encodeURIComponent(active.name);
-  const setNum = encodeURIComponent(active.name+' '+active.setShort+' '+active.number);
-  const p = cardPrices[active.id];
-  const cmUrl = p?.cm?.url || `https://www.cardmarket.com/en/Pokemon/Products/Singles?searchString=${name}`;
-  const tcpUrl = p?.tcp?.url || `https://www.tcgplayer.com/search/pokemon/product?q=${name}`;
-  const sources = [
-    { label:'Cardmarket', icon:'CM', iconBg:'#003087', iconColor:'#fff', desc:"Direct link to this card's listings · Europe's largest TCG marketplace", url:cmUrl },
-    { label:'eBay UK — Sold listings', icon:'eB', iconBg:'#e53238', iconColor:'#fff', desc:'Real completed sale prices · filtered to full art', url:`https://www.ebay.co.uk/sch/i.html?_nkw=${setNum}+full+art&LH_Complete=1&LH_Sold=1` },
-    { label:'TCGPlayer', icon:'TC', iconBg:'#1a8fff', iconColor:'#fff', desc:'Direct link to this card · US market prices', url:tcpUrl },
-    { label:'PriceCharting', icon:'PC', iconBg:'#22c55e', iconColor:'#000', desc:'Historical price tracking across all platforms', url:`https://www.pricecharting.com/search-products?q=${name}+pokemon` },
-  ];
-  return `
-    <div class="buy-disclaimer">
-      ⚠ Always check <strong>completed/sold listings</strong> on eBay for real transaction prices — not just asking prices. Prices vary daily.
-    </div>
-    <div class="buy-links">
-      ${sources.map(s=>`
-        <a class="buy-link-card" href="${s.url}" target="_blank" rel="noopener noreferrer">
-          <div class="buy-icon" style="background:${s.iconBg};color:${s.iconColor};">${s.icon}</div>
-          <div class="buy-info">
-            <div class="buy-name">${s.label}</div>
-            <div class="buy-desc">${s.desc}</div>
-          </div>
-          <div class="buy-cta">Check prices →</div>
-        </a>`).join('')}
-    </div>`;
-}
-
-// ── CATALYSTS ────────────────────────────────────────────
-function renderCatalysts(){
-  const c = active;
-  return `<div class="two-col">
-    <div>
-      <div class="section-label" style="color:#22c55e;">Bullish catalysts</div>
-      ${c.catalysts.map(t=>`<div class="bullet-item">
-        <div class="bullet-icon" style="background:rgba(34,197,94,0.12);color:#22c55e;">✓</div>
-        <p class="bullet-text">${t}</p>
-      </div>`).join('')}
-    </div>
-    <div>
-      <div class="section-label" style="color:#f87171;">Risk factors</div>
-      ${c.risks.map(t=>`<div class="bullet-item">
-        <div class="bullet-icon" style="background:rgba(248,113,113,0.12);color:#f87171;">!</div>
-        <p class="bullet-text">${t}</p>
-      </div>`).join('')}
-    </div>
-  </div>`;
-}
-
-// ── COMPARE ──────────────────────────────────────────────
-function renderCompare(forceRebuild){
-  const grid = document.getElementById('compareGrid');
-  if(!grid) return;
-  const lbl = document.getElementById('compareLabel');
-  if(lbl) lbl.textContent = `${cards.length} cards — tap to view`;
-
-  if(forceRebuild || grid.children.length !== cards.length) {
-    // Full build — only on first render or card count change
-    grid.innerHTML = cards.map(c=>{
-      const imgHtml = cardImages[c.id]
-        ? `<img class="compare-card-img" src="${cardImages[c.id]}" alt="${c.name}" loading="lazy">`
-        : `<div class="compare-card-img-placeholder"></div>`;
-      return `<div class="compare-card${c.id===active.id?' selected':''}" onclick="switchCard('${c.id}')" title="${c.name} · ${c.setShort} · ${c.price}">${imgHtml}<div class="compare-name">${c.name}</div><div class="compare-price">${c.price}</div></div>`;
-    }).join('');
-  } else {
-    // Incremental update — only touch selected state & swap in new images
-    cards.forEach((c,i)=>{
-      const el = grid.children[i];
-      if(!el) return;
-      el.className = `compare-card${c.id===active.id?' selected':''}`;
-      if(cardImages[c.id] && el.querySelector('.compare-card-img-placeholder')) {
-        const img = document.createElement('img');
-        img.className='compare-card-img'; img.src=cardImages[c.id]; img.alt=c.name; img.loading='lazy';
-        el.querySelector('.compare-card-img-placeholder').replaceWith(img);
-      }
-    });
-  }
-}
-
-function scrollCompareToSelected(){
-  setTimeout(()=>{
-    const sel = document.querySelector('#compareGrid .compare-card.selected');
-    if(sel) sel.scrollIntoView({block:'nearest', inline:'nearest'});
-  }, 80);
-}
-
-// ── MAIN RENDER ──────────────────────────────────────────
-function renderMain(){
-  if (chartInst){ chartInst.destroy(); chartInst = null; }
-  let content = '';
-  if (innerTab==='overview')          content = renderOverview();
-  else if (innerTab==='where to buy') content = renderWhereToBuy();
-  else                                content = renderCatalysts();
-  document.getElementById('mainPanel').innerHTML = renderHero() + renderInnerTabs() + content;
-  animatePanel();
-  animateBars();
-  if (innerTab==='overview') setTimeout(buildChart, 80);
-  setTimeout(initHeroTilt, 50);
-}
-
-function switchCard(id){
-  active = cards.find(c=>c.id===id);
-  innerTab = 'overview';
-  renderTabs();
-  renderMain();
-  renderCompare(); // update selected state only (incremental)
-  scrollCompareToSelected();
-  // Only scroll page to top if user tapped from below the fold
-  if(window.scrollY > 200) window.scrollTo({top:0, behavior:'smooth'});
-  setTimeout(()=>{
-    document.querySelector('.card-tab.active')?.scrollIntoView({inline:'center', behavior:'smooth', block:'nearest'});
+  setTimeout(() => {
+    const outer = document.getElementById('hcotdOuter');
+    const body  = document.getElementById('hcotdBody');
+    if (outer) addTilt(outer, 5);
+    if (body)  startParticles(body, 450);
   }, 60);
 }
 
-function switchInner(t){
-  innerTab = t;
-  renderMain();
-  // Don't rebuild tabs or compare grid — they haven't changed
+// ── HOME: BROWSE GRID ────────────────────────────────────────────
+function renderBrowseGrid() {
+  const grid = document.getElementById('browseGrid');
+  const cnt  = document.getElementById('browseCount');
+  if (cnt)  cnt.textContent = cards.length + ' cards';
+  if (!grid) return;
+  grid.innerHTML = cards.map((c, i) => {
+    const imgHtml = cardImages[c.id]
+      ? `<img class="browse-img" src="${cardImages[c.id]}" alt="${c.name}" loading="lazy">`
+      : `<div class="browse-img-ph"></div>`;
+    return `
+      <div class="browse-card${c.id===active.id?' b-sel':''}"
+           onclick="openCard('${c.id}')"
+           style="animation-delay:${Math.min(i*0.05,0.4)}s;">
+        ${imgHtml}
+        <div>
+          <div class="browse-name">${c.name}</div>
+          <div class="browse-set">${c.setShort}</div>
+        </div>
+        <div class="browse-foot">
+          <span class="browse-price">${c.price}</span>
+          <span class="browse-badge" style="background:${c.verdictBg};color:${c.verdictColor};">${c.verdict}</span>
+        </div>
+      </div>`;
+  }).join('');
+  setTimeout(() => {
+    grid.querySelectorAll('.browse-card').forEach(el => addTilt(el, 6));
+  }, 200);
 }
 
-// ── INIT ─────────────────────────────────────────────────
-renderTabs();
-renderCardOfDay();
-renderMain();
-renderCompare(true); // force full build on first load
+// ── DETAIL PAGE ──────────────────────────────────────────────────────
+function renderDetailPage() {
+  const c  = active;
+  const sc = scoreColor(c.score);
+  const live = getLivePrice(c.id);
+
+  const nameEl  = document.getElementById('detTopName');
+  const scoreEl = document.getElementById('detTopScore');
+  if (nameEl)  nameEl.textContent = c.name;
+  if (scoreEl) {
+    scoreEl.textContent = c.score + '/100';
+    scoreEl.style.background = c.verdictBg;
+    scoreEl.style.color      = c.verdictColor;
+  }
+
+  const imgHtml = cardImages[c.id]
+    ? `<img class="det-img" src="${cardImages[c.id]}" alt="${c.name}">`
+    : `<div class="det-img-ph"></div>`;
+
+  const liveStat = live
+    ? `<div class="det-stat-val" style="color:var(--green);">£${live.gbp.toFixed(2)}</div><div class="det-stat-src">${live.source.split('·')[0].trim()}</div>`
+    : `<div class="det-stat-val" style="color:var(--muted);">${c.price}</div><div class="det-stat-src" style="color:var(--dim);">Est.</div>`;
+
+  document.getElementById('detContent').innerHTML = `
+    <div class="det-hero-card">
+      <div class="det-hero-layout">
+        <div class="det-img-col" id="detImgCol">
+          <div class="det-img-tilt" id="detImgTilt">
+            ${imgHtml}
+            <div class="det-img-holo"></div>
+          </div>
+        </div>
+        <div class="det-info-col">
+          <div class="det-verdict-row">
+            ${pill(c.verdict, c.verdictBg, c.verdictColor)}
+            <span class="det-card-num">${c.number} · ${c.year}</span>
+          </div>
+          <div class="det-name">${c.name}</div>
+          <div class="det-sub">${c.subtitle} · ${c.set}</div>
+          <div class="det-stats">
+            <div class="det-stat"><div class="det-stat-lbl">Entry range</div><div class="det-stat-val" style="color:#f59e0b;">${c.price}</div></div>
+            <div class="det-stat"><div class="det-stat-lbl">Current price</div>${liveStat}</div>
+            <div class="det-stat"><div class="det-stat-lbl">PSA 10 est.</div><div class="det-stat-val" style="color:#60a5fa;">${c.psa10}</div></div>
+            <div class="det-stat"><div class="det-stat-lbl">Upside</div><div class="det-stat-val" style="color:#22c55e;">${c.upside}</div></div>
+          </div>
+          <div class="det-score-row">
+            <div class="det-score-hdr">
+              <span>Investment score</span>
+              <span data-count="${c.score}" data-suffix="/100" style="color:${sc};">0/100</span>
+            </div>
+            <div class="det-score-track">
+              <div class="det-score-fill" id="detScore"
+                   style="width:0;background:${sc};color:${sc};"
+                   data-target="${c.score}"></div>
+            </div>
+          </div>
+          <div class="det-meta">
+            ${[['Artist',c.artist],['Type',c.type],['12m','£'+c.t12],['24m','£'+c.t24]].map(([k,v])=>
+              `<div class="det-meta-box"><div class="det-meta-lbl">${k}</div><div class="det-meta-val">${v}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="det-tabs">
+      ${[['overview','Overview'],['where to buy','Buy'],['catalysts & risks','Catalysts']].map(([k,lbl])=>
+        `<button class="det-tab${innerTab===k?' active':''}" data-tab="${k}" onclick="switchInner('${k}')">${lbl}</button>`).join('')}
+    </div>
+
+    <div class="det-tab-panel" id="detTabPanel">
+      ${renderTabContent()}
+    </div>`;
+
+  animateBars();
+  if (innerTab === 'overview') setTimeout(buildChart, 80);
+  setTimeout(() => {
+    const col  = document.getElementById('detImgCol');
+    const tilt = document.getElementById('detImgTilt');
+    if (col && tilt) addTilt(col, 14, tilt);
+  }, 60);
+}
+
+function renderTabContent() {
+  if (innerTab === 'overview')     return renderOverview();
+  if (innerTab === 'where to buy') return renderWhereToBuy();
+  return renderCatalysts();
+}
+
+function switchInner(t) {
+  innerTab = t;
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const panel = document.getElementById('detTabPanel');
+  if (!panel) return;
+  panel.style.opacity   = '0';
+  panel.style.filter    = 'blur(2px)';
+  panel.style.transform = 'translateY(6px)';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    panel.innerHTML       = renderTabContent();
+    panel.style.opacity   = '';
+    panel.style.filter    = '';
+    panel.style.transform = '';
+    if (t === 'overview') setTimeout(buildChart, 80);
+  }));
+  document.querySelectorAll('.det-tab').forEach(el => {
+    el.classList.toggle('active', el.dataset.tab === t);
+  });
+}
+
+// ── INIT ────────────────────────────────────────────────────────────
+renderHomeCotd();
+renderBrowseGrid();
 fetchCardData();
+
 </script>
 </body>
 </html>
