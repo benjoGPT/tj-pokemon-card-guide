@@ -599,6 +599,7 @@
     gap: 8px;
     max-height: 520px;
     overflow-y: auto;
+    overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: var(--border2) transparent;
     padding-right: 2px;
@@ -1049,15 +1050,15 @@ async function fetchCardData() {
     } catch(e) {}
   }
 
-  // Fetch priority cards immediately
+  // Fetch priority cards immediately, then refresh hero + cotd
   await Promise.all(priority.map(id => fetchOne(id, cardApiQueries[id])));
   renderCardOfDay(); renderMain();
 
-  // Fetch remaining cards in batches of 8 with 400ms gaps (avoids rate limits)
+  // Fetch remaining cards in batches — only update compare images (no full rerender)
   for (let i = 0; i < rest.length; i += 8) {
     await Promise.all(rest.slice(i, i+8).map(([id,q]) => fetchOne(id,q)));
-    renderCompare(); // update thumbnails progressively
-    if (i + 8 < rest.length) await new Promise(r => setTimeout(r, 400));
+    renderCompare(); // incremental: just swaps placeholder → img for newly loaded cards
+    if (i + 8 < rest.length) await new Promise(r => setTimeout(r, 500));
   }
 }
 
@@ -1422,24 +1423,40 @@ function renderCatalysts(){
 }
 
 // ── COMPARE ──────────────────────────────────────────────
-function renderCompare(){
-  document.getElementById('compareGrid').innerHTML = cards.map(c=>{
-    const imgHtml = cardImages[c.id]
-      ? `<img class="compare-card-img" src="${cardImages[c.id]}" alt="${c.name}" loading="lazy">`
-      : `<div class="compare-card-img-placeholder"></div>`;
-    return `
-    <div class="compare-card${c.id===active.id?' selected':''}" onclick="switchCard('${c.id}')" title="${c.name} · ${c.setShort} · ${c.price}">
-      ${imgHtml}
-      <div class="compare-name">${c.name}</div>
-      <div class="compare-price">${c.price}</div>
-    </div>`;
-  }).join('');
+function renderCompare(forceRebuild){
+  const grid = document.getElementById('compareGrid');
+  if(!grid) return;
   const lbl = document.getElementById('compareLabel');
   if(lbl) lbl.textContent = `${cards.length} cards — tap to view`;
+
+  if(forceRebuild || grid.children.length !== cards.length) {
+    // Full build — only on first render or card count change
+    grid.innerHTML = cards.map(c=>{
+      const imgHtml = cardImages[c.id]
+        ? `<img class="compare-card-img" src="${cardImages[c.id]}" alt="${c.name}" loading="lazy">`
+        : `<div class="compare-card-img-placeholder"></div>`;
+      return `<div class="compare-card${c.id===active.id?' selected':''}" onclick="switchCard('${c.id}')" title="${c.name} · ${c.setShort} · ${c.price}">${imgHtml}<div class="compare-name">${c.name}</div><div class="compare-price">${c.price}</div></div>`;
+    }).join('');
+  } else {
+    // Incremental update — only touch selected state & swap in new images
+    cards.forEach((c,i)=>{
+      const el = grid.children[i];
+      if(!el) return;
+      el.className = `compare-card${c.id===active.id?' selected':''}`;
+      if(cardImages[c.id] && el.querySelector('.compare-card-img-placeholder')) {
+        const img = document.createElement('img');
+        img.className='compare-card-img'; img.src=cardImages[c.id]; img.alt=c.name; img.loading='lazy';
+        el.querySelector('.compare-card-img-placeholder').replaceWith(img);
+      }
+    });
+  }
+}
+
+function scrollCompareToSelected(){
   setTimeout(()=>{
-    const sel = document.querySelector('.compare-card.selected');
-    if(sel) sel.scrollIntoView({block:'nearest', behavior:'smooth'});
-  }, 50);
+    const sel = document.querySelector('#compareGrid .compare-card.selected');
+    if(sel) sel.scrollIntoView({block:'nearest', inline:'nearest'});
+  }, 80);
 }
 
 // ── MAIN RENDER ──────────────────────────────────────────
@@ -1453,7 +1470,6 @@ function renderMain(){
   animatePanel();
   animateBars();
   if (innerTab==='overview') setTimeout(buildChart, 80);
-  renderCompare();
 }
 
 function switchCard(id){
@@ -1461,22 +1477,26 @@ function switchCard(id){
   innerTab = 'overview';
   renderTabs();
   renderMain();
-  window.scrollTo({top:0, behavior:'smooth'});
+  renderCompare(); // update selected state only (incremental)
+  scrollCompareToSelected();
+  // Only scroll page to top if user tapped from below the fold
+  if(window.scrollY > 200) window.scrollTo({top:0, behavior:'smooth'});
   setTimeout(()=>{
     document.querySelector('.card-tab.active')?.scrollIntoView({inline:'center', behavior:'smooth', block:'nearest'});
-  }, 50);
+  }, 60);
 }
 
 function switchInner(t){
   innerTab = t;
   renderMain();
-  renderTabs();
+  // Don't rebuild tabs or compare grid — they haven't changed
 }
 
 // ── INIT ─────────────────────────────────────────────────
 renderTabs();
 renderCardOfDay();
 renderMain();
+renderCompare(true); // force full build on first load
 fetchCardData();
 </script>
 </body>
