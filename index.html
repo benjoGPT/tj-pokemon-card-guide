@@ -746,8 +746,9 @@ const VM={
 };
 function mk(f) {
   const v=VM[f.verdict]||VM['Watch'];
-  const lo=parseFloat((f.price||'£5–£8').split('–')[0].replace(/[^0-9.]/g,''));
-  const hi=parseFloat((f.price||'£5–£8').split('–')[1].replace(/[^0-9.]/g,''));
+  const _parts=(f.price||'£5–£8').split('–');
+  const lo=parseFloat(_parts[0].replace(/[^0-9.]/g,''));
+  const hi=parseFloat((_parts[1]||_parts[0]).replace(/[^0-9.]/g,''))||lo*1.5;
   const pn=f.priceNum||(lo+hi)/2;
   const pp=f.peakP||pn*2.8; const sp=f.startP||pn*0.15;
   return {
