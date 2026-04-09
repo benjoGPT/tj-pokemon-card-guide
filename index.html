@@ -158,14 +158,20 @@
 
   /* ── POKÉBALL ──────────────────────────────────────── */
   .pokeball {
-    width: 22px; height: 22px;
+    width: 32px; height: 32px;
     border-radius: 50%;
-    border: 2px solid #1a1a2e;
+    border: 2.5px solid #1a1a2e;
     background: linear-gradient(to bottom, #e53935 50%, #fff 50%);
     position: relative;
-    animation: pb-spin 4s linear infinite, float 4s ease-in-out infinite;
+    animation: pb-spin 3s linear infinite, float 4s ease-in-out infinite;
     flex-shrink: 0;
-    cursor: default;
+    cursor: pointer;
+    filter: drop-shadow(0 0 8px rgba(229,57,53,0.6)) drop-shadow(0 0 16px rgba(229,57,53,0.2));
+    transition: filter 0.2s ease;
+  }
+  .pokeball:hover {
+    animation: pb-spin 0.4s linear infinite, float 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 14px rgba(229,57,53,0.9)) drop-shadow(0 0 28px rgba(229,57,53,0.4));
   }
   .pokeball::before {
     content: '';
@@ -397,12 +403,13 @@
   }
   .hero-img-wrap { flex-shrink: 0; }
   .card-img {
-    width: 240px; display: block;
+    width: 160px; display: block;
     transition: transform 0.3s ease;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
   }
-  .card-img:hover { transform: scale(1.03) rotate(1deg); }
+  .card-img:hover { transform: scale(1.05) rotate(1.5deg); filter: drop-shadow(0 12px 28px rgba(0,0,0,0.6)) drop-shadow(0 0 20px rgba(245,158,11,0.2)); }
   .card-img-placeholder {
-    width: 240px; height: 335px;
+    width: 160px; height: 224px;
     background: var(--surface2); border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     font-size: 12px; color: var(--dim);
@@ -441,8 +448,8 @@
 
   @media(max-width:600px) {
     .hero-layout { flex-direction: column; align-items: center; }
-    .card-img { width: 200px; }
-    .card-img-placeholder { width: 200px; height: 280px; }
+    .card-img { width: 140px; }
+    .card-img-placeholder { width: 140px; height: 196px; }
     .hero-text { width: 100%; }
   }
   @media(max-width:360px) {
@@ -583,30 +590,59 @@
   /* ── COMPARE ────────────────────────────────────────── */
   .compare-section {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 10px; padding: 16px; margin: 0 16px 24px;
+    border-radius: 12px; padding: 16px; margin: 0 16px 24px;
     animation: fadeUp 0.5s ease 0.3s both;
   }
-  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  @media(min-width:600px){ .compare-grid { grid-template-columns: repeat(4,1fr); } }
+  .compare-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-height: 520px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border2) transparent;
+    padding-right: 2px;
+  }
+  @media(min-width:480px){ .compare-grid { grid-template-columns: repeat(4, 1fr); } }
+  @media(min-width:700px){ .compare-grid { grid-template-columns: repeat(6, 1fr); } }
+  @media(min-width:960px){ .compare-grid { grid-template-columns: repeat(8, 1fr); } }
+  .compare-grid::-webkit-scrollbar { width: 4px; }
+  .compare-grid::-webkit-scrollbar-track { background: transparent; }
+  .compare-grid::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
   .compare-card {
-    border: 1px solid var(--border); border-radius: 10px; padding: 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 6px 6px 8px;
     cursor: pointer; background: var(--bg);
-    transition: border-color 0.15s, transform 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s, transform 0.2s ease, box-shadow 0.25s ease;
     -webkit-tap-highlight-color: transparent;
     animation: fadeUp 0.4s ease both;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    text-align: center;
   }
-  .compare-card:nth-child(1){ animation-delay: 0.05s; }
-  .compare-card:nth-child(2){ animation-delay: 0.10s; }
-  .compare-card:nth-child(3){ animation-delay: 0.15s; }
-  .compare-card:nth-child(4){ animation-delay: 0.20s; }
-  .compare-card:hover { border-color: var(--border2); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-  .compare-card.selected { border: 2px solid #60a5fa; }
-  .compare-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; gap: 6px; }
-  .compare-name { font-size: 13px; font-weight: 700; }
-  .compare-set { font-size: 10px; color: var(--dim); margin-bottom: 7px; }
-  .compare-bottom { display: flex; justify-content: space-between; margin-top: 8px; }
+  .compare-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+    z-index: 2; position: relative;
+  }
+  .compare-card.selected {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 1px #60a5fa, 0 6px 24px rgba(96,165,250,0.3);
+  }
+  .compare-card-img {
+    width: 100%; border-radius: 5px;
+    display: block;
+    transition: transform 0.2s ease;
+  }
+  .compare-card-img-placeholder {
+    width: 100%; aspect-ratio: 0.714;
+    background: var(--surface2); border-radius: 5px;
+  }
+  .compare-name { font-size: 10px; font-weight: 700; line-height: 1.2; }
+  .compare-price { font-size: 10px; font-weight: 800; color: var(--gold); }
   .compare-stat-label { font-size: 9px; color: var(--dim); }
-  .compare-stat-val { font-size: 12px; font-weight: 700; }
+  .compare-stat-val { font-size: 11px; font-weight: 700; }
 
   /* ── FOOTER ─────────────────────────────────────────── */
   .footer {
@@ -664,7 +700,7 @@
 </div>
 
 <div class="compare-section">
-  <div class="section-label" style="margin-bottom:12px;">All cards at a glance — tap to switch</div>
+  <div class="section-label" style="margin-bottom:12px;" id="compareLabel">All cards — tap to view</div>
   <div class="compare-grid" id="compareGrid"></div>
 </div>
 
@@ -682,6 +718,58 @@
 </div>
 
 <script>
+// ── HISTORY / EVENT GENERATORS ───────────────────────────
+function gh(startY, sp, pp, cp) {
+  const mo = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const pts = []; let y = startY, m = 0;
+  const si = startY*12, pi = 2021*12+6, ni = 2026*12+3;
+  while(y < 2026 || (y===2026 && m<=3)) {
+    if(m%3===0) {
+      const ti = y*12+m; let p;
+      if(ti<=pi){ const t=(ti-si)/Math.max(1,pi-si); const s=t*t*(3-2*t); p=sp+(pp-sp)*s; }
+      else       { const t=(ti-pi)/Math.max(1,ni-pi); const s=t*t*(3-2*t); p=pp+(cp-pp)*s; }
+      pts.push({x:mo[m]+' '+String(y).slice(2), y:Math.round(Math.max(sp*.4,p)*10)/10});
+    }
+    m++; if(m>11){m=0;y++;}
+  }
+  return pts;
+}
+function gev(peakPct, extra) {
+  return [{d:'Jul 2021',l:'Pandemic peak',v:'+'+peakPct+'%',pos:true},{d:'Jan 2022',l:'Market correction',v:'−22%',pos:false},...(extra?[extra]:[])];
+}
+const VM={
+  'Strong buy':{bg:'rgba(34,197,94,0.15)',col:'#22c55e'},
+  'Buy':       {bg:'rgba(96,165,250,0.15)',col:'#60a5fa'},
+  'Watch':     {bg:'rgba(245,158,11,0.15)',col:'#f59e0b'},
+  'Hold':      {bg:'rgba(167,139,250,0.15)',col:'#a78bfa'},
+  'Speculative':{bg:'rgba(248,113,113,0.15)',col:'#f87171'},
+};
+function mk(f) {
+  const v=VM[f.verdict]||VM['Watch'];
+  const lo=parseFloat((f.price||'£5–£8').split('–')[0].replace(/[^0-9.]/g,''));
+  const hi=parseFloat((f.price||'£5–£8').split('–')[1].replace(/[^0-9.]/g,''));
+  const pn=f.priceNum||(lo+hi)/2;
+  const pp=f.peakP||pn*2.8; const sp=f.startP||pn*0.15;
+  return {
+    subtitle:'Full Art Ultra Rare', type:'Supporter', character:'Trainer',
+    reprint:'Low', liquidity:'Medium', upside:'+120–250%',
+    tagBg:'rgba(139,92,246,0.18)', tagColor:'#a78bfa', tag:'',
+    catalysts:['Closed set supply; older prints dwindling in NM condition','Character recognition drives sustained collector demand',"30th anniversary sentiment lifting all vintage SM-era cards"],
+    risks:['Subject to reprint in future set','Lower liquidity than flagship cards','Needs a catalyst to break out of current range'],
+    events: gev(Math.round((pp/pn-1)*100)),
+    ...f,
+    priceNum:pn,
+    verdictBg:v.bg, verdictColor:v.col,
+    id: f.id||(f.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')),
+    setShort: f.setShort||(f.set.includes(':')?f.set.split(': ').pop():f.set),
+    psa10: f.psa10||`£${Math.round(pn*3.2)}–£${Math.round(pn*6)}`,
+    t12: f.t12||Math.round(pn*1.2),
+    t24: f.t24||Math.round(pn*1.45),
+    summary: f.summary||`${f.name} is a sought-after collectible from ${f.set}. Supply is constrained from this closed set, and character recognition drives steady collector demand.`,
+    history: f.history||gh(f.year,sp,pp,pn),
+  };
+}
+
 // ── CARD DATA ────────────────────────────────────────────
 const cards = [
   {
@@ -783,6 +871,119 @@ const cards = [
     ],
     events:[{d:'Jul 2021',l:'Pandemic peak',v:'+233%',pos:true},{d:'Jan 2022',l:'Correction',v:'−25%',pos:false},{d:'Jan 2026',l:'Steady climb',v:'+6%',pos:true}],
   },
+
+  // ── SM ERA FULL ART SUPPORTERS ───────────────────────
+  mk({name:'Lusamine',set:'Sun & Moon: Forbidden Light',number:'#126/131',year:2018,price:'£6–£9',verdict:'Buy',score:74,artist:'Megumi Mizutani',psa10:'£28–£45',t12:11,t24:15,startP:1.5,peakP:9.5,tag:'Villain premium',tagBg:'rgba(248,113,113,0.15)',tagColor:'#f87171',summary:'Lusamine is the primary SM antagonist — villain cards hold a special collector niche. Forbidden Light is a less-opened set, keeping supply tight.',catalysts:["Villain character with strong name recognition across anime and game fans","Forbidden Light lower print run than base SM sets","Aether Foundation aesthetic remains popular in fan communities"],risks:['Multiple Lusamine prints across SM dilute scarcity per copy','Price flat since 2022','Needs media catalyst to break out']}),
+  mk({name:'Plumeria',set:'Sun & Moon: Burning Shadows',number:'#120/147',year:2017,price:'£5–£8',verdict:'Watch',score:70,artist:'Naoki Saito',startP:1.2,peakP:8,tag:'Saito art',tagBg:'rgba(139,92,246,0.18)',tagColor:'#a78bfa',summary:'Naoki Saito artwork consistently holds premiums across all eras. Plumeria has a dedicated fan following and Burning Shadows is a closed 2017 set.',catalysts:['Naoki Saito is among the most collected TCG artists','Burning Shadows (2017) — older supply constraint than most SM cards','Team Skull adjacent — benefits from Guzma halo effect'],risks:['Lower recognition than Guzma or Judge','No competitive catalyst in 2026','Slow moving']}),
+  mk({name:'Mallow',set:'Sun & Moon: Guardians Rising',number:'#127/145',year:2017,price:'£8–£12',verdict:'Buy',score:75,artist:'Yuka Morii',psa10:'£32–£55',t12:13,t24:18,startP:1.8,peakP:12,tag:'Character play',summary:'Mallow has surprisingly durable demand from anime fans who remember her story arc. Guardians Rising is a frequently overlooked set compared to base SM.',catalysts:['Beloved anime character with standalone story arc','Guardians Rising 2017 — strong supply constraint','Yuka Morii clay-style art is highly distinctive and collectible'],risks:['Lower competitive recognition than Judge or Cynthia','Needs anime revival or Remake catalyst','Mid-tier liquidity']}),
+  mk({name:'Wicke',set:'Sun & Moon: Burning Shadows',number:'#127/147',year:2017,price:'£7–£10',verdict:'Buy',score:71,artist:'Hitoshi Ariga',startP:1.5,peakP:10.5,tag:'Aether FA',summary:'Wicke occupies a unique niche as the sympathetic Aether Foundation figure. 2017 Burning Shadows supply is tight and Wicke has a highly engaged collector base.',catalysts:['Aether Foundation collector niche — fans seek the full set of FA Aether cards','Burning Shadows 2017 closed supply','Hitoshi Ariga art style highly distinctive'],risks:['Niche appeal compared to Elite Four or Champion cards','Price has been range-bound since 2023','Dependent on Aether storyline staying culturally relevant']}),
+  mk({name:'Olivia',set:'Sun & Moon: Guardians Rising',number:'#133/145',year:2017,price:'£6–£9',verdict:'Watch',score:69,artist:'Megumi Mizutani',startP:1.4,peakP:8.5,tag:'Island Kahuna',summary:'Olivia as Island Kahuna has moderate recognition. Supply from 2017 Guardians Rising is constrained but demand lags the top SM cards.',catalysts:['Island Kahuna collector set — fans collect all 4 Kahuna FAs','Guardians Rising 2017 supply constrained','Megumi Mizutani art broadly appreciated']}),
+  mk({name:'Kahili',set:'Sun & Moon: Team Up',number:'#165/181',year:2019,price:'£4–£6',verdict:'Watch',score:65,artist:'Naoki Saito',startP:1.0,peakP:6,t12:7,t24:9,tag:'Saito art',tagBg:'rgba(139,92,246,0.18)',tagColor:'#a78bfa',summary:'Kahili is a lower-tier SM Supporter in terms of name recognition, but benefits from Naoki Saito artwork and Team Up being a less-distributed set.'}),
+  mk({name:'Hapu',set:'Sun & Moon: Unified Minds',number:'#200/236',year:2019,price:'£4–£7',verdict:'Watch',score:64,artist:'Sanosuke Sakuma',startP:0.9,peakP:6,t12:6,t24:9,tag:'Island Kahuna',summary:'Hapu completes the Kahuna FA set alongside Olivia. Unified Minds is a large set with wider distribution, limiting supply scarcity.'}),
+  mk({name:'Nanu',set:'Sun & Moon: Lost Thunder',number:'#150/214',year:2018,price:'£4–£7',verdict:'Watch',score:65,artist:'Hitoshi Ariga',startP:0.9,peakP:6.5,summary:'Nanu benefits from Lost Thunder provenance — one of the best SM sets for FA scarcity. Recognition is limited but the art is distinctive.'}),
+  mk({name:'Sophocles',set:'Sun & Moon: Burning Shadows',number:'#123/147',year:2017,price:'£4–£7',verdict:'Watch',score:62,artist:'Tomokazu Komiya',startP:0.8,peakP:6,summary:'Sophocles is a low-tier SM Supporter but benefits from Burning Shadows being a 2017 closed set. Fan recognition moderate.'}),
+  mk({name:'Kiawe',set:'Sun & Moon: Burning Shadows',number:'#116/147',year:2017,price:'£5–£8',verdict:'Watch',score:67,artist:'Naoki Saito',startP:1.0,peakP:7.5,tag:'Saito art',tagBg:'rgba(139,92,246,0.18)',tagColor:'#a78bfa',summary:'Kiawe benefits from Naoki Saito art and 2017 Burning Shadows scarcity. Fire-type theme gives broader collector appeal.'}),
+  mk({name:'Ilima',set:'Sun & Moon: Guardians Rising',number:'#129/145',year:2017,price:'£5–£8',verdict:'Watch',score:66,artist:'Yusuke Ohmura',startP:1.0,peakP:7,summary:'Ilima is one of the Trial Captains with moderate collector recognition. Yusuke Ohmura artwork is a consistent collector premium driver.'}),
+  mk({name:'Hala',set:'Sun & Moon: Guardians Rising',number:'#126/145',year:2017,price:'£5–£8',verdict:'Watch',score:67,artist:'Takumi Wada',startP:1.0,peakP:7.5,tag:'Island Kahuna',summary:'Hala as the first Kahuna encountered in SM is well-recognised. The Island Kahuna set appeal supports his FA card.'}),
+  mk({name:'Gladion',id:'gladion',set:'Sun & Moon: Crimson Invasion',number:'#95/111',year:2017,price:'£6–£10',verdict:'Buy',score:72,artist:'Naoki Saito',startP:1.2,peakP:10,psa10:'£28–£50',tag:'Villain premium',tagBg:'rgba(248,113,113,0.15)',tagColor:'#f87171',summary:"Gladion's brooding anti-hero persona has made him one of the most popular SM characters. Crimson Invasion is a small, under-opened set."}),
+  mk({name:'Erika\'s Hospitality',id:'erikas-hospitality',set:'Sun & Moon: Team Up',number:'#174/181',year:2019,price:'£8–£14',verdict:'Buy',score:76,artist:'Yusuke Ohmura',psa10:'£35–£60',startP:1.8,peakP:14,t12:13,t24:18,tag:'Kanto icon',tagBg:'rgba(34,197,94,0.15)',tagColor:'#22c55e',summary:"Erika is a beloved Kanto Gym Leader with decades of fan recognition. This FA Supporter has become a collector favourite and benefits from Team Up being a quality set.",catalysts:["Kanto Gym Leader with 25+ years of fan recognition","Team Up is regarded as one of the best SM sets by collectors","Yusuke Ohmura art quality consistently holds premium"]}),
+  mk({name:'Ryuki',set:'Sun & Moon: Dragon Majesty',number:'#61/70',year:2018,price:'£6–£10',verdict:'Buy',score:70,artist:'Yusuke Ohmura',startP:1.2,peakP:9.5,tag:'Dragon Majesty',summary:'Dragon Majesty is a small specialty set with low distribution — one of the tightest supply constraints in the SM era. Ryuki benefits purely from scarcity.'}),
+  mk({name:'Faba',set:'Sun & Moon: Lost Thunder',number:'#173/214',year:2018,price:'£4–£6',verdict:'Watch',score:63,artist:'Naoki Saito',startP:0.8,peakP:5.5,summary:'Faba is a minor Aether Foundation character. Lost Thunder provenance and Saito art are positives but recognition is weak.'}),
+  mk({name:'Team Skull Grunt',id:'team-skull-grunt',set:'Sun & Moon',number:'#133/149',year:2017,price:'£5–£8',verdict:'Buy',score:69,artist:'Naoki Saito',startP:1.0,peakP:8,tag:'Team Skull',tagBg:'rgba(139,92,246,0.18)',tagColor:'#a78bfa',summary:'Team Skull Grunt FA captures the group aesthetic that made Team Skull culturally iconic. Benefits from the same fan energy as Guzma.'}),
+  mk({name:'Mina',set:'Sun & Moon: Team Up',number:'#163/181',year:2019,price:'£4–£6',verdict:'Watch',score:62,artist:'Megumi Mizutani',startP:0.8,peakP:5.5,summary:'Mina is a Trial Captain with limited collector recognition. Team Up set quality is a mild positive.'}),
+  mk({name:'Molayne',set:'Sun & Moon: Team Up',number:'#152/181',year:2019,price:'£4–£6',verdict:'Watch',score:62,artist:'Yusuke Ohmura',startP:0.8,peakP:5,summary:'Molayne benefits from Ohmura art but has limited standalone recognition. Team Up supply constraints are moderate.'}),
+
+  // ── XY ERA FULL ART SUPPORTERS ───────────────────────
+  mk({name:'AZ',id:'az',set:'XY: Phantom Forces',setShort:'Phantom Forces',number:'#117/119',year:2014,price:'£12–£18',verdict:'Buy',score:80,artist:'Naoki Saito',psa10:'£50–£90',upside:'+150–300%',t12:18,t24:26,startP:2.5,peakP:20,tag:'Heartbreaking story',tagBg:'rgba(96,165,250,0.18)',tagColor:'#60a5fa',summary:'AZ from Pokémon X&Y is one of the most emotionally resonant characters in the franchise. The Phantom Forces FA is the only version — no reprint risk. Naoki Saito art.',catalysts:['Only one FA version exists — no reprint dilution','Most emotionally memorable XY character — drives continuous new collector demand','Naoki Saito artwork is collectible independently of the character'],risks:['XY era has less momentum than SM era currently','Phantom Forces small set but widely opened','Requires patient hold']}),
+  mk({name:'Hex Maniac',id:'hex-maniac',set:'XY: Ancient Origins',setShort:'Ancient Origins',number:'#75/98',year:2015,price:'£12–£18',verdict:'Buy',score:79,artist:'Yusuke Ohmura',psa10:'£50–£95',upside:'+150–300%',t12:17,t24:25,startP:2.5,peakP:19,tag:'Internet icon',tagBg:'rgba(248,113,113,0.15)',tagColor:'#f87171',summary:'Hex Maniac became a cultural phenomenon beyond Pokémon, with significant internet fan art presence. Ancient Origins FA is the definitive version collectors seek.',catalysts:['Internet meme/fan art crossover vastly expands collector base','Ancient Origins (2015) closed supply','Ohmura artwork at its best — haunting character perfectly captured']}),
+  mk({name:'Diantha',set:'XY: Phantom Forces',setShort:'Phantom Forces',number:'#121/119',year:2014,price:'£10–£15',verdict:'Buy',score:78,artist:'Yusuke Ohmura',psa10:'£45–£80',t12:15,t24:22,startP:2.2,peakP:17,tag:'Champion card',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:"Diantha as Kalos Champion has strong recognition. The Phantom Forces FA is well-regarded for Ohmura's artwork and is among the better XY investment cards.",catalysts:['Kalos Champion with broad fan recognition','Phantom Forces small set — supply is tight','Ohmura artwork premium']}),
+  mk({name:'Korrina',set:'XY: Furious Fists',setShort:'Furious Fists',number:'#95/111',year:2014,price:'£8–£12',verdict:'Buy',score:76,artist:'Yusuke Ohmura',psa10:'£35–£65',t12:13,t24:18,startP:1.8,peakP:14,tag:'Gym Leader',summary:'Korrina is the most popular Kalos Gym Leader, with strong competitive and collector demand historically. Furious Fists supply is limited.'}),
+  mk({name:'Malva',set:'XY: Phantom Forces',setShort:'Phantom Forces',number:'#96/119',year:2014,price:'£8–£12',verdict:'Buy',score:75,artist:'Naoki Saito',startP:1.7,peakP:13,tag:'Elite Four',tagBg:'rgba(248,113,113,0.15)',tagColor:'#f87171',summary:'Malva is the Elite Four villain with a secret antagonist role. Saito art and villain appeal combine well.'}),
+  mk({name:'Lysandre',set:'XY: Ancient Origins',setShort:'Ancient Origins',number:'#79/98',year:2015,price:'£10–£16',verdict:'Buy',score:78,artist:'Naoki Saito',psa10:'£42–£75',t12:15,t24:22,startP:2.0,peakP:17,tag:'Villain FA',tagBg:'rgba(248,113,113,0.15)',tagColor:'#f87171',summary:'Lysandre as XY primary villain maintains collector demand. Ancient Origins is tightly supplied and Saito art ensures long-term appeal.'}),
+  mk({name:'Lysandre\'s Trump Card',id:'lysandres-trump-card',set:'XY: Phantom Forces',setShort:'Phantom Forces',number:'#99/119',year:2014,price:'£8–£14',verdict:'Buy',score:73,artist:'Naoki Saito',startP:1.6,peakP:13,tag:'Banned card',tagBg:'rgba(248,113,113,0.15)',tagColor:'#f87171',summary:'Trump Card was banned from competitive play — a fact that paradoxically drives collector interest. Banned card premiums are well-documented across TCG history.'}),
+  mk({name:'Brigette',set:'XY: BREAKthrough',setShort:'BREAKthrough',number:'#134/162',year:2015,price:'£7–£11',verdict:'Watch',score:72,artist:'Yusuke Ohmura',startP:1.5,peakP:11,summary:'Brigette was a key early-game Supporter in competitive play. BREAKthrough supply is moderate — less scarcity than smaller sets.'}),
+  mk({name:'Valerie',set:'XY: Furious Fists',setShort:'Furious Fists',number:'#93/111',year:2014,price:'£8–£12',verdict:'Buy',score:74,artist:'Yusuke Ohmura',startP:1.6,peakP:13,tag:'Fairy Gym',summary:'Valerie is beloved for her elegant design and Fairy typing theme. Ohmura artwork, small set, and distinctive aesthetic all contribute.'}),
+  mk({name:'Giovanni\'s Scheme',id:'giovannis-scheme',set:'XY: BREAKthrough',setShort:'BREAKthrough',number:'#138/162',year:2015,price:'£6–£9',verdict:'Watch',score:69,artist:'Naoki Saito',startP:1.2,peakP:9,tag:'Giovanni FA',summary:'Giovanni full art is always a draw. BREAKthrough has wider distribution limiting scarcity, but the character recognition is among the strongest in Pokémon.'}),
+  mk({name:'Teammates',set:'XY: Primal Clash',setShort:'Primal Clash',number:'#141/160',year:2015,price:'£7–£11',verdict:'Watch',score:71,artist:'Tomokazu Komiya',startP:1.4,peakP:10.5,summary:'Teammates is an unusual FA showing two rival trainers. Primal Clash was heavily opened but the card design is unique and collectible.'}),
+  mk({name:'Professor Sycamore',id:'professor-sycamore',set:'XY: Generations',setShort:'Generations',number:'#53/83',year:2016,price:'£6–£9',verdict:'Watch',score:71,artist:'Megumi Mizutani',startP:1.2,peakP:9.5,summary:"Sycamore is one of the most played Supporters ever. Generations is a special distribution set with moderate supply — not as tight as main sets."}),
+  mk({name:'Wulfric',set:'XY: BREAKpoint',setShort:'BREAKpoint',number:'#110/122',year:2016,price:'£6–£10',verdict:'Watch',score:70,artist:'Hitoshi Ariga',startP:1.2,peakP:9,summary:'Wulfric is the last Kalos Gym Leader — Ice-type and distinctive design. BREAKpoint is well-distributed so supply scarcity is moderate.'}),
+  mk({name:'Shauna',set:'XY: Generations',setShort:'Generations',number:'#55/83',year:2016,price:'£5–£8',verdict:'Watch',score:67,artist:'Yusuke Ohmura',startP:1.0,peakP:7.5,summary:'Shauna has moderate recognition from the XY games. Generations distribution was broad, limiting scarcity significantly.'}),
+  mk({name:'Tierno',set:'XY: BREAKpoint',setShort:'BREAKpoint',number:'#108/122',year:2016,price:'£5–£8',verdict:'Watch',score:65,artist:'Tomokazu Komiya',startP:0.9,peakP:7,summary:'Tierno is a minor rival character with limited standalone demand. The card primarily appeals to completionist collectors.'}),
+
+  // ── BW ERA FULL ART SUPPORTERS ───────────────────────
+  mk({name:'N',id:'n-bw',set:'Black & White: Noble Victories',setShort:'Noble Victories',number:'#92/101',year:2011,price:'£18–£30',verdict:'Buy',score:85,artist:'Yusuke Ohmura',psa10:'£80–£160',upside:'+200–400%',t12:26,t24:38,startP:3.5,peakP:38,tag:'Fan favourite',tagBg:'rgba(34,197,94,0.15)',tagColor:'#22c55e',summary:'N is the most beloved BW character with near-universal recognition. Noble Victories is the oldest and rarest printing of this FA — supply has been declining since 2011. One of the best long-hold investments in budget SM/BW era.',catalysts:['N is arguably the most beloved male trainer in the franchise — demand is permanent','Noble Victories (2011) is the oldest FA printing — supply severely constrained','Competitive play recognition adds a second collector base on top of character fans'],risks:['Has been reprinted in multiple sets','Higher entry price than most cards in guide','Liquidity depends on finding a buyer who recognises the specific Noble Victories version'],events:[{d:'Jul 2021',l:'Pandemic peak',v:'+250%',pos:true},{d:'Jan 2022',l:'Correction',v:'−28%',pos:false},{d:'Jan 2025',l:'Steady recovery',v:'+18%',pos:true}]}),
+  mk({name:'Colress',set:'Black & White: Plasma Storm',setShort:'Plasma Storm',number:'#118/135',year:2013,price:'£12–£18',verdict:'Buy',score:82,artist:'Yusuke Ohmura',psa10:'£50–£100',t12:18,t24:26,startP:2.5,peakP:22,tag:'Team Plasma',summary:'Colress has a dedicated cult following as the Team Plasma scientist. Plasma Storm is a 2013 set with significant supply constraints now.'}),
+  mk({name:'Bianca',set:'Black & White: Emerging Powers',setShort:'Emerging Powers',number:'#91/98',year:2011,price:'£8–£12',verdict:'Buy',score:75,artist:'Yusuke Ohmura',startP:1.8,peakP:14,psa10:'£35–£65',tag:'BW rival',summary:'Bianca is the beloved BW rival whose emotional arc resonated with a generation of players. Emerging Powers 2011 has very tight supply.'}),
+  mk({name:'Professor Juniper',id:'professor-juniper',set:'Black & White',setShort:'BW Base',number:'#101/114',year:2011,price:'£10–£16',verdict:'Buy',score:79,artist:'Yusuke Ohmura',psa10:'£42–£80',t12:15,t24:22,startP:2.0,peakP:18,tag:'BW Professor',summary:"Juniper is the BW Professor with a long competitive career in Standard and Expanded. BW Base 2011 is among the oldest modern FA sets."}),
+  mk({name:'Skyla',set:'Black & White: Boundaries Crossed',setShort:'Boundaries Crossed',number:'#134/149',year:2012,price:'£8–£12',verdict:'Buy',score:76,artist:'Yusuke Ohmura',startP:1.8,peakP:14,tag:'Fan favourite',summary:'Skyla is the most popular BW Gym Leader with sustained high demand. The Boundaries Crossed 2012 FA is the most sought-after version.'}),
+  mk({name:'Elesa',set:'Black & White: Emerging Powers',setShort:'Emerging Powers',number:'#91/98',year:2011,price:'£10–£15',verdict:'Buy',score:78,artist:'Naoki Saito',psa10:'£42–£80',t12:15,t24:22,startP:2.0,peakP:18,tag:'Electric Gym',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Elesa is a top-tier BW Gym Leader with strong name recognition. Saito art and 2011 supply make this a compelling buy.'}),
+  mk({name:'Iris',set:'Black & White: Plasma Blast',setShort:'Plasma Blast',number:'#81/101',year:2013,price:'£8–£12',verdict:'Buy',score:74,artist:'Yusuke Ohmura',startP:1.7,peakP:13,tag:'BW Champion',summary:'Iris as the Dragon-type BW Champion has strong recognition among players who grew up with the anime. Plasma Blast is a 2013 tightly-distributed set.'}),
+  mk({name:'Caitlin',set:'Black & White',setShort:'BW Base',number:'#78/114',year:2011,price:'£8–£12',verdict:'Buy',score:73,artist:'Naoki Saito',startP:1.6,peakP:13,summary:'Caitlin bridges Gen 4 and Gen 5 as an Elite Four member in both. Dual-generation appeal and Saito art make this a solid buy.'}),
+  mk({name:'Cheren',set:'Black & White: Emerging Powers',setShort:'Emerging Powers',number:'#91/98',year:2011,price:'£6–£10',verdict:'Watch',score:68,artist:'Yusuke Ohmura',startP:1.2,peakP:9,summary:'Cheren is a BW rival with moderate recognition. Emerging Powers 2011 is tight on supply, which is the main investment thesis.'}),
+  mk({name:'Team Plasma Grunt',id:'team-plasma-grunt',set:'Black & White: Plasma Storm',setShort:'Plasma Storm',number:'#105/135',year:2013,price:'£5–£8',verdict:'Watch',score:65,artist:'Tomokazu Komiya',startP:0.9,peakP:7.5,summary:'Team Plasma Grunt FA has niche appeal for completionist Team Plasma collectors. Plasma Storm 2013 supply is moderate.'}),
+
+  // ── MODERN SwSh / SV ERA ─────────────────────────────
+  mk({name:'Charizard VMAX',id:'charizard-vmax-rainbow',subtitle:'Rainbow Rare',set:'Sword & Shield: Darkness Ablaze',setShort:'Darkness Ablaze',number:'#160/189',year:2020,price:'£18–£30',verdict:'Buy',score:84,artist:'PLANETA Mochizuki',type:'Pokémon',character:'Charizard',psa10:'£80–£160',upside:'+150–300%',t12:26,t24:38,startP:3.5,peakP:40,tag:'Charizard tax',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'The Charizard VMAX Rainbow Rare is the definitive SwSh-era Charizard card. Charizard premiums are permanent — this is the most liquid card in the SwSh era.',catalysts:['Charizard is the most valuable recurring brand in all of TCG','Rainbow Rare format has proven to hold value across all sets','Darkness Ablaze is now a closed set with declining NM supply'],risks:['Multiple competing Charizard cards absorb some demand','SwSh era seen as less prestigious than vintage or SM era','High entry price for this guide']}),
+  mk({name:'Pikachu VMAX',id:'pikachu-vmax',subtitle:'Rainbow Rare',set:'Sword & Shield: Vivid Voltage',setShort:'Vivid Voltage',number:'#188/185',year:2020,price:'£12–£20',verdict:'Buy',score:80,artist:'PLANETA Kuwahara',type:'Pokémon',character:'Pikachu',psa10:'£50–£100',t12:18,t24:28,startP:2.5,peakP:30,tag:'Pikachu premium',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Pikachu VMAX as a giant Pikachu is visually spectacular and occupies a permanent premium niche. Vivid Voltage is a popular set whose supply is declining.'}),
+  mk({name:'Umbreon VMAX',id:'umbreon-vmax-alt',subtitle:'Alt Art',set:'Sword & Shield: Evolving Skies',setShort:'Evolving Skies',number:'#215/203',year:2021,price:'£40–£80',verdict:'Buy',score:88,artist:'PLANETA Tsuruoka',type:'Pokémon',character:'Umbreon',psa10:'£160–£350',upside:'+150–300%',t12:60,t24:90,startP:8,peakP:100,tag:'Eeveelution grail',tagBg:'rgba(34,197,94,0.15)',tagColor:'#22c55e',summary:'Umbreon VMAX Alt Art from Evolving Skies is the most sought-after SwSh-era Eeveelution card. The night-sky artwork is widely considered one of the best TCG illustrations ever.',catalysts:['Most popular Dark-type Eeveelution with massive fan base','Alt Art format is the most prestigious SwSh card type','Evolving Skies set cemented as the premier SwSh collector set'],risks:['High entry price significantly above guide budget','Fakes and proxies circulate widely — verification essential','Market can be illiquid at high prices']}),
+  mk({name:'Rayquaza VMAX',id:'rayquaza-vmax-alt',subtitle:'Alt Art',set:'Sword & Shield: Evolving Skies',setShort:'Evolving Skies',number:'#218/203',year:2021,price:'£30–£60',verdict:'Buy',score:87,artist:'PLANETA Mochizuki',type:'Pokémon',character:'Rayquaza',psa10:'£120–£280',t12:50,t24:80,startP:6,peakP:80,tag:'Dragon grail',tagBg:'rgba(34,197,94,0.15)',tagColor:'#22c55e',summary:'Rayquaza VMAX Alt Art is the definitive Dragon-type alt art. Evolving Skies provenance and Rayquaza brand permanence make this a strong long-term hold.'}),
+  mk({name:'Sylveon VMAX',id:'sylveon-vmax',subtitle:'Rainbow Rare',set:'Sword & Shield: Evolving Skies',setShort:'Evolving Skies',number:'#212/203',year:2021,price:'£10–£18',verdict:'Buy',score:76,artist:'PLANETA Kuwahara',type:'Pokémon',character:'Sylveon',psa10:'£42–£80',t12:15,t24:22,startP:2,peakP:22,tag:'Eeveelution',summary:'Sylveon Rainbow Rare from Evolving Skies is a top Fairy-type Eeveelution card. Evolving Skies set premium and Sylveon fan following support the price.'}),
+  mk({name:'Espeon VMAX',id:'espeon-vmax',subtitle:'Rainbow Rare',set:'Sword & Shield: Fusion Strike',setShort:'Fusion Strike',number:'#270/264',year:2021,price:'£8–£15',verdict:'Buy',score:73,artist:'PLANETA',type:'Pokémon',character:'Espeon',psa10:'£35–£70',startP:1.5,peakP:18,summary:'Espeon VMAX in Fusion Strike captures the Psychic Eeveelution with strong artwork. Fusion Strike is a large set but Eeveelution demand is permanent.'}),
+  mk({name:'Charizard V',id:'charizard-v-alt',subtitle:'Alt Art',set:'Sword & Shield: Darkness Ablaze',setShort:'Darkness Ablaze',number:'#020/189',year:2020,price:'£12–£20',verdict:'Buy',score:79,artist:'Ayaka Yoshida',type:'Pokémon',character:'Charizard',psa10:'£50–£100',t12:18,t24:28,startP:2.5,peakP:28,tag:'Charizard alt',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'The Charizard V Alt Art shows Charizard in a highly dynamic pose. Alt Art format and Charizard brand permanence make this a reliable hold.'}),
+  mk({name:'Zacian V',id:'zacian-v-alt',subtitle:'Alt Art',set:'Sword & Shield',setShort:'Sword & Shield',number:'#211/202',year:2020,price:'£10–£18',verdict:'Watch',score:77,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Zacian',psa10:'£42–£80',startP:2.0,peakP:22,tag:'Box mascot',summary:'Zacian V Alt Art is the cover mascot for Sword & Shield. Mitsuhiro Arita artwork adds collectibility. Box mascot cards historically hold value.'}),
+  mk({name:'Eternatus VMAX',id:'eternatus-vmax',subtitle:'Rainbow Rare',set:'Sword & Shield: Darkness Ablaze',setShort:'Darkness Ablaze',number:'#161/189',year:2020,price:'£8–£14',verdict:'Watch',score:72,artist:'PLANETA Tsuruoka',type:'Pokémon',character:'Eternatus',psa10:'£32–£60',startP:1.5,peakP:17,summary:"Eternatus VMAX has a striking all-dark aesthetic. Supply is constrained from Darkness Ablaze but the character lacks Charizard's universal appeal."}),
+  mk({name:'Gardevoir ex',id:'gardevoir-ex-pev',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Paldea Evolved',setShort:'Paldea Evolved',number:'#86/193',year:2023,price:'£10–£18',verdict:'Buy',score:78,artist:'Atsuko Nishida',type:'Pokémon',character:'Gardevoir',psa10:'£42–£85',t12:16,t24:24,startP:2.0,peakP:22,tag:'SIR beauty',summary:"Gardevoir ex SIR is one of the most visually stunning SV-era cards. Gardevoir's decades of popularity ensure permanent collector demand.",catalysts:['Gardevoir has near-universal recognition across 25 years of Pokémon','SIR format is the most prestigious SV card tier','Atsuko Nishida is the original Gardevoir designer — adds provenance']}),
+  mk({name:'Charizard ex',id:'charizard-ex-151',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: 151',setShort:'151',number:'#199/165',year:2023,price:'£8–£15',verdict:'Buy',score:76,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Charizard',psa10:'£35–£75',startP:1.6,peakP:20,tag:'Charizard 151',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'151 set is the Gen 1 nostalgia pinnacle. Charizard ex SIR by original Pokémon artist Mitsuhiro Arita is a landmark card for the set.'}),
+  mk({name:'Mewtwo ex',id:'mewtwo-ex-151',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: 151',setShort:'151',number:'#205/165',year:2023,price:'£15–£28',verdict:'Buy',score:81,artist:'Kouki Saitou',type:'Pokémon',character:'Mewtwo',psa10:'£65–£130',t12:22,t24:34,startP:3.0,peakP:36,tag:'Mewtwo SIR',tagBg:'rgba(96,165,250,0.15)',tagColor:'#60a5fa',summary:'Mewtwo ex SIR from 151 is the most sought-after Mewtwo card of the modern era. Mewtwo brand permanence and 151 set prestige combine powerfully.'}),
+  mk({name:'Pikachu ex',id:'pikachu-ex-pev',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Paldea Evolved',setShort:'Paldea Evolved',number:'#175/193',year:2023,price:'£8–£14',verdict:'Buy',score:74,artist:'Atsuko Nishida',type:'Pokémon',character:'Pikachu',psa10:'£35–£70',startP:1.5,peakP:18,tag:'Pikachu SIR',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Pikachu ex SIR captures the franchise mascot in a lush natural setting. Pikachu premiums are permanent and SIR format is prestigious.'}),
+  mk({name:'Eevee ex',id:'eevee-ex-151',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: 151',setShort:'151',number:'#133/165',year:2023,price:'£6–£11',verdict:'Buy',score:70,artist:'Kyoko Umemoto',type:'Pokémon',character:'Eevee',psa10:'£28–£55',startP:1.2,peakP:14,tag:'Eeveelution lore',summary:'Eevee SIR from 151 benefits from Eeveelution collector culture and the prestige of the 151 set. Entry-level SIR with solid fundamentals.'}),
+  mk({name:'Lugia V',id:'lugia-v-alt',subtitle:'Alt Art',set:'Sword & Shield: Silver Tempest',setShort:'Silver Tempest',number:'#186/195',year:2022,price:'£8–£15',verdict:'Buy',score:74,artist:'Ryuta Fuse',type:'Pokémon',character:'Lugia',psa10:'£35–£70',startP:1.5,peakP:20,tag:'Legendary alt',summary:'Lugia V Alt Art is one of the best Silver Tempest cards. Ryuta Fuse artwork and Lugia legendary status support the price long-term.'}),
+  mk({name:'Giratina VSTAR',id:'giratina-vstar-alt',subtitle:'Alt Art',set:'Sword & Shield: Lost Origin',setShort:'Lost Origin',number:'#196/196',year:2022,price:'£6–£12',verdict:'Buy',score:72,artist:'PLANETA Igarashi',type:'Pokémon',character:'Giratina',psa10:'£28–£55',startP:1.2,peakP:16,tag:'Lost Origin',summary:'Giratina VSTAR Alt Art is the secret rare of Lost Origin. Giratina has a dedicated Distortion World fan base and the artwork is stunning.'}),
+  mk({name:'Arceus VSTAR',id:'arceus-vstar-rainbow',subtitle:'Rainbow Rare',set:'Sword & Shield: Brilliant Stars',setShort:'Brilliant Stars',number:'#176/172',year:2022,price:'£5–£10',verdict:'Watch',score:70,artist:'PLANETA',type:'Pokémon',character:'Arceus',psa10:'£22–£45',startP:1.0,peakP:13,summary:'Arceus VSTAR Rainbow Rare headlined Brilliant Stars. Arceus as the Mythical Creator Pokémon ensures permanent collector demand.'}),
+  mk({name:'Calyrex VMAX Shadow',id:'calyrex-vmax-shadow',subtitle:'Alt Art',set:'Sword & Shield: Chilling Reign',setShort:'Chilling Reign',number:'#205/198',year:2021,price:'£8–£15',verdict:'Watch',score:73,artist:'PLANETA Mochizuki',type:'Pokémon',character:'Calyrex',psa10:'£32–£65',startP:1.5,peakP:20,tag:'Crown Tundra',summary:'Shadow Rider Calyrex VMAX Alt Art was one of the most sought-after cards from Chilling Reign. Crown Tundra lore gives the character lasting appeal.'}),
+  mk({name:'Palkia VSTAR',id:'palkia-vstar-alt',subtitle:'Alt Art',set:'Sword & Shield: Astral Radiance',setShort:'Astral Radiance',number:'#209/189',year:2022,price:'£5–£9',verdict:'Watch',score:68,artist:'PLANETA',type:'Pokémon',character:'Palkia',psa10:'£22–£45',startP:1.0,peakP:12,summary:'Palkia VSTAR Alt Art benefits from Sinnoh nostalgia and Arceus/BD-SP remakes driving legendary demand.'}),
+  mk({name:'Dialga VSTAR',id:'dialga-vstar-alt',subtitle:'Alt Art',set:'Sword & Shield: Astral Radiance',setShort:'Astral Radiance',number:'#211/189',year:2022,price:'£5–£9',verdict:'Watch',score:68,artist:'PLANETA',type:'Pokémon',character:'Dialga',psa10:'£22–£45',startP:1.0,peakP:11,summary:'Dialga VSTAR Alt Art pairs with Palkia as the Astral Radiance legendaries. Sinnoh nostalgia and Time-type appeal support demand.'}),
+
+  // ── CLASSIC / VINTAGE ERA ────────────────────────────
+  mk({name:'Charizard',id:'charizard-base',subtitle:'Holo Rare',set:'Base Set',number:'#4/102',year:1999,price:'£150–£400',verdict:'Strong buy',score:95,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Charizard',psa10:'£2000–£8000',upside:'+400–1500%',t12:320,t24:480,startP:20,peakP:500,tag:'The grail',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Base Set Charizard is the single most iconic and valuable Pokémon card. Demand is permanent, global, and grows with each new generation of collectors. The ultimate long-hold investment.',catalysts:['Most recognisable trading card in history outside of football','New generations of collectors always prioritise Base Set Charizard first','1st Edition and Shadowless variants command 3-10× premium over Unlimited'],risks:['Extremely high entry price — above guide budget','High-grade copies only; damaged copies have limited upside','PSA grading queues and costs add to total cost'],events:[{d:'Jul 2021',l:'Logan Paul effect',v:'+600%',pos:true},{d:'Jan 2022',l:'Correction',v:'−40%',pos:false},{d:'Jan 2026',l:'30th anniversary',v:'+25%',pos:true}]}),
+  mk({name:'Blastoise',id:'blastoise-base',subtitle:'Holo Rare',set:'Base Set',number:'#2/102',year:1999,price:'£25–£60',verdict:'Buy',score:86,artist:'Ken Sugimori',type:'Pokémon',character:'Blastoise',psa10:'£200–£500',upside:'+300–700%',t12:50,t24:80,startP:4,peakP:90,tag:'Starter holo',summary:'Blastoise is the most collected Water-type starter card. Base Set holo with Ken Sugimori original art. Permanent demand from Gen 1 players.',events:[{d:'Jul 2021',l:'Pandemic peak',v:'+400%',pos:true},{d:'Jan 2022',l:'Correction',v:'−35%',pos:false},{d:'Jan 2026',l:'30th anniversary',v:'+15%',pos:true}]}),
+  mk({name:'Venusaur',id:'venusaur-base',subtitle:'Holo Rare',set:'Base Set',number:'#15/102',year:1999,price:'£20–£50',verdict:'Buy',score:84,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Venusaur',psa10:'£160–£400',upside:'+300–600%',t12:40,t24:65,startP:3.5,peakP:75,tag:'Starter holo',summary:'Venusaur is the underappreciated starter — often cheaper than Charizard and Blastoise but with comparable long-term fundamentals. 30th anniversary wave approaching.'}),
+  mk({name:'Mewtwo',id:'mewtwo-base',subtitle:'Holo Rare',set:'Base Set',number:'#10/102',year:1999,price:'£12–£30',verdict:'Buy',score:83,artist:'Ken Sugimori',type:'Pokémon',character:'Mewtwo',psa10:'£80–£200',upside:'+250–500%',t12:24,t24:38,startP:2.5,peakP:45,tag:'Legendary',summary:'Mewtwo Base Set holo is the definitive Legendary Pokémon card. Mewtwo brand is second only to Charizard for enduring collector demand.'}),
+  mk({name:'Gyarados',id:'gyarados-base',subtitle:'Holo Rare',set:'Base Set',number:'#6/102',year:1999,price:'£10–£25',verdict:'Buy',score:79,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Gyarados',psa10:'£60–£150',upside:'+200–400%',t12:20,t24:32,startP:2.0,peakP:38,tag:'Sea monster',summary:'Gyarados has permanent collector demand driven by its transformation arc from Magikarp. Base Set holo supply has been declining for 25 years.'}),
+  mk({name:'Zapdos',id:'zapdos-base',subtitle:'Holo Rare',set:'Base Set',number:'#16/102',year:1999,price:'£8–£20',verdict:'Buy',score:77,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Zapdos',psa10:'£45–£110',upside:'+200–400%',t12:16,t24:26,startP:1.5,peakP:30,tag:'Legendary bird',summary:'Zapdos is the most popular of the three legendary birds. Base Set holo from 1999 with permanent collector demand.'}),
+  mk({name:'Alakazam',id:'alakazam-base',subtitle:'Holo Rare',set:'Base Set',number:'#1/102',year:1999,price:'£10–£24',verdict:'Buy',score:78,artist:'Ken Sugimori',type:'Pokémon',character:'Alakazam',psa10:'£55–£130',upside:'+200–400%',t12:19,t24:30,startP:2.0,peakP:35,tag:'Card #1',summary:'Alakazam is the #1 card in Base Set — a psychological premium applies. Ken Sugimori art and first-position number drive collector demand beyond the Pokémon itself.'}),
+  mk({name:'Ninetales',id:'ninetales-base',subtitle:'Holo Rare',set:'Base Set',number:'#12/102',year:1999,price:'£8–£20',verdict:'Buy',score:76,artist:'Ken Sugimori',type:'Pokémon',character:'Ninetales',psa10:'£40–£100',upside:'+200–350%',startP:1.5,peakP:28,tag:'Vintage',summary:'Ninetales has a dedicated fan base drawn to its elegant Fire-type design. Base Set holo from 1999 with steady long-term appreciation.'}),
+  mk({name:'Gengar',id:'gengar-fossil',subtitle:'Holo Rare',set:'Fossil',number:'#5/62',year:1999,price:'£8–£20',verdict:'Buy',score:78,artist:'Keiji Kinebuchi',type:'Pokémon',character:'Gengar',psa10:'£42–£100',upside:'+200–400%',t12:16,t24:26,startP:1.5,peakP:28,tag:'Ghost-type grail',summary:"Gengar is the most beloved Ghost-type Pokémon. The Fossil holo from 1999 is the definitive version. Gengar's spooky aesthetic ensures permanent demand from fans beyond TCG."}),
+  mk({name:'Dragonite',id:'dragonite-fossil',subtitle:'Holo Rare',set:'Fossil',number:'#4/62',year:1999,price:'£7–£18',verdict:'Buy',score:75,artist:'Kagemaru Himeno',type:'Pokémon',character:'Dragonite',psa10:'£35–£85',upside:'+200–350%',startP:1.3,peakP:25,tag:'Dragon rare',summary:'Dragonite is the original Dragon-type icon and remains one of the most beloved Pokémon. Fossil holo 1999 supply is very constrained.'}),
+  mk({name:'Lapras',id:'lapras-fossil',subtitle:'Holo Rare',set:'Fossil',number:'#9/62',year:1999,price:'£6–£15',verdict:'Buy',score:73,artist:'Keiji Kinebuchi',type:'Pokémon',character:'Lapras',psa10:'£28–£65',upside:'+150–300%',startP:1.2,peakP:20,summary:'Lapras is a fan-favourite Water-type with a gentle aesthetic. Fossil holo from 1999 benefits from decades of supply constraint.'}),
+  mk({name:'Machamp 1st Edition',id:'machamp-1st-ed',subtitle:'Holo Rare 1st Edition',set:'Base Set',number:'#8/102',year:1999,price:'£15–£40',verdict:'Buy',score:82,artist:'Ken Sugimori',type:'Pokémon',character:'Machamp',psa10:'£100–£280',upside:'+300–600%',t12:28,t24:45,startP:3,peakP:58,tag:'1st Ed starter',tagBg:'rgba(34,197,94,0.15)',tagColor:'#22c55e',summary:'Machamp 1st Edition was the only 1st Ed holo in Base Set starter decks — meaning millions of kids had one, yet NM copies are surprisingly scarce 25 years later.',events:[{d:'Jul 2021',l:'1st Ed hype',v:'+300%',pos:true},{d:'Jan 2022',l:'Correction',v:'−30%',pos:false}]}),
+  mk({name:'Hitmonchan',id:'hitmonchan-base',subtitle:'Holo Rare',set:'Base Set',number:'#7/102',year:1999,price:'£7–£16',verdict:'Buy',score:74,artist:'Ken Sugimori',type:'Pokémon',character:'Hitmonchan',psa10:'£32–£75',upside:'+200–350%',startP:1.3,peakP:22,summary:'Hitmonchan was one of the most played competitive cards in Base Set era. Competitive history adds provenance beyond just collector sentiment.'}),
+  mk({name:'Jolteon',id:'jolteon-jungle',subtitle:'Holo Rare',set:'Jungle',number:'#4/64',year:1999,price:'£8–£18',verdict:'Buy',score:76,artist:'Atsuko Nishida',type:'Pokémon',character:'Jolteon',psa10:'£38–£90',upside:'+200–350%',startP:1.5,peakP:26,tag:'Eeveelution',summary:'Jolteon Jungle holo is the most sought-after Eeveelution from the Jungle set. Atsuko Nishida original art and Eeveelution collector culture drive demand.'}),
+  mk({name:'Vaporeon',id:'vaporeon-jungle',subtitle:'Holo Rare',set:'Jungle',number:'#12/64',year:1999,price:'£8–£18',verdict:'Buy',score:75,artist:'Atsuko Nishida',type:'Pokémon',character:'Vaporeon',psa10:'£35–£85',upside:'+200–350%',startP:1.5,peakP:25,tag:'Eeveelution',summary:'Vaporeon Jungle holo pairs with Jolteon for Eeveelution set collectors. Atsuko Nishida art and 1999 supply constraints.'}),
+  mk({name:'Flareon',id:'flareon-jungle',subtitle:'Holo Rare',set:'Jungle',number:'#3/64',year:1999,price:'£8–£18',verdict:'Buy',score:75,artist:'Atsuko Nishida',type:'Pokémon',character:'Flareon',psa10:'£35–£85',upside:'+200–350%',startP:1.5,peakP:25,tag:'Eeveelution',summary:'Flareon Jungle holo completes the original Eeveelution trio from 1999. Fire-type fan base adds an extra demand vector.'}),
+  mk({name:'Scyther',id:'scyther-jungle',subtitle:'Holo Rare',set:'Jungle',number:'#10/64',year:1999,price:'£6–£14',verdict:'Buy',score:73,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Scyther',psa10:'£28–£65',upside:'+200–300%',startP:1.2,peakP:20,summary:'Scyther was a top competitive card in early Base Set era. Collector demand from the competitive history remains active.'}),
+  mk({name:'Clefable',id:'clefable-jungle',subtitle:'Holo Rare',set:'Jungle',number:'#1/64',year:1999,price:'£5–£12',verdict:'Watch',score:70,artist:'Keiji Kinebuchi',type:'Pokémon',character:'Clefable',psa10:'£22–£55',upside:'+150–300%',startP:1.0,peakP:16,summary:'Clefable is card #1 in Jungle set — same #1 premium as Alakazam in Base Set. Fairy-type retroactively adds thematic appeal.'}),
+
+  // ── GOLD STARS ──────────────────────────────────────
+  mk({name:'Umbreon Gold Star',id:'umbreon-gold-star',subtitle:'Gold Star Holo',set:'EX: Unseen Forces',setShort:'Unseen Forces',number:'#17/115',year:2005,price:'£80–£180',verdict:'Strong buy',score:92,artist:'Masakazu Fukuda',type:'Pokémon',character:'Umbreon',psa10:'£600–£1800',upside:'+400–900%',t12:140,t24:220,startP:15,peakP:250,tag:'Gold Star grail',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Umbreon Gold Star is the single most sought-after Gold Star card and one of the most valuable cards from the EX era. Gold Star rarity was 1:88 packs making true NM copies extremely scarce.',catalysts:['1:88 pack pull rate — genuine scarcity unlike modern rare cards','Umbreon as most popular Eeveelution commands permanent premium','EX era Gold Stars are increasingly recognised as the vintage equivalent of modern alt arts'],risks:['Far above guide budget — aspirational entry','Many fakes and trimmed cards circulate — authentication essential','Illiquid at this price point'],events:[{d:'Jul 2021',l:'Gold Star wave',v:'+400%',pos:true},{d:'Jan 2022',l:'Correction',v:'−30%',pos:false},{d:'Jan 2025',l:'EX era renaissance',v:'+35%',pos:true}]}),
+  mk({name:'Espeon Gold Star',id:'espeon-gold-star',subtitle:'Gold Star Holo',set:'EX: Unseen Forces',setShort:'Unseen Forces',number:'#16/115',year:2005,price:'£60–£140',verdict:'Strong buy',score:91,artist:'Masakazu Fukuda',type:'Pokémon',character:'Espeon',psa10:'£450–£1400',upside:'+400–800%',t12:110,t24:180,startP:12,peakP:200,tag:'Gold Star',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Espeon Gold Star sits just below Umbreon as the second most coveted Unseen Forces Gold Star. Psychic Eeveelution with identical pack-pull scarcity to Umbreon.'}),
+  mk({name:'Charizard Gold Star',id:'charizard-gold-star',subtitle:'Gold Star Holo',set:'EX: Dragon Frontiers',setShort:'Dragon Frontiers',number:'#100/101',year:2006,price:'£120–£300',verdict:'Strong buy',score:93,artist:'Ryo Ueda',type:'Pokémon',character:'Charizard',psa10:'£900–£3000',upside:'+500–1000%',t12:220,t24:360,startP:20,peakP:450,tag:'Charizard Gold Star',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Charizard Gold Star is the pinnacle of EX era cards. #100/101 secret rare, 1:88 pull rate, Charizard brand. One of the most coveted cards outside Base Set 1st Edition.',catalysts:['Charizard × Gold Star = maximum collector demand intersection','Dragon Frontiers was a short-print set — supply even scarcer than Unseen Forces','Shiny Charizard aesthetic drives demand independent of base Charizard collectors'],risks:['Far above guide budget','Authentication and condition are critical — heavily faked','Illiquid at this level']}),
+  mk({name:'Mewtwo Gold Star',id:'mewtwo-gold-star',subtitle:'Gold Star Holo',set:'EX: Holon Phantoms',setShort:'Holon Phantoms',number:'#103/110',year:2006,price:'£80–£200',verdict:'Strong buy',score:92,artist:'Ryo Ueda',type:'Pokémon',character:'Mewtwo',psa10:'£600–£2000',upside:'+400–900%',t12:150,t24:240,startP:15,peakP:280,tag:'Gold Star',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Mewtwo Gold Star is the definitive EX era Mewtwo card. Shiny Mewtwo aesthetic and the prestige of the Gold Star tier make this a permanent investment grade card.'}),
+  mk({name:'Pikachu Gold Star',id:'pikachu-gold-star',subtitle:'Gold Star Holo',set:'POP Series 5',number:'#100/101',year:2006,price:'£40–£90',verdict:'Buy',score:88,artist:'Naoyo Kimura',type:'Pokémon',character:'Pikachu',psa10:'£280–£700',upside:'+300–600%',t12:70,t24:110,startP:8,peakP:130,tag:'Gold Star Pikachu',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Pikachu Gold Star from POP Series 5 was a hard-to-obtain promo making it rarer than most Gold Stars. Pikachu brand and Gold Star tier together.'}),
+  mk({name:'Rayquaza Gold Star',id:'rayquaza-gold-star',subtitle:'Gold Star Holo',set:'EX: Deoxys',setShort:'EX Deoxys',number:'#107/107',year:2005,price:'£60–£150',verdict:'Strong buy',score:90,artist:'Masakazu Fukuda',type:'Pokémon',character:'Rayquaza',psa10:'£450–£1300',upside:'+400–800%',t12:110,t24:180,startP:12,peakP:220,tag:'Gold Star',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Rayquaza Gold Star is #107/107 — the secret rare of EX Deoxys. Dragon-type Gold Star with Rayquaza permanent collector premium.'}),
+  mk({name:'Vaporeon Gold Star',id:'vaporeon-gold-star',subtitle:'Gold Star Holo',set:'EX: Power Keepers',setShort:'Power Keepers',number:'#101/108',year:2007,price:'£50–£120',verdict:'Buy',score:89,artist:'Naoyo Kimura',type:'Pokémon',character:'Vaporeon',psa10:'£380–£1000',upside:'+400–800%',startP:10,peakP:180,tag:'Gold Star',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Vaporeon Gold Star from Power Keepers pairs with Flareon Gold Star for Eeveelution set collectors. Power Keepers was the last EX era set — lowest distribution.'}),
+  mk({name:'Flareon Gold Star',id:'flareon-gold-star',subtitle:'Gold Star Holo',set:'EX: Power Keepers',setShort:'Power Keepers',number:'#100/108',year:2007,price:'£50–£120',verdict:'Buy',score:89,artist:'Naoyo Kimura',type:'Pokémon',character:'Flareon',psa10:'£380–£1000',upside:'+400–800%',startP:10,peakP:175,tag:'Gold Star',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Flareon Gold Star from Power Keepers is the Fire Eeveelution Gold Star. Final EX set with lowest print run — extremely scarce in NM condition.'}),
+
+  // ── SPECIAL / PROMO / NEO ERA ────────────────────────
+  mk({name:'Crystal Charizard',id:'crystal-charizard',subtitle:'Crystal Holo',set:'Skyridge',number:'#146/144',year:2003,price:'£80–£200',verdict:'Strong buy',score:91,artist:'Ryo Ueda',type:'Pokémon',character:'Charizard',psa10:'£700–£2500',upside:'+500–1000%',t12:150,t24:240,startP:15,peakP:300,tag:'Crystal rarity',tagBg:'rgba(96,165,250,0.15)',tagColor:'#60a5fa',summary:'Crystal Charizard from Skyridge is a secret rare Crystal-type holo — one of the rarest card types from the e-Reader era. Crystal-type cards were notoriously hard to obtain and NM copies are extremely scarce.',catalysts:['Crystal-type is the rarest card category from the e-Reads era','Skyridge itself is a very limited distribution set from 2003','Charizard brand premium on top of crystal rarity'],risks:['Far above guide budget','Skyridge cards are heavily counterfeited — authentication essential','Very low liquidity outside specialist auctions']}),
+  mk({name:'Shining Charizard',id:'shining-charizard',subtitle:'Shining Holo',set:'Neo Destiny',number:'#107/105',year:2000,price:'£30–£80',verdict:'Buy',score:87,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Charizard',psa10:'£220–£600',upside:'+400–700%',t12:60,t24:95,startP:6,peakP:110,tag:'Shining rare',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Shining Charizard from Neo Destiny is the original "shiny" Charizard card. #107/105 secret rare from 2000 — one of the earliest examples of secret rare printing.',events:[{d:'Jul 2021',l:'Neo era discovery',v:'+280%',pos:true},{d:'Jan 2022',l:'Correction',v:'−28%',pos:false}]}),
+  mk({name:'Shining Mewtwo',id:'shining-mewtwo',subtitle:'Shining Holo',set:'Neo Destiny',number:'#109/105',year:2000,price:'£25–£60',verdict:'Buy',score:84,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Mewtwo',psa10:'£180–£500',upside:'+350–650%',t12:48,t24:75,startP:5,peakP:95,tag:'Shining rare',summary:'Shining Mewtwo is one of only three Shining Pokémon in Neo Destiny. Original Shiny Mewtwo with Arita art — one of the earliest shiny concept cards in existence.'}),
+  mk({name:'Shining Magikarp',id:'shining-magikarp',subtitle:'Shining Holo',set:'Neo Revelation',number:'#66/64',year:2000,price:'£12–£30',verdict:'Buy',score:78,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Magikarp',psa10:'£80–£200',upside:'+250–500%',t12:22,t24:35,startP:2.5,peakP:45,tag:'Shining rare',summary:'Shining Magikarp from Neo Revelation is the original shiny Magikarp card — iconic due to the Magikarp-to-Gyarados transformation lore. #66/64 secret rare.'}),
+  mk({name:'Charizard ex',id:'charizard-ex-df',subtitle:'ex Holo Rare',set:'EX: Dragon Frontiers',setShort:'Dragon Frontiers',number:'#4/101',year:2006,price:'£25–£60',verdict:'Buy',score:85,artist:'Ryo Ueda',type:'Pokémon',character:'Charizard',psa10:'£160–£400',upside:'+300–600%',t12:48,t24:78,startP:5,peakP:90,tag:'EX era Charizard',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:"Charizard ex from Dragon Frontiers is the standout Charizard card from the EX era. Gold Star provenance set and excellent Ryo Ueda artwork. The 'dark' colour scheme is distinctive.",events:[{d:'Jul 2021',l:'EX era discovery',v:'+320%',pos:true},{d:'Jan 2022',l:'Correction',v:'−30%',pos:false}]}),
+  mk({name:'Ancient Mew',id:'ancient-mew',subtitle:'Movie Promo Holo',set:'Pokémon: The Movie 2000',setShort:'Movie 2000',number:'Promo',year:2000,price:'£4–£10',verdict:'Watch',score:65,artist:'Keiji Kinebuchi',type:'Pokémon',character:'Mew',psa10:'£25–£60',upside:'+150–300%',startP:0.8,peakP:12,summary:'Ancient Mew is the most widely owned promo card in history — given free in cinemas with the 2000 movie. Most copies are played condition but NM copies in original booklet attract collector premium.',catalysts:['Strong nostalgic trigger — millions of people who attended the movie owned one','Mew brand permanent collector demand','NM with original booklet and insert scarce despite huge total print run'],risks:['Most copies are played or poorly stored','Very low value in average condition — only NM commands premium','Lacks competitive or investment cachet']}),
+  mk({name:'Birthday Pikachu',id:'birthday-pikachu',subtitle:'Base Set Promo',set:'Base Set Promos',number:'#24',year:1999,price:'£8–£20',verdict:'Watch',score:72,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Pikachu',psa10:'£55–£130',upside:'+200–350%',startP:1.5,peakP:25,summary:'Birthday Pikachu was only available from the Pokémon Fan Club in Japan — extremely limited distribution. The birthday theme gives it an emotionally resonant niche.',catalysts:['Limited Fan Club distribution — genuine scarcity','Birthday theme creates uniquely personal collector appeal','Mitsuhiro Arita art with birthday cake Pikachu design is iconic']}),
+  mk({name:'Surfing Pikachu',id:'surfing-pikachu',subtitle:'XY Evolutions Promo',set:'XY Evolutions',setShort:'Evolutions',number:'#Promo XY134',year:2016,price:'£6–£15',verdict:'Watch',score:69,artist:'Atsuko Nishida',type:'Pokémon',character:'Pikachu',psa10:'£32–£75',upside:'+200–350%',startP:1.2,peakP:18,summary:'Surfing Pikachu in the modern Evolutions artwork by original Nishida is distinctive. Pikachu variants with water themes have a dedicated niche following.'}),
+  mk({name:'Pikachu Illustrator',id:'pikachu-illustrator',subtitle:'Promo Holo',set:'CoroCoro Comic',number:'Promo',year:1998,price:'£500000+',verdict:'Watch',score:99,artist:'Atsuko Nishida',type:'Pokémon',character:'Pikachu',psa10:'£5000000+',upside:'Incalculable',t12:600000,t24:750000,startP:1000,peakP:6000000,tag:'Most valuable card',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Pikachu Illustrator is the rarest and most valuable Pokémon card in existence. Only 39 copies are believed to exist. This is purely aspirational — included for reference.',catalysts:['Only 39 known copies in existence','Awarded only to illustration contest winners in 1998 Japan','PSA 10 copy sold for $5.275M in 2022'],risks:['Completely out of reach for virtually all collectors','Any circulation is a major financial event — illiquidity is extreme','Verification requires professional authentication']}),
 ];
 
 // Card of the Day — Acerola, not in the main 4 tabs
@@ -807,13 +1008,21 @@ const cotdCard = {
 const cardImages = {};   // { id: url }
 const cardPrices = {};   // { id: { cm, tcp } }
 
-const cardApiQueries = {
+// Auto-generate API queries: key cards get specific queries, rest use name+set
+const cardApiQueries = {};
+cards.forEach(c => { cardApiQueries[c.id] = `name:"${c.name}"`; });
+// Overrides for ambiguous names
+Object.assign(cardApiQueries, {
   judge:   'name:Judge set.name:"Lost Thunder"',
   cynthia: 'name:Cynthia set.name:"Ultra Prism"',
   guzma:   'name:Guzma set.name:"Burning Shadows"',
   lillie:  'name:Lillie set.name:"Sun & Moon"',
   acerola: 'name:Acerola set.name:"Burning Shadows"',
-};
+  'n-bw':  'name:N set.name:"Noble Victories"',
+  colress: 'name:Colress set.name:"Plasma Storm"',
+  az:      'name:AZ set.name:"Phantom Forces"',
+  'hex-maniac':'name:"Hex Maniac" set.name:"Ancient Origins"',
+});
 
 const EUR_GBP = 0.855;
 const USD_GBP = 0.797;
@@ -824,19 +1033,31 @@ function eurToGbp(v){ return fmtGbp(v*EUR_GBP); }
 function usdToGbp(v){ return fmtGbp(v*USD_GBP); }
 
 async function fetchCardData() {
-  const fetches = Object.entries(cardApiQueries).map(async ([id, q]) => {
+  // Priority cards: fetch immediately (original 4 + cotd)
+  const priority = ['judge','cynthia','guzma','lillie','acerola'];
+  const rest = Object.entries(cardApiQueries).filter(([id]) => !priority.includes(id));
+
+  async function fetchOne(id, q) {
     try {
-      const res = await fetch('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q));
+      const res = await fetch('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) + '&pageSize=5');
       const data = await res.json();
-      const card = data.data && (data.data.find(c => c.rarity === 'Rare Ultra') || data.data[0]);
+      const card = data.data && (data.data.find(c => c.rarity==='Rare Ultra'||c.rarity==='Rare Holo') || data.data[0]);
       if (!card) return;
       if (card.images?.large) cardImages[id] = card.images.large;
-      if (card.cardmarket || card.tcgplayer) cardPrices[id] = { cm: card.cardmarket||null, tcp: card.tcgplayer||null };
+      if (card.cardmarket||card.tcgplayer) cardPrices[id] = {cm:card.cardmarket||null,tcp:card.tcgplayer||null};
     } catch(e) {}
-  });
-  await Promise.all(fetches);
-  renderCardOfDay();
-  renderMain();
+  }
+
+  // Fetch priority cards immediately
+  await Promise.all(priority.map(id => fetchOne(id, cardApiQueries[id])));
+  renderCardOfDay(); renderMain();
+
+  // Fetch remaining cards in batches of 8 with 400ms gaps (avoids rate limits)
+  for (let i = 0; i < rest.length; i += 8) {
+    await Promise.all(rest.slice(i, i+8).map(([id,q]) => fetchOne(id,q)));
+    renderCompare(); // update thumbnails progressively
+    if (i + 8 < rest.length) await new Promise(r => setTimeout(r, 400));
+  }
 }
 
 // ── STATE ────────────────────────────────────────────────
@@ -1201,20 +1422,23 @@ function renderCatalysts(){
 
 // ── COMPARE ──────────────────────────────────────────────
 function renderCompare(){
-  document.getElementById('compareGrid').innerHTML = cards.map(c=>`
-    <div class="compare-card${c.id===active.id?' selected':''}" onclick="switchCard('${c.id}')">
-      <div class="compare-card-header">
-        <div class="compare-name">${c.name}</div>
-        ${pill(c.verdict, c.verdictBg, c.verdictColor)}
-      </div>
-      <div class="compare-set">${c.setShort}</div>
-      ${scoreBar(c.score, scoreColor(c.score))}
-      <div class="compare-bottom">
-        <div><div class="compare-stat-label">ENTRY</div><div class="compare-stat-val" style="color:#f59e0b;">${c.price}</div></div>
-        <div style="text-align:right;"><div class="compare-stat-label">UPSIDE</div><div class="compare-stat-val" style="color:#22c55e;">${c.upside}</div></div>
-      </div>
-    </div>`).join('');
-  animateBars();
+  document.getElementById('compareGrid').innerHTML = cards.map(c=>{
+    const imgHtml = cardImages[c.id]
+      ? `<img class="compare-card-img" src="${cardImages[c.id]}" alt="${c.name}" loading="lazy">`
+      : `<div class="compare-card-img-placeholder"></div>`;
+    return `
+    <div class="compare-card${c.id===active.id?' selected':''}" onclick="switchCard('${c.id}')" title="${c.name} · ${c.setShort} · ${c.price}">
+      ${imgHtml}
+      <div class="compare-name">${c.name}</div>
+      <div class="compare-price">${c.price}</div>
+    </div>`;
+  }).join('');
+  const lbl = document.getElementById('compareLabel');
+  if(lbl) lbl.textContent = `${cards.length} cards — tap to view`;
+  setTimeout(()=>{
+    const sel = document.querySelector('.compare-card.selected');
+    if(sel) sel.scrollIntoView({block:'nearest', behavior:'smooth'});
+  }, 50);
 }
 
 // ── MAIN RENDER ──────────────────────────────────────────
