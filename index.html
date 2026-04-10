@@ -1622,6 +1622,125 @@
   .wl-empty { text-align: center; padding: 60px 20px; color: var(--muted); }
   .wl-empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.3; }
   .wl-empty-text { font-size: 13px; }
+
+  /* Live price tint in grid */
+  .browse-price.lp { color: var(--green) !important; }
+
+  /* ── PROFILE PAGE ──────────────────────────────────────────────── */
+  .prof-topbar {
+    position: sticky; top: 0; z-index: 100; padding: 10px 14px;
+    background: rgba(8,8,16,0.95); backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .prof-topbar-title { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; }
+  .prof-content { padding: 16px; max-width: 820px; margin: 0 auto; }
+  .prof-header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 20px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; margin-bottom: 16px; flex-wrap: wrap;
+    animation: fadeUp 0.4s ease both;
+  }
+  .prof-avatar-lg {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg,#a78bfa,#60a5fa);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 900; color: #000; flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(167,139,250,0.4);
+  }
+  .prof-name { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+  .prof-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .prof-stats { display: flex; gap: 18px; margin-top: 10px; }
+  .prof-stat-item { text-align: center; }
+  .prof-stat-num { font-size: 17px; font-weight: 900; color: var(--gold); }
+  .prof-stat-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .prof-actions { display: flex; flex-direction: column; gap: 6px; margin-left: auto; }
+  .prof-btn {
+    border-radius: 10px; padding: 7px 14px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid;
+    transition: opacity 0.15s ease;
+  }
+  .prof-btn:hover { opacity: 0.8; }
+  .prof-btn-msg    { background:rgba(96,165,250,0.12);  border-color:rgba(96,165,250,0.4);  color:#60a5fa; }
+  .prof-btn-add    { background:rgba(34,197,94,0.12);   border-color:rgba(34,197,94,0.4);   color:#22c55e; }
+  .prof-btn-remove { background:rgba(248,113,113,0.1);  border-color:rgba(248,113,113,0.3); color:#f87171; }
+  .prof-tabs { display: flex; gap: 5px; margin-bottom: 16px; }
+  .prof-tab {
+    font-size: 11px; font-weight: 700; padding: 7px 14px; border-radius: 10px;
+    border: 1px solid var(--border); background: transparent; color: var(--muted);
+    cursor: pointer; transition: all 0.15s ease;
+  }
+  .prof-tab.active { background:rgba(167,139,250,0.15); border-color:rgba(167,139,250,0.35); color:#a78bfa; }
+
+  /* Friends */
+  .friend-grid { display: flex; flex-direction: column; gap: 10px; }
+  .friend-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .friend-card:hover { border-color: rgba(167,139,250,0.4); transform: translateY(-1px); }
+  .friend-top { display: flex; align-items: center; gap: 10px; }
+  .friend-av {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: linear-gradient(135deg,#f59e0b,#f87171);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900; color: #000; flex-shrink: 0;
+  }
+  .friend-name { font-size: 12px; font-weight: 700; }
+  .friend-wl   { font-size: 10px; color: var(--muted); }
+  .friend-actions { margin-left: auto; }
+  .add-friend-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .add-friend-input {
+    flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border2);
+    border-radius: 10px; padding: 9px 12px; font-size: 13px; color: var(--text); outline: none;
+    transition: border-color 0.2s ease;
+  }
+  .add-friend-input:focus { border-color: rgba(167,139,250,0.5); }
+  .add-friend-btn {
+    background: rgba(167,139,250,0.15); border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 10px; padding: 9px 16px; font-size: 12px; font-weight: 700;
+    color: #a78bfa; cursor: pointer; white-space: nowrap;
+  }
+
+  /* Messages */
+  .msg-layout { display: grid; grid-template-columns: 190px 1fr; gap: 10px; height: 500px; }
+  @media(max-width:580px) { .msg-layout { grid-template-columns: 1fr; height: auto; } }
+  .msg-sidebar {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;
+  }
+  .msg-sidebar-hdr { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .msg-convo-list { flex: 1; overflow-y: auto; }
+  .msg-convo-item {
+    padding: 11px 12px; cursor: pointer; border-bottom: 1px solid var(--border);
+    transition: background 0.15s ease; display: flex; align-items: center; gap: 8px;
+  }
+  .msg-convo-item:hover  { background: rgba(255,255,255,0.04); }
+  .msg-convo-item.active { background: rgba(167,139,250,0.1); }
+  .msg-convo-user    { font-size: 11px; font-weight: 700; }
+  .msg-convo-preview { font-size: 9px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+  .msg-thread-area {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;
+  }
+  .msg-thread-hdr { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .msg-thread-scroll { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+  .msg-bubble { max-width: 78%; padding: 8px 12px; border-radius: 12px; font-size: 12px; line-height: 1.5; word-break: break-word; }
+  .msg-bubble.mine   { background:rgba(167,139,250,0.18); border:1px solid rgba(167,139,250,0.3); align-self:flex-end; border-bottom-right-radius:3px; }
+  .msg-bubble.theirs { background:rgba(255,255,255,0.06); border:1px solid var(--border); align-self:flex-start; border-bottom-left-radius:3px; }
+  .msg-from { font-size: 9px; color: var(--muted); margin-bottom: 3px; }
+  .msg-time { font-size: 8px; color: var(--dim); margin-top: 3px; text-align: right; }
+  .msg-input-row { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+  .msg-input {
+    flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--border2);
+    border-radius: 20px; padding: 9px 14px; font-size: 12px; color: var(--text); outline: none;
+  }
+  .msg-input:focus { border-color: rgba(167,139,250,0.5); }
+  .msg-send-btn {
+    background: rgba(167,139,250,0.2); border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 20px; padding: 9px 16px; font-size: 12px; font-weight: 700;
+    color: #a78bfa; cursor: pointer; white-space: nowrap;
+  }
+  .msg-empty { display: flex; align-items: center; justify-content: center; flex: 1; color: var(--muted); font-size: 13px; flex-direction: column; gap: 8px; }
 </style>
 </head>
 <body>
@@ -1769,6 +1888,16 @@
   <div class="det-content" id="detContent"></div>
 </div>
 
+<!-- ── PAGE: PROFILE ───────────────────────────────────── -->
+<div class="page" id="pageProfile">
+  <div class="prof-topbar">
+    <button class="det-back" onclick="goHome()">← Back</button>
+    <div class="prof-topbar-title">Profile</div>
+    <div></div>
+  </div>
+  <div class="prof-content" id="profileContent"></div>
+</div>
+
 <script>
 // ── HISTORY / EVENT GENERATORS ───────────────────────────
 function gh(startY, sp, pp, cp) {
@@ -1815,9 +1944,9 @@ function mk(f) {
     verdictBg:v.bg, verdictColor:v.col,
     id: f.id||(f.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')),
     setShort: f.setShort||(f.set.includes(':')?f.set.split(': ').pop():f.set),
-    psa10: f.psa10||`£${Math.round(pn*3.2)}–£${Math.round(pn*6)}`,
-    t12: f.t12||Math.round(pn*1.2),
-    t24: f.t24||Math.round(pn*1.45),
+    psa10: f.psa10||`£${Math.round(pn*4)}–£${Math.round(pn*8)}`,
+    t12: f.t12||Math.round(pn*1.4),
+    t24: f.t24||Math.round(pn*1.75),
     summary: f.summary||`${f.name} is a sought-after collectible from ${f.set}. Supply is constrained from this closed set, and character recognition drives steady collector demand.`,
     history: f.history||gh(f.year,sp,pp,pn),
   };
@@ -2150,7 +2279,7 @@ Object.assign(cardApiQueries, {
   'mewtwo-gold-star':   'number:103 set.id:ex14',
   'rayquaza-gold-star': 'number:107 set.id:ex7',
   // Meowth Illustration Rare — Phantasmal Flames (JP sv3a) / fallback to any IR
-  'meowth-phantasmal':  'name:Meowth rarity:"Illustration Rare"',
+  'meowth-phantasmal':  'number:106 set.id:sv3a',
 });
 
 const EUR_GBP = 0.855;
@@ -2483,7 +2612,7 @@ let currentPage = 'home';
 
 function showPage(name) {
   if (name === currentPage) return;
-  const ids = { home: 'pageHome', detail: 'pageDetail' };
+  const ids = { home: 'pageHome', detail: 'pageDetail', profile: 'pageProfile' };
   const from = document.getElementById(ids[currentPage]);
   const to   = document.getElementById(ids[name]);
   if (!from || !to) return;
@@ -2495,6 +2624,10 @@ function showPage(name) {
   if (name === 'home') {
     window.scrollTo({ top: 0, behavior: 'instant' });
     renderBrowseGrid();
+  }
+  if (name === 'profile') {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    renderProfilePage();
   }
 }
 
@@ -2616,6 +2749,10 @@ function renderBrowseGrid() {
       ? `<img class="browse-img" src="${cardImages[c.id]}" alt="${c.name}" loading="lazy">`
       : `<div class="browse-img-ph"></div>`;
     const watched = isWatched(c.id);
+    const live = getLivePrice(c.id);
+    const priceHtml = live
+      ? `<span class="browse-price lp">£${live.gbp.toFixed(0)}</span>`
+      : `<span class="browse-price">${c.price}</span>`;
     return `
       <div class="browse-card${c.id===active.id?' b-sel':''}"
            data-id="${c.id}"
@@ -2629,7 +2766,7 @@ function renderBrowseGrid() {
         <div class="browse-name">${c.name}</div>
         <div class="browse-set">${c.setShort}</div>
         <div class="browse-foot">
-          <span class="browse-price">${c.price}</span>
+          ${priceHtml}
           <span class="browse-badge" style="background:${c.verdictBg};color:${c.verdictColor};">${c.verdict}</span>
         </div>
       </div>`;
@@ -2882,7 +3019,7 @@ function updateAuthUI() {
 let modalTab = 'login';
 function openAuthModal() {
   const u = currentUser();
-  if (u) { if(confirm('Sign out of ' + u + '?')){ endSession(); updateAuthUI(); renderBrowseGrid(); } return; }
+  if (u) { showPage('profile'); return; }
   document.getElementById('authModal').classList.remove('hidden');
   document.getElementById('modalErr').textContent = '';
 }
@@ -3015,6 +3152,218 @@ startMeowthFire();
   const origRender = renderBrowseGrid;
   window._browseRevealObs = obs;
 })();
+
+// ── PROFILE / FRIENDS / MESSAGES ────────────────────────────────────
+
+function getMsgKey(a, b) { return 'tjpkmn_msg_' + [a,b].sort().join('_'); }
+function getConvo(a, b) { try { return JSON.parse(localStorage.getItem(getMsgKey(a,b)) || '[]'); } catch(e) { return []; } }
+function saveConvo(a, b, msgs) { localStorage.setItem(getMsgKey(a,b), JSON.stringify(msgs)); }
+
+function getMyFriends() {
+  const u = currentUser(); if (!u) return [];
+  const a = getAccounts();
+  return (a[u] && a[u].friends) || [];
+}
+function setMyFriends(list) {
+  const u = currentUser(); if (!u) return;
+  const a = getAccounts();
+  if (!a[u]) return;
+  a[u].friends = list; saveAccounts(a);
+}
+
+function getAllConvos() {
+  const u = currentUser(); if (!u) return [];
+  const friends = getMyFriends();
+  return friends.map(f => {
+    const msgs = getConvo(u, f);
+    const last = msgs[msgs.length - 1];
+    return { user: f, last: last ? last.text : '', ts: last ? last.ts : 0 };
+  }).sort((a,b) => b.ts - a.ts);
+}
+
+let profTab = 'friends';
+let profMsgUser = null;
+
+function setProfileTab(t) {
+  profTab = t;
+  renderProfilePage();
+}
+
+function openProfileMsg(friend) {
+  profMsgUser = friend;
+  profTab = 'messages';
+  renderProfilePage();
+}
+
+function renderProfilePage() {
+  const u = currentUser();
+  const el = document.getElementById('profileContent');
+  if (!el) return;
+
+  if (!u) {
+    el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:var(--muted);">Sign in to view your profile.</div>`;
+    return;
+  }
+
+  const friends = getMyFriends();
+  const accounts = getAccounts();
+  const avatar = u[0].toUpperCase();
+
+  el.innerHTML = `
+    <div class="prof-header">
+      <div class="prof-avatar-lg">${avatar}</div>
+      <div class="prof-name">${u}</div>
+      <div style="color:var(--muted);font-size:13px;">${friends.length} friend${friends.length!==1?'s':''} · ${getWatchlist().length} watched</div>
+      <button onclick="doSignOut()" style="margin-top:12px;background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:8px;padding:7px 18px;cursor:pointer;font-size:13px;">Sign out</button>
+    </div>
+    <div class="prof-tabs">
+      <button class="prof-tab${profTab==='friends'?' active':''}" onclick="setProfileTab('friends')">Friends</button>
+      <button class="prof-tab${profTab==='messages'?' active':''}" onclick="setProfileTab('messages')">Messages</button>
+    </div>
+    <div id="profTabContent">${profTab==='friends' ? renderFriendsTab(u, friends, accounts) : renderMessagesTab(u, friends, accounts)}</div>
+  `;
+}
+
+function renderFriendsTab(u, friends, accounts) {
+  const friendCards = friends.map(f => {
+    const wl = (accounts[f] && accounts[f].watchlist) || [];
+    const av = f[0].toUpperCase();
+    const wlCards = cards.filter(c => wl.includes(c.id));
+    return `
+      <div class="friend-card">
+        <div class="friend-top">
+          <div class="friend-av">${av}</div>
+          <div>
+            <div class="friend-name">${f}</div>
+            <div style="color:var(--muted);font-size:11px;">${wl.length} card${wl.length!==1?'s':''} watched</div>
+          </div>
+          <div style="display:flex;gap:6px;margin-left:auto;">
+            <button onclick="openProfileMsg('${f}')" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;">Message</button>
+            <button onclick="doRemoveFriend('${f}')" style="background:var(--red-bg);color:var(--red);border:1px solid var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;">Remove</button>
+          </div>
+        </div>
+        ${wlCards.length > 0 ? `
+          <div style="margin-top:10px;">
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">${f}'s watchlist:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px;">
+              ${wlCards.slice(0,8).map(c => `
+                <div onclick="openCard('${c.id}')" style="cursor:pointer;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;color:var(--text);">
+                  ${c.name} <span style="color:var(--gold);">${c.price}</span>
+                </div>`).join('')}
+              ${wlCards.length > 8 ? `<div style="color:var(--muted);font-size:11px;padding:4px 8px;">+${wlCards.length-8} more</div>` : ''}
+            </div>
+          </div>` : ''}
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="add-friend-row">
+      <input id="addFriendInput" type="text" placeholder="Enter username to add..." style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:14px;outline:none;">
+      <button onclick="doAddFriend()" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green);border-radius:8px;padding:9px 16px;cursor:pointer;font-size:14px;white-space:nowrap;">Add Friend</button>
+    </div>
+    <div id="addFriendErr" style="color:var(--red);font-size:12px;padding:0 0 8px 0;min-height:18px;"></div>
+    <div class="friend-grid">
+      ${friends.length === 0
+        ? `<div style="color:var(--muted);text-align:center;padding:40px;grid-column:1/-1;">No friends yet. Add someone by username!</div>`
+        : friendCards}
+    </div>`;
+}
+
+function renderMessagesTab(u, friends, accounts) {
+  const convos = getAllConvos();
+
+  const sidebar = `
+    <div class="msg-convo-list">
+      ${convos.length === 0
+        ? `<div style="padding:24px;color:var(--muted);font-size:13px;text-align:center;">No conversations yet.<br>Add a friend and send a message.</div>`
+        : convos.map(cv => `
+          <div class="msg-convo-item${profMsgUser===cv.user?' active':''}" onclick="openProfileMsg('${cv.user}')">
+            <div class="friend-av" style="width:32px;height:32px;font-size:14px;">${cv.user[0].toUpperCase()}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:600;font-size:13px;">${cv.user}</div>
+              <div style="color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${cv.last||'No messages yet'}</div>
+            </div>
+          </div>`).join('')}
+      ${friends.filter(f => !convos.find(c => c.user===f)).map(f => `
+        <div class="msg-convo-item${profMsgUser===f?' active':''}" onclick="openProfileMsg('${f}')">
+          <div class="friend-av" style="width:32px;height:32px;font-size:14px;">${f[0].toUpperCase()}</div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:13px;">${f}</div>
+            <div style="color:var(--muted);font-size:11px;">No messages yet</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  let thread = `<div class="msg-thread-area" id="msgThread" style="display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;">Select a conversation</div>`;
+  if (profMsgUser) {
+    const msgs = getConvo(u, profMsgUser);
+    const bubbles = msgs.length === 0
+      ? `<div style="text-align:center;color:var(--muted);font-size:13px;margin:auto;">No messages yet. Say hi!</div>`
+      : msgs.map(m => `
+          <div class="msg-bubble ${m.from===u?'mine':'theirs'}">
+            <div>${m.text}</div>
+            <div style="font-size:10px;opacity:0.5;margin-top:3px;">${new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>
+          </div>`).join('');
+    thread = `
+      <div class="msg-thread-area" id="msgThread" style="display:flex;flex-direction:column;gap:6px;overflow-y:auto;padding:16px;">
+        ${bubbles}
+      </div>
+      <div class="msg-input-row">
+        <input id="msgInput" type="text" placeholder="Message ${profMsgUser}..." onkeydown="if(event.key==='Enter')doSendMsg()"
+               style="flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-size:14px;outline:none;">
+        <button class="msg-send-btn" onclick="doSendMsg()">Send</button>
+      </div>`;
+  }
+
+  return `<div class="msg-layout">${sidebar}<div style="flex:1;display:flex;flex-direction:column;min-width:0;">${thread}</div></div>`;
+}
+
+function doAddFriend() {
+  const u = currentUser(); if (!u) return;
+  const input = document.getElementById('addFriendInput');
+  const errEl = document.getElementById('addFriendErr');
+  if (!input || !errEl) return;
+  const target = input.value.trim().toLowerCase();
+  if (!target) { errEl.textContent = 'Enter a username.'; return; }
+  if (target === u) { errEl.textContent = "That's you!"; return; }
+  const a = getAccounts();
+  if (!a[target]) { errEl.textContent = 'User not found.'; return; }
+  const friends = getMyFriends();
+  if (friends.includes(target)) { errEl.textContent = 'Already friends.'; return; }
+  friends.push(target); setMyFriends(friends);
+  input.value = '';
+  errEl.textContent = '';
+  renderProfilePage();
+}
+
+function doRemoveFriend(f) {
+  const friends = getMyFriends().filter(x => x !== f);
+  setMyFriends(friends);
+  if (profMsgUser === f) profMsgUser = null;
+  renderProfilePage();
+}
+
+function doSendMsg() {
+  const u = currentUser(); if (!u || !profMsgUser) return;
+  const input = document.getElementById('msgInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  const msgs = getConvo(u, profMsgUser);
+  msgs.push({ from: u, text, ts: Date.now() });
+  saveConvo(u, profMsgUser, msgs);
+  input.value = '';
+  renderProfilePage();
+  // Scroll to bottom
+  setTimeout(() => {
+    const t = document.getElementById('msgThread');
+    if (t) t.scrollTop = t.scrollHeight;
+  }, 50);
+}
+
+function doSignOut() {
+  if (confirm('Sign out?')) { endSession(); updateAuthUI(); renderBrowseGrid(); showPage('home'); }
+}
 
 // ── INIT ────────────────────────────────────────────────────────────
 updateAuthUI();
