@@ -890,6 +890,7 @@
     backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
     border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
+    transition: transform 0.3s ease, opacity 0.3s ease;
   }
   .home-hdr-left { display: flex; align-items: center; gap: 10px; }
   .home-logo { font-size: 17px; font-weight: 900; letter-spacing: -0.3px; }
@@ -1186,12 +1187,300 @@
     .hcotd-score-fill, .det-score-fill { animation: none !important; }
     .browse-card, .det-stat { opacity: 1 !important; }
   }
+
+  /* ── LANDING HERO ───────────────────────────────────────── */
+  @keyframes heroBgPulse {
+    0%,100% { opacity: 0.6; transform: scale(1); }
+    50%     { opacity: 1;   transform: scale(1.08); }
+  }
+  @keyframes heroCardFloat1 {
+    0%,100% { transform: translateY(0px) rotate(-5deg) scale(1); }
+    50%     { transform: translateY(-14px) rotate(-3deg) scale(1.02); }
+  }
+  @keyframes heroCardFloat2 {
+    0%,100% { transform: translateY(0px) rotate(6deg) scale(1); }
+    50%     { transform: translateY(-10px) rotate(4deg) scale(1.02); }
+  }
+  @keyframes heroCardFloat3 {
+    0%,100% { transform: translateY(0px) rotate(-2deg) scale(1); }
+    50%     { transform: translateY(-18px) rotate(1deg) scale(1.02); }
+  }
+  @keyframes heroCardFloat4 {
+    0%,100% { transform: translateY(0px) rotate(4deg) scale(1); }
+    50%     { transform: translateY(-8px) rotate(6deg) scale(1.02); }
+  }
+  @keyframes heroCardFloat5 {
+    0%,100% { transform: translateY(0px) rotate(-8deg) scale(1); }
+    50%     { transform: translateY(-12px) rotate(-6deg) scale(1.02); }
+  }
+  @keyframes scrollBounce {
+    0%,100% { transform: translateY(0); opacity: 0.6; }
+    50%     { transform: translateY(8px); opacity: 0.2; }
+  }
+  @keyframes heroRainbow {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes heroPart {
+    0%   { opacity:1; transform: translateY(0) translateX(0) scale(1); }
+    100% { opacity:0; transform: translateY(-90px) translateX(var(--hpdx,0px)) scale(0.3); }
+  }
+
+  .hero-section {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 100px 20px 100px;
+    background: #030008;
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .hero-bg-blob {
+    position: absolute; border-radius: 50%; filter: blur(70px);
+    animation: heroBgPulse 7s ease-in-out infinite;
+  }
+  .hero-bg-blob:nth-child(1) {
+    width: 55%; height: 60%; top: -10%; left: -10%;
+    background: radial-gradient(ellipse, rgba(167,139,250,0.25) 0%, transparent 70%);
+    animation-delay: 0s;
+  }
+  .hero-bg-blob:nth-child(2) {
+    width: 50%; height: 55%; top: 20%; right: -10%;
+    background: radial-gradient(ellipse, rgba(245,158,11,0.2) 0%, transparent 70%);
+    animation-delay: -3s;
+  }
+  .hero-bg-blob:nth-child(3) {
+    width: 40%; height: 45%; bottom: -5%; left: 30%;
+    background: radial-gradient(ellipse, rgba(248,113,113,0.18) 0%, transparent 70%);
+    animation-delay: -5s;
+  }
+
+  .hero-grid-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  /* floating cards */
+  .hero-cards-stage {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .hero-float-card {
+    position: absolute;
+    border-radius: 10px;
+    overflow: hidden;
+    pointer-events: auto;
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, filter 0.35s ease;
+    will-change: transform;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(167,139,250,0.25);
+  }
+  .hero-float-card img { display: block; width: 100%; border-radius: 10px; }
+  .hero-float-card .hero-card-ph {
+    width: 100%; border-radius: 10px;
+    background: linear-gradient(135deg, #1a0a3e, #0d0520, #1a0a3e);
+    background-size: 200% 200%; animation: heroRainbow 4s linear infinite;
+  }
+  .hero-float-card:hover {
+    box-shadow: 0 30px 80px rgba(0,0,0,0.9), 0 0 60px rgba(245,158,11,0.5);
+    filter: brightness(1.15);
+    z-index: 20;
+  }
+  .hero-float-card.pos-1 {
+    width: clamp(90px,12vw,150px); bottom: 18%; left: 2%;
+    animation: heroCardFloat1 5.5s ease-in-out infinite;
+  }
+  .hero-float-card.pos-2 {
+    width: clamp(100px,14vw,170px); top: 15%; left: 5%;
+    animation: heroCardFloat2 7s ease-in-out infinite;
+  }
+  .hero-float-card.pos-3 {
+    width: clamp(80px,10vw,130px); top: 50%; left: 1%;
+    transform: translateY(-50%);
+    animation: heroCardFloat3 6s ease-in-out infinite;
+  }
+  .hero-float-card.pos-4 {
+    width: clamp(100px,14vw,170px); bottom: 18%; right: 2%;
+    animation: heroCardFloat4 6.5s ease-in-out infinite;
+  }
+  .hero-float-card.pos-5 {
+    width: clamp(90px,12vw,150px); top: 12%; right: 5%;
+    animation: heroCardFloat5 5s ease-in-out infinite;
+  }
+  .hero-float-card.pos-6 {
+    width: clamp(75px,9vw,120px); top: 52%; right: 1%;
+    transform: translateY(-50%);
+    animation: heroCardFloat1 8s ease-in-out infinite reverse;
+  }
+  @media(max-width:480px) {
+    .hero-float-card.pos-3, .hero-float-card.pos-6 { display: none; }
+    .hero-float-card.pos-1, .hero-float-card.pos-4 { width: 70px; }
+    .hero-float-card.pos-2, .hero-float-card.pos-5 { width: 80px; }
+  }
+
+  /* hero content */
+  .hero-content {
+    position: relative; z-index: 10;
+    text-align: center; max-width: 520px; width: 100%;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(245,158,11,0.12);
+    border: 1px solid rgba(245,158,11,0.3);
+    color: #f59e0b; font-size: 10px; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 5px 14px; border-radius: 20px; margin-bottom: 18px;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+  .hero-title {
+    font-size: clamp(38px, 9vw, 80px); font-weight: 900;
+    line-height: 0.95; letter-spacing: -3px; margin-bottom: 16px;
+    animation: fadeUp 0.6s ease 0.25s both;
+  }
+  .hero-title-pokeball { font-size: 0.55em; display: inline-block; letter-spacing: 0; vertical-align: middle; }
+  .hero-title-shine {
+    background: linear-gradient(90deg, #f59e0b 0%, #fcd34d 18%, #fff8 36%, #ff6b9d 52%, #a78bfa 68%, #60a5fa 84%, #f59e0b 100%);
+    background-size: 300% auto;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: shimmer 3.5s linear infinite;
+    display: block;
+  }
+  .hero-title-white { display: block; color: rgba(255,255,255,0.92); font-size: 0.6em; letter-spacing: -1px; margin-top: 6px; }
+  .hero-subtitle {
+    font-size: clamp(13px, 2.5vw, 16px); color: rgba(255,255,255,0.42); margin-bottom: 28px;
+    line-height: 1.6; animation: fadeUp 0.6s ease 0.4s both;
+  }
+  .hero-stats-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; margin-bottom: 30px; flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.55s both;
+  }
+  .hero-stat-chip {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 700; color: var(--text);
+  }
+  .hero-stat-chip b { color: #f59e0b; }
+  .hero-cta-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    animation: fadeUp 0.6s ease 0.7s both; }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: linear-gradient(135deg, #f59e0b 0%, #f87171 100%);
+    color: #000; font-size: 14px; font-weight: 800; padding: 12px 26px;
+    border-radius: 50px; border: none; cursor: pointer;
+    box-shadow: 0 8px 28px rgba(245,158,11,0.45);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    letter-spacing: 0.3px;
+  }
+  .hero-cta:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 16px 50px rgba(245,158,11,0.55); }
+  .hero-cta-secondary {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+    color: var(--text); font-size: 14px; font-weight: 700; padding: 12px 22px;
+    border-radius: 50px; cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .hero-cta-secondary:hover { transform: translateY(-2px); background: rgba(255,255,255,0.1); }
+
+  .hero-scroll-indicator {
+    position: absolute; bottom: 28px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    z-index: 10; animation: fadeUp 0.6s ease 1.1s both;
+  }
+  .hero-scroll-text { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.25); }
+  @keyframes arrowBounce {
+    0%,100% { transform: rotate(45deg) translateY(0); opacity: 0.6; }
+    50%     { transform: rotate(45deg) translateY(5px); opacity: 0.2; }
+  }
+  .hero-scroll-arrow {
+    width: 18px; height: 18px;
+    border-right: 2px solid rgba(255,255,255,0.25);
+    border-bottom: 2px solid rgba(255,255,255,0.25);
+    animation: arrowBounce 1.8s ease-in-out infinite;
+  }
+
+  /* hero rainbow border pulse */
+  .hero-section::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(167,139,250,0.5), rgba(245,158,11,0.5), transparent);
+  }
 </style>
 </head>
 <body>
 
 <!-- ── PAGE: HOME ─────────────────────────────────────── -->
 <div class="page p-active" id="pageHome">
+
+  <!-- LANDING HERO -->
+  <section class="hero-section" id="heroSection">
+    <div class="hero-bg">
+      <div class="hero-bg-blob"></div>
+      <div class="hero-bg-blob"></div>
+      <div class="hero-bg-blob"></div>
+    </div>
+    <div class="hero-grid-lines"></div>
+
+    <!-- floating card images -->
+    <div class="hero-cards-stage" id="heroCardsStage">
+      <div class="hero-float-card pos-1" id="hfc1" onclick="scrollToCards()">
+        <div class="hero-card-ph" style="aspect-ratio:0.714;width:100%;"></div>
+      </div>
+      <div class="hero-float-card pos-2" id="hfc2" onclick="scrollToCards()">
+        <div class="hero-card-ph" style="aspect-ratio:0.714;width:100%;"></div>
+      </div>
+      <div class="hero-float-card pos-3" id="hfc3" onclick="scrollToCards()">
+        <div class="hero-card-ph" style="aspect-ratio:0.714;width:100%;"></div>
+      </div>
+      <div class="hero-float-card pos-4" id="hfc4" onclick="scrollToCards()">
+        <div class="hero-card-ph" style="aspect-ratio:0.714;width:100%;"></div>
+      </div>
+      <div class="hero-float-card pos-5" id="hfc5" onclick="scrollToCards()">
+        <div class="hero-card-ph" style="aspect-ratio:0.714;width:100%;"></div>
+      </div>
+      <div class="hero-float-card pos-6" id="hfc6" onclick="scrollToCards()">
+        <div class="hero-card-ph" style="aspect-ratio:0.714;width:100%;"></div>
+      </div>
+    </div>
+
+    <!-- content -->
+    <div class="hero-content">
+      <div class="hero-badge">Investment Guide · April 2026</div>
+      <h1 class="hero-title">
+        <span class="hero-title-shine">Pokémon</span>
+        <span class="hero-title-white">Card Guide</span>
+      </h1>
+      <p class="hero-subtitle">Discover which cards to buy, hold &amp; invest in.<br>Expert analysis on 100+ cards with live prices.</p>
+      <div class="hero-stats-row">
+        <div class="hero-stat-chip"><b>100+</b> Cards</div>
+        <div class="hero-stat-chip"><b>Live</b> Prices</div>
+        <div class="hero-stat-chip"><b>Expert</b> Analysis</div>
+        <div class="hero-stat-chip"><b>All</b> Eras</div>
+      </div>
+      <div class="hero-cta-row">
+        <button class="hero-cta" onclick="scrollToCards()">Explore Cards ↓</button>
+        <button class="hero-cta-secondary" onclick="scrollToCards()">Card of the Day</button>
+      </div>
+    </div>
+
+    <div class="hero-scroll-indicator">
+      <div class="hero-scroll-text">Scroll to explore</div>
+      <div class="hero-scroll-arrow"></div>
+    </div>
+  </section>
+
   <div class="home-hdr">
     <div class="home-hdr-left">
       <div class="pokeball" title="Gotta catch 'em all"></div>
@@ -1456,6 +1745,30 @@ const cards = [
   mk({name:'Palkia VSTAR',id:'palkia-vstar-alt',subtitle:'Alt Art',set:'Sword & Shield: Astral Radiance',setShort:'Astral Radiance',number:'#209/189',year:2022,price:'£5–£9',verdict:'Watch',score:68,artist:'PLANETA',type:'Pokémon',character:'Palkia',psa10:'£22–£45',startP:1.0,peakP:12,summary:'Palkia VSTAR Alt Art benefits from Sinnoh nostalgia and Arceus/BD-SP remakes driving legendary demand.'}),
   mk({name:'Dialga VSTAR',id:'dialga-vstar-alt',subtitle:'Alt Art',set:'Sword & Shield: Astral Radiance',setShort:'Astral Radiance',number:'#211/189',year:2022,price:'£5–£9',verdict:'Watch',score:68,artist:'PLANETA',type:'Pokémon',character:'Dialga',psa10:'£22–£45',startP:1.0,peakP:11,summary:'Dialga VSTAR Alt Art pairs with Palkia as the Astral Radiance legendaries. Sinnoh nostalgia and Time-type appeal support demand.'}),
 
+  // ── MORE SwSh POKÉMON FULL ARTS ─────────────────────
+  mk({name:'Gengar VMAX',id:'gengar-vmax-alt',subtitle:'Alt Art',set:'Sword & Shield: Fusion Strike',setShort:'Fusion Strike',number:'#271/264',year:2021,price:'£10–£18',verdict:'Buy',score:77,artist:'Anesaki Dynamic',type:'Pokémon',character:'Gengar',psa10:'£40–£85',upside:'+150–300%',t12:16,t24:24,startP:2,peakP:24,tag:'Ghost grail',tagBg:'rgba(167,139,250,0.18)',tagColor:'#a78bfa',summary:"Gengar VMAX Alt Art from Fusion Strike shows Gengar in its terrifying Gigantamax form. Ghost-type grail card with massive collector base."}),
+  mk({name:'Blaziken VMAX',id:'blaziken-vmax-alt',subtitle:'Alt Art',set:'Sword & Shield: Chilling Reign',setShort:'Chilling Reign',number:'#200/198',year:2021,price:'£8–£16',verdict:'Buy',score:74,artist:'PLANETA Mochizuki',type:'Pokémon',character:'Blaziken',psa10:'£32–£75',t12:14,t24:20,startP:1.6,peakP:22,tag:'Starter grail',summary:'Blaziken VMAX Alt Art is the standout starter card from Chilling Reign. The Hoenn Fire starter has a fiercely loyal fan base driving steady demand.'}),
+  mk({name:'Ice Rider Calyrex VMAX',id:'ice-rider-calyrex-vmax',subtitle:'Alt Art',set:'Sword & Shield: Chilling Reign',setShort:'Chilling Reign',number:'#203/198',year:2021,price:'£8–£15',verdict:'Buy',score:73,artist:'PLANETA Tsuruoka',type:'Pokémon',character:'Calyrex',psa10:'£32–£65',t12:13,t24:19,startP:1.5,peakP:20,tag:'Crown Tundra',summary:'Ice Rider Calyrex VMAX pairs with Shadow Rider as the two Crown Tundra legendaries. The ice aesthetic is visually stunning and the card is highly collectible.'}),
+  mk({name:'Duraludon VMAX',id:'duraludon-vmax-alt',subtitle:'Alt Art',set:'Sword & Shield: Evolving Skies',setShort:'Evolving Skies',number:'#220/203',year:2021,price:'£6–£11',verdict:'Watch',score:70,artist:'PLANETA Kuwahara',type:'Pokémon',character:'Duraludon',psa10:'£25–£50',t12:9,t24:14,startP:1.2,peakP:15,tag:'Evolving Skies',summary:"Duraludon VMAX Alt Art benefits from Evolving Skies prestige — the set's rising reputation lifts all its alt arts including lower-profile characters."}),
+  mk({name:'Leafeon VMAX',id:'leafeon-vmax-alt',subtitle:'Alt Art',set:'Sword & Shield: Evolving Skies',setShort:'Evolving Skies',number:'#205/203',year:2021,price:'£8–£15',verdict:'Buy',score:75,artist:'PLANETA Igarashi',type:'Pokémon',character:'Leafeon',psa10:'£32–£70',t12:13,t24:20,startP:1.5,peakP:20,tag:'Eeveelution',summary:'Leafeon VMAX Alt Art from Evolving Skies — a serene forest scene that is widely considered one of the best Eeveelution artworks in the modern era.'}),
+  mk({name:'Glaceon VMAX',id:'glaceon-vmax-alt',subtitle:'Alt Art',set:'Sword & Shield: Evolving Skies',setShort:'Evolving Skies',number:'#209/203',year:2021,price:'£8–£15',verdict:'Buy',score:74,artist:'PLANETA Mochizuki',type:'Pokémon',character:'Glaceon',psa10:'£32–£68',t12:13,t24:19,startP:1.5,peakP:20,tag:'Eeveelution',summary:"Glaceon VMAX Alt Art completes the Evolving Skies Eeveelution alt art set. The icy tundra artwork is breathtaking and collector demand mirrors Leafeon's."}),
+
+  // ── SV ERA POKÉMON FULL ARTS ─────────────────────────
+  mk({name:'Charizard ex',id:'charizard-ex-obs',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Obsidian Flames',setShort:'Obsidian Flames',number:'#228/197',year:2023,price:'£20–£45',verdict:'Strong buy',score:89,artist:'PLANETA Mochizuki',type:'Pokémon',character:'Charizard',psa10:'£90–£200',upside:'+200–400%',t12:35,t24:55,startP:4,peakP:55,tag:'Tera Charizard',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Charizard ex SIR from Obsidian Flames is the most sought-after SV-era Charizard. The black Tera Charizard artwork is instantly recognisable and commands the Charizard premium at every price point.',catalysts:['Black Tera Charizard design is unique — no prior version','Obsidian Flames is now a closed set','Charizard SIR is the highest-prestige SV card format'],risks:['Competing Charizard cards absorb some demand','SV era seen as less prestigious than SM/vintage','Price at upper end of budget guide']}),
+  mk({name:'Miraidon ex',id:'miraidon-ex-sir',subtitle:'Special Illustration Rare',set:'Scarlet & Violet',setShort:'SV Base',number:'#243/198',year:2023,price:'£8–£15',verdict:'Buy',score:76,artist:'Atsuko Nishida',type:'Pokémon',character:'Miraidon',psa10:'£32–£70',upside:'+150–300%',t12:14,t24:20,startP:1.6,peakP:20,tag:'Box mascot SIR',tagBg:'rgba(96,165,250,0.15)',tagColor:'#60a5fa',summary:'Miraidon ex SIR is the cover mascot of Scarlet & Violet. As the first SV set, SV Base has collector significance and Miraidon is one of the most visually distinct new legendaries.',catalysts:['SV mascot card in the debut SV set','Atsuko Nishida art — the original Pikachu designer','Box mascot SIRs historically hold strong value'],risks:['Koraidon provides direct competition for collector attention','SV Base was heavily opened','Early in the investment timeline — needs 2+ years to fully appreciate']}),
+  mk({name:'Koraidon ex',id:'koraidon-ex-sir',subtitle:'Special Illustration Rare',set:'Scarlet & Violet',setShort:'SV Base',number:'#254/198',year:2023,price:'£8–£15',verdict:'Buy',score:75,artist:'Kouki Saitou',type:'Pokémon',character:'Koraidon',psa10:'£32–£70',t12:14,t24:20,startP:1.6,peakP:20,tag:'Box mascot SIR',tagBg:'rgba(248,113,113,0.15)',tagColor:'#f87171',summary:'Koraidon ex SIR mirrors Miraidon as the Scarlet mascot. Kouki Saitou artwork gives a dynamic, primal energy that differentiates it from Miraidon. Both SV Base mascots should be held together.'}),
+  mk({name:'Iron Valiant ex',id:'iron-valiant-ex-sir',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Paradox Rift',setShort:'Paradox Rift',number:'#242/182',year:2023,price:'£6–£12',verdict:'Buy',score:72,artist:'5ban Graphics',type:'Pokémon',character:'Iron Valiant',psa10:'£25–£55',t12:11,t24:16,startP:1.2,peakP:16,tag:'Paradox Rift',summary:'Iron Valiant ex SIR from Paradox Rift is one of the most sought-after Future-type Pokémon cards. The robotic Gardevoir aesthetic drives demand from Gardevoir collectors.'}),
+  mk({name:'Roaring Moon ex',id:'roaring-moon-ex-sir',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Paradox Rift',setShort:'Paradox Rift',number:'#245/182',year:2023,price:'£6–£12',verdict:'Buy',score:72,artist:'PLANETA Tsuruoka',type:'Pokémon',character:'Roaring Moon',psa10:'£25–£55',t12:11,t24:16,startP:1.2,peakP:16,tag:'Ancient Pokémon',summary:"Roaring Moon ex SIR is the Ancient Salamence variant with a terrifying prehistoric aesthetic. Pairs with Iron Valiant as the Paradox Rift SIR duo and benefits from dragon-type premium."}),
+  mk({name:'Umbreon ex',id:'umbreon-ex-sir',subtitle:'Special Illustration Rare',set:'Sword & Shield: Twilight Masquerade',setShort:'Twilight Masquerade',number:'#176/167',year:2024,price:'£12–£22',verdict:'Buy',score:79,artist:'PLANETA Igarashi',type:'Pokémon',character:'Umbreon',psa10:'£50–£110',upside:'+150–300%',t12:20,t24:30,startP:2.4,peakP:30,tag:'Eeveelution SIR',tagBg:'rgba(34,197,94,0.15)',tagColor:'#22c55e',summary:'Umbreon ex SIR from Twilight Masquerade is the definitive modern Umbreon card. The masquerade ball setting is breathtaking. Umbreon commands a permanent premium as the most popular Eeveelution.',catalysts:['Umbreon consistently commands the highest Eeveelution premium','Masquerade ball setting is unprecedented in TCG art','PLANETA Igarashi artwork is among the best in the SV era'],risks:['High entry for SV era','Competes with Umbreon VMAX alt art for collector attention','SV era less prestigious than SM vintage for now']}),
+  mk({name:'Gengar ex',id:'gengar-ex-sir',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Paldea Evolved',setShort:'Paldea Evolved',number:'#213/193',year:2023,price:'£8–£14',verdict:'Buy',score:74,artist:'Atsuko Nishida',type:'Pokémon',character:'Gengar',psa10:'£32–£65',t12:13,t24:19,startP:1.6,peakP:19,tag:'Ghost SIR',tagBg:'rgba(167,139,250,0.18)',tagColor:'#a78bfa',summary:'Gengar ex SIR from Paldea Evolved captures the Ghost-type icon in a vivid party-ghost setting. Atsuko Nishida art and Gengar permanent demand make this a solid hold.'}),
+  mk({name:'Mew ex',id:'mew-ex-151',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: 151',setShort:'151',number:'#205/165',year:2023,price:'£8–£14',verdict:'Buy',score:75,artist:'Atsuko Nishida',type:'Pokémon',character:'Mew',psa10:'£32–£65',t12:13,t24:19,startP:1.6,peakP:19,tag:'Gen 1 mythical',tagBg:'rgba(248,113,113,0.15)',tagColor:'#f87171',summary:'Mew ex SIR from 151 is the mythical Pokémon in the most prestigious modern set. Atsuko Nishida captures Mew floating in an ethereal space — one of the most beautiful SV-era cards.'}),
+  mk({name:'Blastoise ex',id:'blastoise-ex-151',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: 151',setShort:'151',number:'#197/165',year:2023,price:'£6–£12',verdict:'Buy',score:73,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Blastoise',psa10:'£25–£55',t12:11,t24:16,startP:1.2,peakP:16,tag:'Starter SIR 151',summary:'Blastoise ex SIR from 151 by original artist Mitsuhiro Arita is the definitive modern Blastoise card. Water starter fan base and 151 set prestige both contribute.'}),
+  mk({name:'Venusaur ex',id:'venusaur-ex-151',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: 151',setShort:'151',number:'#198/165',year:2023,price:'£5–£10',verdict:'Watch',score:70,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Venusaur',psa10:'£20–£45',t12:9,t24:13,startP:1.0,peakP:13,tag:'Starter SIR 151',summary:"Venusaur ex SIR from 151 completes the original starter SIR trio. Arita's artwork gives Venusaur a lush, overgrown jungle scene. The underrated starter — often cheapest of the three."}),
+  mk({name:'Alakazam ex',id:'alakazam-ex-151',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: 151',setShort:'151',number:'#196/165',year:2023,price:'£5–£10',verdict:'Watch',score:71,artist:'Kouki Saitou',type:'Pokémon',character:'Alakazam',psa10:'£20–£48',t12:9,t24:13,startP:1.0,peakP:13,tag:'151 SIR',summary:'Alakazam ex SIR from 151 is the psychic powerhouse in the Gen 1 nostalgia set. The #1 card identity from Base Set adds collector cachet beyond Alakazam alone.'}),
+  mk({name:'Charizard ex',id:'charizard-ex-paldean-fates',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Paldean Fates',setShort:'Paldean Fates',number:'#228/091',year:2024,price:'£10–£18',verdict:'Buy',score:76,artist:'5ban Graphics',type:'Pokémon',character:'Charizard',psa10:'£40–£85',t12:16,t24:24,startP:2,peakP:25,tag:'Shiny Charizard SIR',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Charizard ex SIR from Paldean Fates features the shiny black Tera Charizard — the same design as Obsidian Flames but in the shiny card format. High demand from Charizard completionists.'}),
+  mk({name:'Snorlax ex',id:'snorlax-ex-sir',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Stellar Crown',setShort:'Stellar Crown',number:'#175/142',year:2024,price:'£6–£12',verdict:'Watch',score:71,artist:'Eri Yamaki',type:'Pokémon',character:'Snorlax',psa10:'£25–£55',t12:11,t24:16,startP:1.2,peakP:16,tag:'Cozy SIR',summary:'Snorlax ex SIR captures the fan-favourite Normal-type in a cosy sleeping scene. Snorlax has universal appeal across all generations of Pokémon fans.'}),
+  mk({name:'Flutter Mane ex',id:'flutter-mane-ex-sir',subtitle:'Special Illustration Rare',set:'Scarlet & Violet: Paradox Rift',setShort:'Paradox Rift',number:'#244/182',year:2023,price:'£5–£10',verdict:'Watch',score:69,artist:'PLANETA Kuwahara',type:'Pokémon',character:'Flutter Mane',psa10:'£20–£45',t12:9,t24:13,startP:1.0,peakP:13,tag:'Paradox Rift',summary:'Flutter Mane ex SIR is the ancient Mismagius variant — a delicate pink ghost with ethereal artwork. Paradox Rift SIRs as a group are gaining collector recognition.'}),
+
   // ── CLASSIC / VINTAGE ERA ────────────────────────────
   mk({name:'Charizard',id:'charizard-base',subtitle:'Holo Rare',set:'Base Set',number:'#4/102',year:1999,price:'£150–£400',verdict:'Strong buy',score:95,artist:'Mitsuhiro Arita',type:'Pokémon',character:'Charizard',psa10:'£2000–£8000',upside:'+400–1500%',t12:320,t24:480,startP:20,peakP:500,tag:'The grail',tagBg:'rgba(245,158,11,0.18)',tagColor:'#f59e0b',summary:'Base Set Charizard is the single most iconic and valuable Pokémon card. Demand is permanent, global, and grows with each new generation of collectors. The ultimate long-hold investment.',catalysts:['Most recognisable trading card in history outside of football','New generations of collectors always prioritise Base Set Charizard first','1st Edition and Shadowless variants command 3-10× premium over Unlimited'],risks:['Extremely high entry price — above guide budget','High-grade copies only; damaged copies have limited upside','PSA grading queues and costs add to total cost'],events:[{d:'Jul 2021',l:'Logan Paul effect',v:'+600%',pos:true},{d:'Jan 2022',l:'Correction',v:'−40%',pos:false},{d:'Jan 2026',l:'30th anniversary',v:'+25%',pos:true}]}),
   mk({name:'Blastoise',id:'blastoise-base',subtitle:'Holo Rare',set:'Base Set',number:'#2/102',year:1999,price:'£25–£60',verdict:'Buy',score:86,artist:'Ken Sugimori',type:'Pokémon',character:'Blastoise',psa10:'£200–£500',upside:'+300–700%',t12:50,t24:80,startP:4,peakP:90,tag:'Starter holo',summary:'Blastoise is the most collected Water-type starter card. Base Set holo with Ken Sugimori original art. Permanent demand from Gen 1 players.',events:[{d:'Jul 2021',l:'Pandemic peak',v:'+400%',pos:true},{d:'Jan 2022',l:'Correction',v:'−35%',pos:false},{d:'Jan 2026',l:'30th anniversary',v:'+15%',pos:true}]}),
@@ -1534,6 +1847,25 @@ Object.assign(cardApiQueries, {
   colress: 'name:Colress set.name:"Plasma Storm"',
   az:      'name:AZ set.name:"Phantom Forces"',
   'hex-maniac':'name:"Hex Maniac" set.name:"Ancient Origins"',
+  'charizard-vmax-rainbow':'name:"Charizard VMAX" set.name:"Darkness Ablaze"',
+  'umbreon-vmax-alt':'name:"Umbreon VMAX" set.name:"Evolving Skies"',
+  'mewtwo-ex-151':'name:"Mewtwo ex" set.name:"151"',
+  'rayquaza-vmax-alt':'name:"Rayquaza VMAX" set.name:"Evolving Skies"',
+  'pikachu-vmax':'name:"Pikachu VMAX" set.name:"Vivid Voltage"',
+  'charizard-base':'name:Charizard set.id:base1',
+  'charizard-ex-obs':'name:"Charizard ex" set.name:"Obsidian Flames"',
+  'miraidon-ex-sir':'name:"Miraidon ex" set.name:"Scarlet & Violet"',
+  'koraidon-ex-sir':'name:"Koraidon ex" set.name:"Scarlet & Violet"',
+  'umbreon-ex-sir':'name:"Umbreon ex" set.name:"Twilight Masquerade"',
+  'mew-ex-151':'name:"Mew ex" set.name:"151"',
+  'blastoise-ex-151':'name:"Blastoise ex" set.name:"151"',
+  'venusaur-ex-151':'name:"Venusaur ex" set.name:"151"',
+  'alakazam-ex-151':'name:"Alakazam ex" set.name:"151"',
+  'gengar-ex-sir':'name:"Gengar ex" set.name:"Paldea Evolved"',
+  'charizard-ex-151':'name:"Charizard ex" set.name:"151"',
+  'gardevoir-ex-pev':'name:"Gardevoir ex" set.name:"Paldea Evolved"',
+  'umbreon-gold-star':'name:"Umbreon Star" set.name:"Unseen Forces"',
+  'espeon-gold-star':'name:"Espeon Star" set.name:"Unseen Forces"',
 });
 
 const EUR_GBP = 0.855;
@@ -1545,8 +1877,8 @@ function eurToGbp(v){ return fmtGbp(v*EUR_GBP); }
 function usdToGbp(v){ return fmtGbp(v*USD_GBP); }
 
 async function fetchCardData() {
-  // Priority cards: fetch immediately (original 4 + cotd)
-  const priority = ['judge','cynthia','guzma','lillie','acerola'];
+  // Priority cards: fetch immediately (original 4 + cotd + hero showcase cards)
+  const priority = ['judge','cynthia','guzma','lillie','acerola','charizard-vmax-rainbow','umbreon-vmax-alt','mewtwo-ex-151','rayquaza-vmax-alt','pikachu-vmax','charizard-base'];
   const rest = Object.entries(cardApiQueries).filter(([id]) => !priority.includes(id));
 
   async function fetchOne(id, q) {
@@ -1563,12 +1895,15 @@ async function fetchCardData() {
   // Fetch priority cards immediately, then refresh home + detail
   await Promise.all(priority.map(id => fetchOne(id, cardApiQueries[id])));
   renderHomeCotd();
+  updateBrowseImages();
+  updateHeroImages();
   if (currentPage === 'detail') renderDetailPage();
 
-  // Fetch remaining cards in batches — only update browse images
+  // Fetch remaining cards in batches — only swap placeholders, no full re-render
   for (let i = 0; i < rest.length; i += 8) {
     await Promise.all(rest.slice(i, i+8).map(([id,q]) => fetchOne(id,q)));
-    renderBrowseGrid(); // incremental: swap placeholders for loaded images
+    updateBrowseImages(); // incremental swap without re-triggering animations
+    updateHeroImages();
     if (i + 8 < rest.length) await new Promise(r => setTimeout(r, 500));
   }
 }
@@ -1970,6 +2305,7 @@ function renderBrowseGrid() {
       : `<div class="browse-img-ph"></div>`;
     return `
       <div class="browse-card${c.id===active.id?' b-sel':''}"
+           data-id="${c.id}"
            onclick="openCard('${c.id}')"
            style="animation-delay:${Math.min(i*0.05,0.4)}s;">
         ${imgHtml}
@@ -1986,6 +2322,42 @@ function renderBrowseGrid() {
   setTimeout(() => {
     grid.querySelectorAll('.browse-card').forEach(el => addTilt(el, 6));
   }, 200);
+}
+
+// Swap placeholders → images without re-rendering (prevents animation re-trigger glitch)
+function updateBrowseImages() {
+  document.querySelectorAll('.browse-card[data-id]').forEach(el => {
+    const id = el.dataset.id;
+    if (!cardImages[id]) return;
+    const ph = el.querySelector('.browse-img-ph');
+    if (!ph) return;
+    const img = document.createElement('img');
+    img.className = 'browse-img';
+    img.src = cardImages[id];
+    img.alt = '';
+    img.loading = 'lazy';
+    ph.replaceWith(img);
+  });
+}
+
+// Update hero floating card images once API data arrives
+const HERO_CARD_IDS = ['charizard-vmax-rainbow','umbreon-vmax-alt','mewtwo-ex-151','rayquaza-vmax-alt','pikachu-vmax','charizard-base'];
+let heroImagesSet = 0;
+function updateHeroImages() {
+  HERO_CARD_IDS.forEach((id, idx) => {
+    if (!cardImages[id]) return;
+    const slot = document.getElementById('hfc' + (idx + 1));
+    if (!slot) return;
+    const ph = slot.querySelector('.hero-card-ph');
+    if (!ph) return;
+    const img = document.createElement('img');
+    img.src = cardImages[id];
+    img.alt = '';
+    img.loading = 'lazy';
+    img.style.cssText = 'display:block;width:100%;border-radius:10px;';
+    ph.replaceWith(img);
+    heroImagesSet++;
+  });
 }
 
 // ── DETAIL PAGE ──────────────────────────────────────────────────────
@@ -2095,6 +2467,68 @@ function switchInner(t) {
     el.classList.toggle('active', el.dataset.tab === t);
   });
 }
+
+// ── SCROLL TO CARDS ──────────────────────────────────────────────
+function scrollToCards() {
+  // scroll to the sticky header / card content below the hero
+  const hero = document.getElementById('heroSection');
+  if (hero) {
+    const y = hero.offsetTop + hero.offsetHeight;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+}
+
+// ── HERO MOUSE PARALLAX ─────────────────────────────────────────
+(function initHeroParallax() {
+  const hero = document.getElementById('heroSection');
+  if (!hero) return;
+  let rafId;
+  hero.addEventListener('mousemove', e => {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      const r = hero.getBoundingClientRect();
+      const mx = (e.clientX - r.left) / r.width  - 0.5;
+      const my = (e.clientY - r.top)  / r.height - 0.5;
+      for (let i = 1; i <= 6; i++) {
+        const el = document.getElementById('hfc' + i);
+        if (!el) continue;
+        const depth = 0.6 + (i % 3) * 0.3;
+        const dx = mx * 22 * depth;
+        const dy = my * 14 * depth;
+        el.style.setProperty('--px', dx + 'px');
+        el.style.setProperty('--py', dy + 'px');
+        el.style.marginLeft  = dx + 'px';
+        el.style.marginTop   = dy + 'px';
+      }
+    });
+  });
+  hero.addEventListener('mouseleave', () => {
+    for (let i = 1; i <= 6; i++) {
+      const el = document.getElementById('hfc' + i);
+      if (!el) continue;
+      el.style.transition = 'margin 0.8s cubic-bezier(0.34,1.56,0.64,1), transform 0.8s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, filter 0.35s ease';
+      el.style.marginLeft = '';
+      el.style.marginTop  = '';
+      setTimeout(() => { if (el) el.style.transition = ''; }, 800);
+    }
+  });
+
+  // Floating particles in hero
+  const stage = document.getElementById('heroCardsStage');
+  if (stage) {
+    const colors = ['#f59e0b','#a78bfa','#60a5fa','#f87171','#22c55e','#fcd34d','#ff6b9d'];
+    setInterval(() => {
+      if (!document.body.contains(stage)) return;
+      const p = document.createElement('div');
+      const x = Math.random() * 100;
+      const dx = (Math.random() - 0.5) * 60;
+      const sz = 2 + Math.random() * 3;
+      p.style.cssText = `position:absolute;bottom:${Math.random()*30}%;left:${x}%;width:${sz}px;height:${sz}px;border-radius:50%;background:${colors[Math.floor(Math.random()*colors.length)]};pointer-events:none;z-index:3;--hpdx:${dx}px;animation:heroPart ${0.8+Math.random()*1.2}s ease forwards;opacity:1;`;
+      stage.appendChild(p);
+      setTimeout(() => p.remove(), 2200);
+    }, 280);
+  }
+})();
 
 // ── INIT ────────────────────────────────────────────────────────────
 renderHomeCotd();
