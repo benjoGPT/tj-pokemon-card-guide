@@ -1427,13 +1427,11 @@
     background: linear-gradient(90deg, transparent, rgba(167,139,250,0.5), rgba(245,158,11,0.5), transparent);
   }
 
-  /* TJ's title prefix */
+  /* TJ's + Pokémon on same line */
+  .hero-title-row1 { display: block; }
   .hero-title-tj {
-    display: block; font-size: 0.42em; font-weight: 900;
-    letter-spacing: 4px; text-transform: uppercase;
-    color: rgba(255,255,255,0.55);
-    animation: fadeUp 0.5s ease 0.15s both;
-    margin-bottom: 2px;
+    display: inline;
+    -webkit-text-fill-color: transparent;
   }
 
   /* Enhanced hero: rotating energy ring */
@@ -1476,6 +1474,60 @@
   .hero-float-card.pos-4 { animation: heroCardFloat4 6.5s ease-in-out infinite, heroCardGlow 4.5s ease-in-out infinite; }
   .hero-float-card.pos-5 { animation: heroCardFloat5 5s   ease-in-out infinite, heroCardGlow 3.9s ease-in-out infinite; }
   .hero-float-card.pos-6 { animation: heroCardFloat1 8s   ease-in-out infinite reverse, heroCardGlow 5.8s ease-in-out infinite; }
+
+  /* Meowth fire card — left-center showcase */
+  .hero-float-card.pos-meowth {
+    width: clamp(120px,16vw,200px);
+    left: 50%; top: 50%;
+    transform: translate(-50%,-50%) translateX(-280px);
+    animation: heroCardFloat3 5.8s ease-in-out infinite, meowthGlow 2.5s ease-in-out infinite;
+    z-index: 8;
+    display: none; /* shown only on wider screens */
+  }
+  @media(min-width:700px) { .hero-float-card.pos-meowth { display: block; } }
+  @keyframes meowthGlow {
+    0%,100% { box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(251,146,60,0.4), 0 0 60px rgba(239,68,68,0.25); }
+    50%      { box-shadow: 0 28px 80px rgba(0,0,0,0.9), 0 0 60px rgba(251,146,60,0.7), 0 0 100px rgba(239,68,68,0.45); }
+  }
+
+  /* Fire particles above Meowth */
+  @keyframes firePart {
+    0%   { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
+    50%  { opacity: 0.7; }
+    100% { opacity: 0; transform: translateY(-70px) translateX(var(--fdx,0px)) scale(0.2); }
+  }
+  .fire-container {
+    position: absolute; inset: 0; pointer-events: none; overflow: visible; z-index: 10;
+  }
+
+  /* Ambient animated orbs on home (below hero) */
+  @keyframes orbFloat {
+    0%,100% { transform: translate(0,0) scale(1); opacity: 0.15; }
+    33%     { transform: translate(20px,-30px) scale(1.1); opacity: 0.25; }
+    66%     { transform: translate(-15px,15px) scale(0.95); opacity: 0.18; }
+  }
+  .home-orb {
+    position: fixed; border-radius: 50%; pointer-events: none;
+    filter: blur(80px); z-index: 0; animation: orbFloat 14s ease-in-out infinite;
+  }
+
+  /* Card reveal on scroll */
+  @keyframes cardReveal {
+    from { opacity:0; transform: translateY(20px) scale(0.95); }
+    to   { opacity:1; transform: none; }
+  }
+  .browse-card.revealed { animation: cardReveal 0.4s ease both; }
+
+  /* Shimmering banner above browse grid */
+  .browse-banner {
+    background: linear-gradient(90deg, rgba(167,139,250,0.08) 0%, rgba(245,158,11,0.06) 50%, rgba(96,165,250,0.08) 100%);
+    border: 1px solid rgba(167,139,250,0.12);
+    border-radius: 10px; padding: 8px 14px; margin: 0 6px 10px;
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10px; color: var(--muted);
+    background-size: 200% 100%; animation: shimmer 4s linear infinite;
+  }
+  .browse-banner b { color: var(--gold); font-size: 11px; }
 
   /* ── WATCHLIST / AUTH ─────────────────────────────────────────── */
   /* Auth button in header */
@@ -1608,14 +1660,18 @@
       <div class="hero-float-card pos-6" id="hfc6" onclick="scrollToCards()">
         <div class="hero-card-ph" style="aspect-ratio:0.714;width:100%;"></div>
       </div>
+      <!-- Meowth fire card -->
+      <div class="hero-float-card pos-meowth" id="hfcMeowth" onclick="scrollToCards()">
+        <div class="fire-container" id="meowthFire"></div>
+        <div class="hero-card-ph" id="meowthPh" style="aspect-ratio:0.714;width:100%;background:linear-gradient(135deg,#3d1a00,#1a0800,#3d1a00);"></div>
+      </div>
     </div>
 
     <!-- content -->
     <div class="hero-content">
       <div class="hero-badge">Investment Guide · April 2026</div>
       <h1 class="hero-title">
-        <span class="hero-title-tj">TJ's</span>
-        <span class="hero-title-shine">Pokémon</span>
+        <span class="hero-title-shine hero-title-row1"><span class="hero-title-tj">TJ's </span>Pokémon</span>
         <span class="hero-title-white">Card Guide</span>
       </h1>
       <p class="hero-subtitle">Discover which cards to buy, hold &amp; invest in.<br>Expert analysis on 100+ cards with live prices.</p>
@@ -1661,6 +1717,9 @@
         <button class="browse-tab active" id="tabAll" onclick="setBrowseTab('all')">All</button>
         <button class="browse-tab" id="tabWl" onclick="setBrowseTab('watchlist')">♡ Watchlist</button>
       </div>
+    </div>
+    <div class="browse-banner" id="browseBanner">
+      <span>🔴</span> <b id="bbLive">Live</b> prices from Pokémon TCG API · Cardmarket · TCGPlayer · Hover any card to add to watchlist
     </div>
     <div class="browse-grid" id="browseGrid"></div>
   </div>
@@ -2029,36 +2088,69 @@ const cardPrices = {};   // { id: { cm, tcp } }
 // Auto-generate API queries: key cards get specific queries, rest use name+set
 const cardApiQueries = {};
 cards.forEach(c => { cardApiQueries[c.id] = `name:"${c.name}"`; });
-// Overrides for ambiguous names
+// Overrides — use number:X set.id:Y for precision (avoids picking wrong variant)
 Object.assign(cardApiQueries, {
-  judge:   'name:Judge set.name:"Lost Thunder"',
-  cynthia: 'name:Cynthia set.name:"Ultra Prism"',
-  guzma:   'name:Guzma set.name:"Burning Shadows"',
-  lillie:  'name:Lillie set.name:"Sun & Moon"',
-  acerola: 'name:Acerola set.name:"Burning Shadows"',
-  'n-bw':  'name:N set.name:"Noble Victories"',
-  colress: 'name:Colress set.name:"Plasma Storm"',
-  az:      'name:AZ set.name:"Phantom Forces"',
-  'hex-maniac':'name:"Hex Maniac" set.name:"Ancient Origins"',
-  'charizard-vmax-rainbow':'name:"Charizard VMAX" set.name:"Darkness Ablaze"',
-  'umbreon-vmax-alt':'name:"Umbreon VMAX" set.name:"Evolving Skies"',
-  'mewtwo-ex-151':'name:"Mewtwo ex" set.name:"151"',
-  'rayquaza-vmax-alt':'name:"Rayquaza VMAX" set.name:"Evolving Skies"',
-  'pikachu-vmax':'name:"Pikachu VMAX" set.name:"Vivid Voltage"',
-  'charizard-base':'name:Charizard set.id:base1',
-  'charizard-ex-obs':'name:"Charizard ex" set.name:"Obsidian Flames"',
-  'miraidon-ex-sir':'name:"Miraidon ex" set.name:"Scarlet & Violet"',
-  'koraidon-ex-sir':'name:"Koraidon ex" set.name:"Scarlet & Violet"',
-  'umbreon-ex-sir':'name:"Umbreon ex" set.name:"Twilight Masquerade"',
-  'mew-ex-151':'name:"Mew ex" set.name:"151"',
-  'blastoise-ex-151':'name:"Blastoise ex" set.name:"151"',
-  'venusaur-ex-151':'name:"Venusaur ex" set.name:"151"',
-  'alakazam-ex-151':'name:"Alakazam ex" set.name:"151"',
-  'gengar-ex-sir':'name:"Gengar ex" set.name:"Paldea Evolved"',
-  'charizard-ex-151':'name:"Charizard ex" set.name:"151"',
-  'gardevoir-ex-pev':'name:"Gardevoir ex" set.name:"Paldea Evolved"',
-  'umbreon-gold-star':'name:"Umbreon Star" set.name:"Unseen Forces"',
-  'espeon-gold-star':'name:"Espeon Star" set.name:"Unseen Forces"',
+  // SM era — precise by card number in set
+  judge:   'number:209 set.id:sm8',
+  cynthia: 'number:148 set.id:sm5',
+  guzma:   'number:143 set.id:sm3',
+  lillie:  'number:147 set.id:sm1',
+  acerola: 'number:142 set.id:sm3',
+  'n-bw':  'number:92 set.id:bw3',
+  colress: 'number:118 set.id:bw8',
+  az:      'number:117 set.id:xy4',
+  'hex-maniac':'number:75 set.id:xy7',
+  // SwSh — precise
+  'charizard-vmax-rainbow':'number:160 set.id:swsh3',
+  'umbreon-vmax-alt':      'number:215 set.id:swsh7',
+  'rayquaza-vmax-alt':     'number:218 set.id:swsh7',
+  'pikachu-vmax':          'number:188 set.id:swsh4',
+  'sylveon-vmax':          'number:212 set.id:swsh7',
+  'espeon-vmax':           'number:270 set.id:swsh8',
+  'charizard-v-alt':       'number:19 set.id:swsh3',
+  'zacian-v-alt':          'number:211 set.id:swsh1',
+  'eternatus-vmax':        'number:161 set.id:swsh3',
+  'gengar-vmax-alt':       'number:271 set.id:swsh8',
+  'leafeon-vmax-alt':      'number:205 set.id:swsh7',
+  'glaceon-vmax-alt':      'number:209 set.id:swsh7',
+  'blaziken-vmax-alt':     'number:200 set.id:swsh6',
+  'ice-rider-calyrex-vmax':'number:203 set.id:swsh6',
+  'duraludon-vmax-alt':    'number:220 set.id:swsh7',
+  'lugia-v-alt':           'number:186 set.id:swsh12',
+  'giratina-vstar-alt':    'number:196 set.id:swsh11',
+  'arceus-vstar-rainbow':  'number:176 set.id:swsh9',
+  'calyrex-vmax-shadow':   'number:205 set.id:swsh6',
+  'palkia-vstar-alt':      'number:209 set.id:swsh10',
+  'dialga-vstar-alt':      'number:211 set.id:swsh10',
+  // SV era — precise
+  'charizard-base':        'number:4 set.id:base1',
+  'charizard-ex-obs':      'number:228 set.id:sv3',
+  'miraidon-ex-sir':       'number:243 set.id:sv1',
+  'koraidon-ex-sir':       'number:254 set.id:sv1',
+  'gardevoir-ex-pev':      'number:86 set.id:sv2',
+  'mewtwo-ex-151':         'number:205 set.id:sv3pt5',
+  'charizard-ex-151':      'number:199 set.id:sv3pt5',
+  'pikachu-ex-pev':        'number:175 set.id:sv2',
+  'eevee-ex-151':          'number:133 set.id:sv3pt5',
+  'mew-ex-151':            'name:"Mew ex" set.id:sv3pt5',
+  'blastoise-ex-151':      'name:"Blastoise ex" set.id:sv3pt5',
+  'venusaur-ex-151':       'name:"Venusaur ex" set.id:sv3pt5',
+  'alakazam-ex-151':       'name:"Alakazam ex" set.id:sv3pt5',
+  'iron-valiant-ex-sir':   'name:"Iron Valiant ex" set.id:sv4',
+  'roaring-moon-ex-sir':   'name:"Roaring Moon ex" set.id:sv4',
+  'flutter-mane-ex-sir':   'name:"Flutter Mane ex" set.id:sv4',
+  'gengar-ex-sir':         'name:"Gengar ex" set.id:sv2',
+  'umbreon-ex-sir':        'name:"Umbreon ex" set.id:sv5',
+  'charizard-ex-paldean-fates': 'name:"Charizard ex" set.id:sv4pt5',
+  'snorlax-ex-sir':        'name:"Snorlax ex" set.id:sv6',
+  // Gold Stars
+  'umbreon-gold-star':  'number:17 set.id:ex10',
+  'espeon-gold-star':   'number:16 set.id:ex10',
+  'charizard-gold-star':'number:100 set.id:ex13',
+  'mewtwo-gold-star':   'number:103 set.id:ex14',
+  'rayquaza-gold-star': 'number:107 set.id:ex7',
+  // Meowth Illustration Rare — Phantasmal Flames (JP sv3a) / fallback to any IR
+  'meowth-phantasmal':  'name:Meowth rarity:"Illustration Rare"',
 });
 
 const EUR_GBP = 0.855;
@@ -2071,17 +2163,20 @@ function usdToGbp(v){ return fmtGbp(v*USD_GBP); }
 
 async function fetchCardData() {
   // Priority cards: fetch immediately (original 4 + cotd + hero showcase cards)
-  const priority = ['judge','cynthia','guzma','lillie','acerola','charizard-vmax-rainbow','umbreon-vmax-alt','mewtwo-ex-151','rayquaza-vmax-alt','pikachu-vmax','charizard-base'];
+  const priority = ['judge','cynthia','guzma','lillie','acerola','charizard-vmax-rainbow','umbreon-vmax-alt','mewtwo-ex-151','rayquaza-vmax-alt','pikachu-vmax','charizard-base','meowth-phantasmal'];
   const rest = Object.entries(cardApiQueries).filter(([id]) => !priority.includes(id));
 
   async function fetchOne(id, q) {
     try {
-      const res = await fetch('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) + '&pageSize=5');
+      const res = await fetch('https://api.pokemontcg.io/v2/cards?q=' + encodeURIComponent(q) + '&pageSize=8');
       const data = await res.json();
-      const card = data.data && (data.data.find(c => c.rarity==='Rare Ultra'||c.rarity==='Rare Holo') || data.data[0]);
+      if (!data.data || !data.data.length) return;
+      // Prefer high-rarity versions so prices match the correct variant
+      const PREF = ['Illustration Rare','Special Illustration Rare','Hyper Rare','Rare Rainbow','Rare Secret','Rare Ultra','Rare Holo'];
+      const card = PREF.reduce((best, r) => best || data.data.find(c => c.rarity === r), null) || data.data[0];
       if (!card) return;
       if (card.images?.large) cardImages[id] = card.images.large;
-      if (card.cardmarket||card.tcgplayer) cardPrices[id] = {cm:card.cardmarket||null,tcp:card.tcgplayer||null};
+      if (card.cardmarket || card.tcgplayer) cardPrices[id] = { cm: card.cardmarket||null, tcp: card.tcgplayer||null };
     } catch(e) {}
   }
 
@@ -2562,6 +2657,7 @@ function updateBrowseImages() {
 
 // Update hero floating card images once API data arrives
 const HERO_CARD_IDS = ['charizard-vmax-rainbow','umbreon-vmax-alt','mewtwo-ex-151','rayquaza-vmax-alt','pikachu-vmax','charizard-base'];
+const MEOWTH_ID = 'meowth-phantasmal';
 let heroImagesSet = 0;
 function updateHeroImages() {
   HERO_CARD_IDS.forEach((id, idx) => {
@@ -2578,6 +2674,38 @@ function updateHeroImages() {
     ph.replaceWith(img);
     heroImagesSet++;
   });
+  // Meowth fire card
+  if (cardImages[MEOWTH_ID]) {
+    const ph = document.getElementById('meowthPh');
+    if (ph) {
+      const img = document.createElement('img');
+      img.src = cardImages[MEOWTH_ID];
+      img.alt = 'Meowth Illustration Rare';
+      img.style.cssText = 'display:block;width:100%;border-radius:10px;position:relative;z-index:2;';
+      ph.replaceWith(img);
+    }
+  }
+}
+
+// Fire particle emitter for Meowth card
+function startMeowthFire() {
+  const container = document.getElementById('meowthFire');
+  if (!container) return;
+  const fireColors = ['#ff4500','#ff6b00','#ff8c00','#ffa500','#ffcc00','#ff3300'];
+  setInterval(() => {
+    if (!document.body.contains(container)) return;
+    for (let j = 0; j < 2; j++) {
+      const p = document.createElement('div');
+      const x = 15 + Math.random() * 70;
+      const dx = (Math.random() - 0.5) * 30;
+      const sz = 3 + Math.random() * 5;
+      const dur = 0.6 + Math.random() * 0.8;
+      const col = fireColors[Math.floor(Math.random() * fireColors.length)];
+      p.style.cssText = `position:absolute;bottom:5%;left:${x}%;width:${sz}px;height:${sz}px;border-radius:50% 50% 30% 30%;background:${col};pointer-events:none;z-index:15;--fdx:${dx}px;animation:firePart ${dur}s ease-out forwards;box-shadow:0 0 ${sz*2}px ${col};`;
+      container.appendChild(p);
+      setTimeout(() => p.remove(), dur * 1000 + 100);
+    }
+  }, 80);
 }
 
 // ── DETAIL PAGE ──────────────────────────────────────────────────────
@@ -2697,6 +2825,8 @@ function saveAccounts(a) { localStorage.setItem(STORE_KEY, JSON.stringify(a)); }
 function getSession()  { return localStorage.getItem(SESS_KEY)||''; }
 function saveSession(u) { localStorage.setItem(SESS_KEY, u); }
 function endSession()   { localStorage.removeItem(SESS_KEY); }
+// Safe hash — encodeURIComponent before btoa so special chars don't throw
+function hashPass(p) { try { return btoa(encodeURIComponent(p)); } catch(e) { return btoa(p.replace(/[^\x00-\x7E]/g,'')); } }
 
 function currentUser() { return getSession(); }
 function getWatchlist() {
@@ -2772,7 +2902,7 @@ function doLogin() {
   const p = document.getElementById('loginPass').value;
   if (!u||!p) return modalErr('Please fill in all fields.');
   const a = getAccounts();
-  if (!a[u] || a[u].pass !== btoa(p)) return modalErr('Incorrect username or password.');
+  if (!a[u] || a[u].pass !== hashPass(p)) return modalErr('Incorrect username or password.');
   saveSession(u); closeAuthModal(); updateAuthUI(); renderBrowseGrid();
 }
 function doCreate() {
@@ -2785,7 +2915,7 @@ function doCreate() {
   if (p !== p2) return modalErr('Passwords do not match.');
   const a = getAccounts();
   if (a[u]) return modalErr('Username already taken.');
-  a[u] = { pass: btoa(p), watchlist: [] }; saveAccounts(a);
+  a[u] = { pass: hashPass(p), watchlist: [] }; saveAccounts(a);
   saveSession(u); closeAuthModal(); updateAuthUI(); renderBrowseGrid();
 }
 
@@ -2849,6 +2979,41 @@ function scrollToCards() {
       setTimeout(() => p.remove(), 2200);
     }, 280);
   }
+})();
+
+// ── AMBIENT HOME ORBS ────────────────────────────────────────────
+(function addHomeOrbs() {
+  const home = document.getElementById('pageHome');
+  if (!home) return;
+  const orbs = [
+    { size:'500px', top:'20%',  left:'-10%', color:'rgba(167,139,250,0.12)', delay:'0s' },
+    { size:'400px', top:'60%',  right:'-8%', color:'rgba(245,158,11,0.1)',  delay:'-5s' },
+    { size:'300px', bottom:'10%',left:'30%', color:'rgba(96,165,250,0.08)', delay:'-9s' },
+  ];
+  orbs.forEach(o => {
+    const el = document.createElement('div');
+    el.className = 'home-orb';
+    Object.assign(el.style, { width:o.size, height:o.size, background:o.color,
+      top:o.top||'', left:o.left||'', right:o.right||'', bottom:o.bottom||'',
+      animationDelay: o.delay });
+    home.appendChild(el);
+  });
+})();
+
+// ── MEOWTH FIRE ──────────────────────────────────────────────────
+startMeowthFire();
+
+// ── SCROLL REVEAL FOR BROWSE GRID ───────────────────────────────
+(function initScrollReveal() {
+  if (!('IntersectionObserver' in window)) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.style.animationPlayState = 'running'; obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  // Observe cards after render
+  const origRender = renderBrowseGrid;
+  window._browseRevealObs = obs;
 })();
 
 // ── INIT ────────────────────────────────────────────────────────────
