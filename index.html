@@ -1008,6 +1008,40 @@
   }
   .hcotd-cta:hover { background: rgba(167,139,250,0.22); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(167,139,250,0.3); }
 
+  /* ── COTD RING PULSE ── */
+  @keyframes ringOut {
+    0%   { transform: translate(-50%,-50%) scale(0.7); opacity: 0.6; }
+    100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+  }
+  .cotd-ring {
+    position: absolute; left: 50%; top: 50%;
+    width: 100%; aspect-ratio: 1;
+    border-radius: 50%; pointer-events: none; z-index: 0;
+    border: 1px solid rgba(167,139,250,0.35);
+    animation: ringOut 2.4s ease-out infinite;
+  }
+  .cotd-ring:nth-child(2) { animation-delay: 0.8s; border-color: rgba(245,158,11,0.25); }
+  .cotd-ring:nth-child(3) { animation-delay: 1.6s; border-color: rgba(96,165,250,0.2); }
+
+  /* ── COTD SCORE COUNTER ── */
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .hcotd-score-num { animation: countUp 0.4s ease 0.8s both; }
+
+  /* ── COTD MOBILE STACK ── */
+  @media(max-width:480px) {
+    .hcotd-body { flex-direction: column; }
+    .hcotd-img-col { width: 100%; padding: 18px 18px 0; display: flex; justify-content: center; }
+    .hcotd-info { padding: 14px 16px 16px; }
+    .hcotd-name { font-size: 20px; }
+  }
+  @media(max-width:360px) {
+    .hcotd-img { width: 72px; }
+    .hcotd-img-ph { width: 72px; height: 101px; }
+  }
+
   /* ── BROWSE GRID ── */
   .browse-section { padding: 16px 16px 80px; }
   .browse-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
@@ -1636,6 +1670,183 @@ function startParticles(container, intervalMs) {
   }, intervalMs);
 }
 
+// ── LIVE PRICE HELPER ─────────────────────────────────────
+function getLivePrice(id) {
+  const p = cardPrices[id];
+  if (!p) return null;
+  if (p.cm && p.cm.prices) {
+    const price = p.cm.prices.averageSellPrice || p.cm.prices.trendPrice || p.cm.prices.avg30;
+    if (price && price > 0) return { gbp: price * EUR_GBP, source: 'Cardmarket · EUR' };
+  }
+  if (p.tcp && p.tcp.prices) {
+    const pr = p.tcp.prices;
+    const price = (pr.holofoil && pr.holofoil.market)
+               || (pr.normal && pr.normal.market)
+               || (pr['1stEditionHolofoil'] && pr['1stEditionHolofoil'].market);
+    if (price && price > 0) return { gbp: price * USD_GBP, source: 'TCGPlayer · USD' };
+  }
+  return null;
+}
+
+// ── CHART BUILDER ─────────────────────────────────────────
+function buildChart() {
+  const c = active;
+  const canvas = document.getElementById('priceChart');
+  if (!canvas || !c.history) return;
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+  const labels = c.history.map(p => p.x);
+  const vals   = c.history.map(p => p.y);
+  chartInst = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: [...labels, 'Oct 26', 'Apr 27'],
+      datasets: [
+        {
+          label: 'Historical',
+          data: [...vals, null, null],
+          borderColor: '#60a5fa',
+          backgroundColor: 'rgba(96,165,250,0.07)',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.4,
+          fill: true,
+        },
+        {
+          label: 'Projected',
+          data: [...Array(vals.length - 1).fill(null), vals[vals.length-1], c.t12, c.t24],
+          borderColor: '#22c55e',
+          borderDash: [4, 3],
+          borderWidth: 2,
+          pointRadius: 3,
+          pointBackgroundColor: '#22c55e',
+          tension: 0.4,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f0f1a',
+          borderColor: 'rgba(255,255,255,0.1)',
+          borderWidth: 1,
+          titleColor: '#888',
+          bodyColor: '#e0e0f0',
+          callbacks: { label: ctx => ctx.parsed.y != null ? ' £' + ctx.parsed.y.toFixed(2) : '' }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#444', font: { size: 10 }, maxTicksLimit: 8 } },
+        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#444', font: { size: 10 }, callback: v => '£' + v } }
+      }
+    }
+  });
+}
+
+// ── DETAIL TAB RENDERERS ───────────────────────────────────
+function renderOverview() {
+  const c  = active;
+  const eventsHtml = (c.events || []).map(e => `
+    <div class="event-box">
+      <div class="event-date">${e.d}</div>
+      <div class="event-label">${e.l}</div>
+      <div class="event-delta" style="color:${e.pos?'#22c55e':'#f87171'};">${e.v}</div>
+    </div>`).join('');
+  return `
+    <div class="two-col">
+      <div>
+        <div class="section-label">Summary</div>
+        <p class="summary-text">${c.summary}</p>
+        <div class="targets-box">
+          <div class="section-label">Price targets</div>
+          <div class="targets-grid">
+            <div><div class="target-label">Entry</div><div class="target-val" style="color:var(--gold);">${c.price}</div></div>
+            <div class="target-divider"></div>
+            <div><div class="target-label">12m</div><div class="target-val" style="color:var(--green);">£${c.t12}</div></div>
+            <div class="target-divider"></div>
+            <div><div class="target-label">24m</div><div class="target-val" style="color:var(--blue);">£${c.t24}</div></div>
+            <div class="target-divider"></div>
+            <div><div class="target-label">PSA 10</div><div class="target-val" style="color:var(--purple);">${c.psa10}</div></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="section-label">Risk factors</div>
+        <div class="risk-row"><span class="risk-label">Reprint risk</span>${riskPill(c.reprint)}</div>
+        <div class="risk-row"><span class="risk-label">Liquidity</span>${riskPill(c.liquidity)}</div>
+        <div class="risk-row"><span class="risk-label">Upside</span><span style="font-weight:700;color:var(--green);">${c.upside}</span></div>
+      </div>
+    </div>
+    <div class="chart-section">
+      <div class="chart-section-label">Price history & projection</div>
+      <div class="chart-note">Historical data from eBay UK, Cardmarket, TCGPlayer. Projections are trend estimates — not financial advice.</div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-line" style="background:#60a5fa;"></div>Historical</div>
+        <div class="legend-item"><div class="legend-dash" style="border-color:#22c55e;"></div>Projected</div>
+      </div>
+      <div class="chart-wrap"><canvas id="priceChart"></canvas></div>
+      ${eventsHtml ? `<div class="events-grid">${eventsHtml}</div>` : ''}
+    </div>`;
+}
+
+function renderWhereToBuy() {
+  const c = active;
+  const links = [
+    { name:'eBay UK', desc:'Best for auctions and rare finds', icon:'eBay', iconBg:'rgba(235,37,36,0.15)', iconColor:'#eb2524',
+      url:`https://www.ebay.co.uk/sch/i.html?_nkw=${encodeURIComponent(c.name+' '+c.setShort+' full art')}&LH_Sold=1&LH_Complete=1` },
+    { name:'Cardmarket', desc:'European marketplace — often cheapest', icon:'CM', iconBg:'rgba(37,138,220,0.15)', iconColor:'#258adc',
+      url:`https://www.cardmarket.com/en/Pokemon/Products/Search?searchString=${encodeURIComponent(c.name)}` },
+    { name:'TCGPlayer', desc:'US market — check condition carefully', icon:'TCG', iconBg:'rgba(96,165,250,0.15)', iconColor:'#60a5fa',
+      url:`https://www.tcgplayer.com/search/pokemon/product?q=${encodeURIComponent(c.name)}&view=grid` },
+    { name:'Vinted / Depop', desc:'Private sellers — verify carefully', icon:'V', iconBg:'rgba(34,197,94,0.15)', iconColor:'#22c55e',
+      url:`https://www.vinted.co.uk/catalog?search_text=${encodeURIComponent(c.name+' pokemon card')}` },
+  ];
+  return `
+    <div class="buy-disclaimer">
+      Always verify condition carefully. Request multiple photos including front, back, and edges. For cards above £20 use a platform with buyer protection. Never pay via bank transfer to unknown sellers.
+    </div>
+    <div class="buy-links">
+      ${links.map(l=>`
+        <a class="buy-link-card" href="${l.url}" target="_blank" rel="noopener noreferrer">
+          <div class="buy-icon" style="background:${l.iconBg};color:${l.iconColor};">${l.icon}</div>
+          <div class="buy-info">
+            <div class="buy-name">${l.name}</div>
+            <div class="buy-desc">${l.desc}</div>
+          </div>
+          <div class="buy-cta">Shop →</div>
+        </a>`).join('')}
+    </div>`;
+}
+
+function renderCatalysts() {
+  const c = active;
+  const catHtml = (c.catalysts||[]).map(t=>`
+    <div class="bullet-item">
+      <div class="bullet-icon" style="background:rgba(34,197,94,0.15);color:#22c55e;">+</div>
+      <div class="bullet-text">${t}</div>
+    </div>`).join('');
+  const riskHtml = (c.risks||[]).map(t=>`
+    <div class="bullet-item">
+      <div class="bullet-icon" style="background:rgba(248,113,113,0.15);color:#f87171;">−</div>
+      <div class="bullet-text">${t}</div>
+    </div>`).join('');
+  return `
+    <div class="two-col">
+      <div>
+        <div class="section-label">Catalysts</div>
+        ${catHtml||'<p class="summary-text">No catalysts listed.</p>'}
+      </div>
+      <div>
+        <div class="section-label">Risks</div>
+        ${riskHtml||'<p class="summary-text">No risks listed.</p>'}
+      </div>
+    </div>`;
+}
+
 // ── PAGE SYSTEM ───────────────────────────────────────────
 let currentPage = 'home';
 
@@ -1707,7 +1918,7 @@ function renderHomeCotd() {
             ${liveHtml}
             <div><div class="hcotd-price-lbl">Upside</div><div class="hcotd-price-val" style="color:#22c55e;">${c.upside}</div></div>
           </div>
-          <div class="hcotd-score-hdr"><span>Score</span><span style="color:${sc};">${c.score}/100</span></div>
+          <div class="hcotd-score-hdr"><span>Score</span><span class="hcotd-score-num" id="hcotdScoreNum" style="color:${sc};">0/100</span></div>
           <div class="hcotd-score-track">
             <div class="hcotd-score-fill" id="hcotdFill"
                  style="width:0;background:${sc};color:${sc};"
@@ -1716,17 +1927,34 @@ function renderHomeCotd() {
           <div class="hcotd-cta" onclick="event.stopPropagation();openCard('${c.id}')">View Analysis →</div>
         </div>
       </div>
+      <div class="cotd-ring"></div>
+      <div class="cotd-ring"></div>
+      <div class="cotd-ring"></div>
     </div>`;
 
+  // Animate score bar
   requestAnimationFrame(() => {
     const fill = document.getElementById('hcotdFill');
     if (fill) fill.style.width = c.score + '%';
   });
+  // Animate score counter
+  setTimeout(() => {
+    const numEl = document.getElementById('hcotdScoreNum');
+    if (!numEl) return;
+    const target = c.score; let step = 0; const steps = 30; const dur = 800;
+    const iv = setInterval(() => {
+      step++;
+      const t = step / steps;
+      const ease = t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+      numEl.textContent = Math.round(target * ease) + '/100';
+      if (step >= steps) { numEl.textContent = target + '/100'; clearInterval(iv); }
+    }, dur / steps);
+  }, 600);
   setTimeout(() => {
     const outer = document.getElementById('hcotdOuter');
     const body  = document.getElementById('hcotdBody');
     if (outer) addTilt(outer, 5);
-    if (body)  startParticles(body, 450);
+    if (body)  startParticles(body, 320);
   }, 60);
 }
 
